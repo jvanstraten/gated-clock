@@ -1,0 +1,3 @@
+mouser 863-MMBT4403WT1G
+model DCK3
+datasheet https://eu.mouser.com/datasheet/2/308/MMBT4403WT1_D-1811904.pdf

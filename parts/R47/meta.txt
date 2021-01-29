@@ -1,0 +1,4 @@
+mouser 603-RT0603FRE0747RL
+model 0603R
+value 47R
+power 0.1W

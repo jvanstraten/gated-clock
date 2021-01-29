@@ -1,0 +1,5 @@
+mouser 859-LTST-C230KFKT
+model LTST-C230
+color orange
+wavelength 605nm
+datasheet https://eu.mouser.com/datasheet/2/239/Lite-On-LTST-C230KFKT-1175400.pdf
