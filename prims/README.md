@@ -134,5 +134,14 @@ to be adhered to for the scripts to make sense of them.
  - Objects not within the classes above are ignored, and may thus be used for
    notes.
 
- - Local net labels must start with a `.`. All other net labels are considered
-   to be global.
+ - Four type of net labels are distinguished by a symbol prefix:
+
+    - no prefix: global net. The name will appear in the final netlist as
+      written.
+    - `.` prefix: local net. The name will be prefixed with the instance name
+      to make it unique.
+    - `>` prefix: input port. Same as `.`, but the net is treated as an input
+      of this primitive. A similarly-named input is expected in the VHDL model.
+    - `<` prefix: output port. Same as `.`, but the net is treated as an output
+      of this primitive. A similarly-named output is expected in the VHDL
+      model.
