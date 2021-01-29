@@ -5,7 +5,7 @@ import struct
 def read_lines(layer, ob, f, thickness):
     assert round(ob.location[0], 3) == 0 and round(ob.location[1], 3) == 0 and round(ob.location[2], 3) == 0
     assert round(ob.rotation_euler[0], 3) == 0 and round(ob.rotation_euler[1], 3) == 0 and round(ob.rotation_euler[2], 3) == 0
-    f.write('mode {} C{}\n'.format(layer, thickness))
+    f.write('layer {}\nmode C{}\n'.format(layer, thickness))
     d = ob.data
     n = 0
     verts = set()
@@ -33,7 +33,7 @@ def read_regions(layer, ob, f):
     assert round(ob.rotation_euler[0], 3) == 0 and round(ob.rotation_euler[1], 3) == 0 and round(ob.rotation_euler[2], 3) == 0
     n = 0
     for p in ob.data.polygons:
-        f.write('mode {} region\n'.format(layer))
+        f.write('layer {}\nmode region\n'.format(layer))
         for v in p.vertices:
             c = ob.data.vertices[v].co
             assert c[2] == 0.0
@@ -43,7 +43,7 @@ def read_regions(layer, ob, f):
 
 def read_label(layer, ob, f):
     assert ob.location[2] == 0
-    f.write('mode {} label {} {} {} {}\n'.format(layer, ob.data.body, ob.location[0], ob.location[1], ob.rotation_euler[2]))
+    f.write('layer {}\nlabel {} {} {} {}\n'.format(layer, ob.data.body, ob.location[0], ob.location[1], ob.rotation_euler[2]))
     print(' {}'.format(ob.data.body))
 
 def read_via(ob, f):
@@ -61,10 +61,10 @@ def read_via(ob, f):
     ds.sort()
     if len(ds) == 1:
         print(', non-plated {:.2f}'.format(ds[0]))
-        f.write('mode hole {} {} {}\n'.format(ob.location[0], ob.location[1], ds[0]))
+        f.write('hole {} {} {}\n'.format(ob.location[0], ob.location[1], ds[0]))
     elif len(ds) == 2:
         print(', plated {:.2f}x{:.2f}'.format(ds[1], ds[0]))
-        f.write('mode via {} {} {} {}\n'.format(ob.location[0], ob.location[1], ds[0], ds[1]))
+        f.write('via {} {} {} {}\n'.format(ob.location[0], ob.location[1], ds[0], ds[1]))
     else:
         assert False
 
