@@ -91,7 +91,7 @@ def read_layer(layer, f):
 
 known_layers = {'Ctop', 'GTO', 'GTS', 'GTL', 'G1', 'G2', 'GBL', 'GBS', 'GBO', 'Cbottom', 'Mill', 'Drill'}
 
-with open(bpy.data.filepath + '.dat', 'w') as f:
+with open(bpy.data.filepath + '.txt', 'w') as f:
     for ob in bpy.data.objects:
         for c in ob.users_collection:
             print('parsing object {} on layer {}: '.format(ob.name, c.name), end='')

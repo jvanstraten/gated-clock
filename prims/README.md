@@ -66,7 +66,7 @@ Blend file data extraction
 
 The data can be extracted from the `.blend` files by just running `make` here.
 This runs `blend-export.py` within Blender for all primitives. That generates
-`.blend.dat` files, which are straightforward, easy-to-parse text files.
+`.blend.txt` files, which are straightforward, easy-to-parse text files.
 
 Since these files are just glorified coordinate entry, a couple of rules need
 to be adhered to for the scripts to make sense of them.

@@ -6,10 +6,16 @@ BLENDER = blender-2.91
 endif
 
 DIRS = $(shell echo */)
-COMPONENTS = $(join $(DIRS),$(patsubst %/,%.blend.data,$(DIRS)))
+COMPONENTS = $(join $(DIRS),$(patsubst %/,%.blend.txt,$(DIRS)))
 
 .PHONY: all
 all: $(COMPONENTS)
 
-%.blend.data: %.blend blend-export.py
+.PHONY: clean
+clean:
+	rm $(COMPONENTS)
+	rm $(shell find -name '*.blend1')
+
+%.blend.txt: %.blend blend-export.py
 	$(BLENDER) -b $< --python blend-export.py --python-exit-code 1
+
