@@ -74,12 +74,16 @@ class Primitive:
                         layer = layer[:2] + 'L'
                     if layer in ('GTL', 'GBL', 'G1', 'G2'):
                         if name[0] == '>':
-                            self._pins.add(name[1:], 'in', layer, coord)
+                            mode = 'in'
                             name = '.' + name[1:]
                         elif name[0] == '<':
-                            self._pins.add(name[1:], 'out', layer, coord)
+                            mode = 'out'
                             name = '.' + name[1:]
-                        self._board.add_net(name, layer, coord)
+                        else:
+                            mode = 'passive'
+                        if mode != 'passive':
+                            self._pins.add(name[1:], mode, layer, coord)
+                        self._board.add_net(name, layer, coord, mode)
                         continue
 
                 if args[0] == 'hole':
@@ -98,6 +102,14 @@ class Primitive:
     def get_pins(self):
         return self._pins
 
+    def instantiate(self, pcb, transformer, coord, rotation, net_prefix, net_override):
+        """Instantiates this primitive on the given PCB with the given
+        transformer and local coordinate + rotation. Nets found in the
+        net_override map will be renamed accordingly. Local nets not found
+        in the map will be prefixed by net_prefix."""
+        warpable = False
+        self._board.instantiate(pcb, transformer, coord, rotation, warpable, net_prefix, net_override)
+
 _primitives = {}
 
 def get_primitive(name):
@@ -111,12 +123,28 @@ def get_primitive(name):
 
 # TODO removeme
 if __name__ == '__main__':
-    p = get_primitive('nand1')
-    p._board.add_outline(
-        (from_mm(-10), from_mm(-10)),
-        (from_mm(10), from_mm(-10)),
-        (from_mm(10), from_mm(10)),
-        (from_mm(-10), from_mm(10)),
-        (from_mm(-10), from_mm(-10)),
+    #p = get_primitive('nand1')
+    #p._board.add_outline(
+        #(from_mm(-10), from_mm(-10)),
+        #(from_mm(10), from_mm(-10)),
+        #(from_mm(10), from_mm(10)),
+        #(from_mm(-10), from_mm(10)),
+        #(from_mm(-10), from_mm(-10)),
+    #)
+    #p._board.to_file('kek')
+
+    pcb = CircuitBoard()
+    pcb.add_outline(
+        (from_mm(-15), from_mm(-10)),
+        (from_mm(15), from_mm(-10)),
+        (from_mm(15), from_mm(10)),
+        (from_mm(-15), from_mm(10)),
+        (from_mm(-15), from_mm(-10)),
     )
-    p._board.to_file('kek')
+    from coordinates import LinearTransformer, CircularTransformer
+    import math
+    t = CircularTransformer((0, from_mm(-5.0)), from_mm(5))
+    get_primitive('nand1').instantiate(pcb, t, (from_mm(-8), 0), 0.0, '', {})
+    get_primitive('nand1').instantiate(pcb, t, (0, 0), 0.0, '', {})
+    get_primitive('nand1').instantiate(pcb, t, (from_mm(8), 0), 0.0, '', {})
+    pcb.to_file('kek')

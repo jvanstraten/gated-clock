@@ -30,7 +30,7 @@ def to_ncd_mm(x):
     """Converts internal dimension format into an NC drill float."""
     return '{:0.4f}'.format(x / 1e6)
 
-def transrot(coord, translate, rotate):
+def transrot(coord, translate=(0, 0), rotate=0.0):
     """Rotates and then translates a coordinate."""
     return (
         int(round(coord[0] * math.cos(rotate) - coord[1] * math.sin(rotate) + translate[0])),
@@ -59,43 +59,94 @@ class Transformer:
         self._forward_lookup = {}
         self._reverse_lookup = {}
 
-    def to_global(self, origin, rotation=0.0, delta=(0, 0), warpable=False):
-        """When one argument is specified, treat it as a simple local
-        coordinate. When four arguments are specified, treat the first two as
-        origin/rotation of an instance, the third as the coordinate in the
-        subcircuit/primitive coordinate system, and the fourth as a boolean
-        indicating whether the subcircuit/primitive coordinate system may be
-        warped or not."""
+    def _to_global_int(self, coord, translate, rotate, warpable):
+        """Translate/rotate component coordinate to get a local coordinate,
+        then transform to a global coordinate, returning both position and
+        (additional) rotation. warpable specifies whether the initial
+        translation/rotation should be warped by the local to global
+        transformation (True), or whether the local to global transformation
+        should be linearised around the component origin."""
 
         # If we're allowed to warp the subcoordinate, transform it to a simple
         # local coordinate first. If not, we still have to rotate first.
-        if delta != (0, 0):
-            if warpable:
-                origin = transrot(delta, origin, rotation)
-                delta = (0, 0)
-            else:
-                delta = transrot(delta, (0, 0), rotation)
+        if warpable:
+            pre_rotation = rotate
+            origin = transrot(coord, translate, rotate)
+            coord = (0, 0)
+            rotate = 0.0
+        else:
+            pre_rotation = 0.0
+            origin = translate
+
+        # Get the transformation at the origin point.
+        translate, rotation = self._get_transform(origin)
+        rotate += rotation
 
         # If this is a simple translation, see if we've done it before, and
         # return exactly what we returned then if so.
-        if delta == (0, 0):
+        if coord == (0, 0):
             global_coord = self._forward_lookup.get(origin, None)
             if global_coord is not None:
-                return global_coord
+                return global_coord, rotate + pre_rotation
 
-        # Get the transformation at the origin point.
-        translate, rotate = self._get_transform(origin)
-
-        # We get our global coord by transforming the delta coordinate with the
+        # We get our global coord by transforming the coordinate with the
         # transformation we got for the origin point. But in order to ensure
         # that there is a one-to-one mapping between local and global
         # coordinates (in the presence of roundoff error), we must transform
         # that coordinate back to local first. That transformation is the
         # master, so to speak. Then we should have a mapping in our
         # transformation cache that we can use.
-        global_coord = transrot(delta, translate, rotate)
+        global_coord = transrot(coord, translate, rotate)
         local_coord = self.to_local(global_coord)
-        return self._forward_lookup[local_coord]
+        return self._forward_lookup[local_coord], rotate + pre_rotation
+
+    def to_global(self, coord, translate=None, rotate=0.0, warpable=False):
+        """When one argument is specified, treat it as a simple local
+        coordinate and transform it. Otherwise, treat the first argument as a
+        primitive/subcircuit coordinate that must first be translated/rotated
+        to get local coordinates. warpable then specifies whether it is allowed
+        to scale/warp the primitive/subcircuit coordinate system; if not, the
+        transformation applied by this transformer is fixed around the
+        primitive/subcircuit reference (i.e. `translate`)."""
+        if translate is None:
+            translate = coord
+            coord = (0, 0)
+        return self._to_global_int(coord, translate, rotate, warpable)[0]
+
+    def path_to_global(self, path, translate=None, rotate=0.0, warpable=None):
+        """Transforms a path (list of coordinates, open unless first=last) in
+        the local coordinate system to a path in the global coordinate system,
+        taking nonlinearity into consideration."""
+        if warpable is None:
+            warpable = translate is None
+        if translate is None:
+            translate = (0, 0)
+
+        global_path = [self.to_global(path[0], translate, rotate, warpable)]
+        for i in range(1, len(path)):
+            if warpable:
+                n = self._num_segments(path[i-1], path[i])
+            else:
+                n = 1
+            for j in reversed(range(n)):
+                global_path.append(self.to_global((
+                    path[i][0] + (j / n) * (path[i-1][0] - path[i][0]),
+                    path[i][1] + (j / n) * (path[i-1][1] - path[i][1])
+                ), translate, rotate, warpable))
+        return global_path
+
+    def part_to_global(self, comp_coord, comp_rotation, translate=None, rotate=0.0, warpable=False):
+        """Same as to_global(), but transforms a part, which naturally has
+        a position and rotation rather than only a point, so both are needed
+        and both are returned. While the warpable argument is present, it must
+        be False: components cannot be warped in real life after all!"""
+        rotate += comp_rotation
+        if translate is None:
+            translate = coord
+            comp_coord = (0, 0)
+        if warpable:
+            raise ValueError('a part is being warped!')
+        return self._to_global_int(comp_coord, translate, rotate, warpable)
 
     def to_local(self, global_coord):
         """Converts a global coordinate to its corresponding local
@@ -106,20 +157,6 @@ class Transformer:
             self._forward_lookup[local_coord] = global_coord
             self._reverse_lookup[global_coord] = local_coord
         return local_coord
-
-    def path_to_global(self, path):
-        """Transforms a path (list of coordinates, open unless first=last) in
-        the local coordinate system to a path in the global coordinate system,
-        taking nonlinearity into consideration."""
-        global_path = [path[0]]
-        for i in range(1, len(path)):
-            n = self._num_segments(path[i-1], path[i])
-            for j in reversed(range(n)):
-                global_path.append((
-                    path[i][0] + (j / n) * (path[i-1][0] - path[i][0]),
-                    path[i][1] + (j / n) * (path[i-1][1] - path[i][1])
-                ))
-        return global_path
 
     def _get_transform(self, local_coord):
         """Transforms the local coordinate to a global coordinate, and also
@@ -159,7 +196,7 @@ class CircularTransformer(Transformer):
     """Treats local coordinates as polar coordinates, such that (x, y) ends
     up at transrot((0, radius + y), translate, rotate - x / radius)."""
 
-    def __init__(self, translate, radius, rotate=0.0, epsilon=from_mm(0.1)):
+    def __init__(self, translate, radius, rotate=0.0, epsilon=from_mm(0.005)):
         super().__init__()
         self._translate = translate
         self._radius = radius
@@ -194,26 +231,30 @@ class CircularTransformer(Transformer):
     def _num_segments(self, c1, c2):
         """Returns the number of line segments needed to make a path between
         local coordinates c1 and c2."""
-        r = (c1[1] + c1[2]) * 0.5 + self._radius
+        r = (c1[1] + c2[1]) * 0.5 + self._radius
         x = (1.0 - self._epsilon / r) if r > self._epsilon else 0.0
         th = math.acos(2.0 * x * x - 1.0) + 1e-3;
         dx = th * self._radius
-        return int(math.ceil(abs(c1[0] - c2[0]) / dx))
+        return int(math.ceil(abs(c1[0] - c2[0]) / dx + 0.01))
 
 
 if __name__ == '__main__':
     t1 = CircularTransformer((0, 0), 100000, 0)
     t2 = CircularTransformer((0, 0), 100000, 0)
-    a = t1.to_global((100000*math.pi/2, 0), math.pi/2, (10000, 0))
+    a = t1.to_global((10000, 0), (100000*math.pi/2, 0), math.pi/2)
     print(a)
     b = t1.to_local(a)
     print(b)
     c = t2.to_global(b)
     print(c)
 
+    t1 = CircularTransformer((0, 0), 100000, 0)
+    a = t1.part_to_global((0, 0), 0, (100000*math.pi/2, 0), math.pi/2)
+    print(a)
+
     t1 = LinearTransformer((3000, 2000), math.pi/2)
     t2 = LinearTransformer((3000, 2000), math.pi/2)
-    a = t1.to_global((10000, 1000), 0, (0, 0))
+    a = t1.to_global((0, 0), (10000, 1000), 0)
     print(a)
     b = t1.to_local(a)
     print(b)

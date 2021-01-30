@@ -61,6 +61,27 @@ class GerberLayer:
 
     def add_path(self, aper, *path):
         paths = self._paths.get(aper, None)
+
+        # Due to roundoff error during rotation, some almost-identical
+        # (actually identical in the gerber file) apertures can appear
+        # for region apertures. To avoid this, look for apertures that
+        # are "close enough".
+        if paths is None and isinstance(aper, tuple):
+            for ap2 in self._paths:
+                if not isinstance(ap2, tuple):
+                    continue
+                if len(aper) != len(ap2):
+                    continue
+                err = 0
+                for c1, c2 in zip(aper, ap2):
+                    err += (c1[0] - c2[0])**2
+                    err += (c1[1] - c2[1])**2
+                    if err > 10:
+                        break
+                else:
+                    aper = ap2
+                    paths = self._paths[aper]
+                    break
         if paths is None:
             paths = Paths()
             self._paths[aper] = paths
@@ -101,6 +122,32 @@ class GerberLayer:
                     if len(path) == 1:
                         f.write('D03*\n')
             f.write('M02*\n')
+
+    def instantiate(self, pcb, transformer, translate, rotate, warpable):
+        """Instantiates the contents of this layer onto the given PCB with the
+        given transformer and local translation + rotation."""
+        for aper, paths in self._paths.items():
+            for path in paths:
+                if isinstance(aper, int):
+                    pcb.add_trace(
+                        self._name,
+                        aper,
+                        *transformer.path_to_global(
+                            path,
+                            translate,
+                            rotate,
+                            warpable
+                        )
+                    )
+                else:
+                    assert len(path) == 1
+                    flash = path[0]
+                    path = [(ap[0] + flash[0], ap[1] + flash[1]) for ap in list(aper) + [aper[0]]]
+                    path = transformer.path_to_global(path, translate, rotate, warpable)[:-1]
+                    pcb.add_flashed_region(
+                        self._name,
+                        *path
+                    )
 
 class DrillLayer:
     """Represents a drilling layer."""
@@ -156,6 +203,14 @@ class DrillLayer:
                     f.write('\n')
             f.write('M30\n')
 
+    def instantiate(self, pcb, transformer, translate, rotate, warpable):
+        """Instantiates the contents of this layer onto the given PCB with the
+        given transformer and local translation + rotation."""
+        for (dia, plated), points in self._holes.items():
+            for coord in points:
+                coord = transformer.to_global(coord, translate, rotate, warpable)
+                pcb.add_hole(coord, dia, plated)
+
 class Net:
     """Represents a physical net."""
 
@@ -177,6 +232,7 @@ class PartInstance:
         if layer not in ('Ctop', 'Cbottom'):
             raise ValueError('layer must be Ctop or Cbottom')
         super().__init__()
+        self._name = name
         self._part = get_part(name)
         self._layer = layer
         self._coord = coord
@@ -184,6 +240,9 @@ class PartInstance:
 
     def get_name(self):
         return self._name
+
+    def get_part(self):
+        return self._part
 
     def get_layer(self):
         return self._layer
@@ -252,12 +311,11 @@ class CircuitBoard:
         self.add_flash('G2', outer, coord)
         self.add_flash('GBL', outer, coord)
 
-    def add_net(self, name, layer, coord, driver=None):
+    def add_net(self, name, layer, coord, mode='passive'):
         """Indicates that the copper at layer/coord is connected to the given
-        net. Dimensions are integer nanometers. If driver is set to True, a
-        driver is also added for the net. If driver is set to False, a user
-        is added for the net."""
-        self._netlist.add(name, layer, coord, driver)
+        net. Dimensions are integer nanometers. Mode must be 'passive',
+        'driver', 'user', 'in', or 'out'."""
+        self._netlist.add(name, layer, coord, mode)
 
     def add_part(self, name, layer, coord, rotation):
         """Adds a soldered part to the PCB."""
@@ -267,3 +325,44 @@ class CircuitBoard:
         for layer in self._layers.values():
             layer.to_file(fname)
         self._drill.to_file(fname)
+
+    def instantiate(self, pcb, transformer, translate, rotate, warpable, net_prefix, net_override):
+        """Instantiates the contents of this PCB onto the given PCB with the
+        given transformer and local translation + rotation. Nets found in the
+        net_override map will be renamed accordingly. Local nets not found
+        in the map will be prefixed by net_prefix."""
+
+        # Gerber layers.
+        for layer in self._layers.values():
+            layer.instantiate(pcb, transformer, translate, rotate, warpable)
+
+        # Drill data.
+        self._drill.instantiate(pcb, transformer, translate, rotate, warpable)
+
+        # Netlist data.
+        for net in self._netlist.iter_physical():
+            name = net.get_name()
+            if name in net_override:
+                name = net_override[name]
+            elif name.startswith('.'):
+                name = net_prefix + name
+            for layer, coord, mode in net.iter_points():
+                if mode in ('in', 'out'):
+                    mode = 'passive'
+                pcb.add_net(
+                    name,
+                    layer,
+                    transformer.to_global(coord, translate, rotate, warpable),
+                    mode)
+
+        # Assembly data.
+        for part_inst in self._parts:
+            pcb.add_part(
+                part_inst.get_name(),
+                part_inst.get_layer(),
+                *transformer.part_to_global(
+                    part_inst.get_coord(), part_inst.get_rotation(),
+                    translate, rotate, warpable
+                )
+            )
+

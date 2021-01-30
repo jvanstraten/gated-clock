@@ -175,7 +175,7 @@ class Subcircuit:
                 unrouted.remove(net)
                 y_min = None
                 y_max = None
-                for _, (_, y) in self._netlist.get_logical(net).iter_points():
+                for _, (_, y), _ in self._netlist.get_logical(net).iter_points():
                     if y_min is None or y < y_min:
                         y_min = y
                     if y_max is None or y > y_max:

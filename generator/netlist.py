@@ -10,8 +10,8 @@ class LogicalNet:
     def get_name(self):
         return self._name
 
-    def add_point(self, layer, coord):
-        self._points.add((layer, coord))
+    def add_point(self, layer, coord, mode):
+        self._points.add((layer, coord, mode))
 
     def iter_points(self):
         for data in self._points:
@@ -94,16 +94,15 @@ class Netlist:
         for net in self._logical_nets.values():
             yield net
 
-    def add(self, name, layer, coord, driver=None):
+    def add(self, name, layer, coord, mode='passive'):
         """Marks that the given coordinate on the given layer is part of the
-        given logical net. If driver is True, also mark this point as a driver
-        for the corresponding physical net (name without * suffix). If driver
-        is False, mark it as a user instead."""
+        given logical net. mode must be 'passive', 'driver', 'user', 'in', or
+        'out'."""
         logical_net = self.get_logical(name)
-        logical_net.add_point(layer, coord)
-        if driver is True:
+        logical_net.add_point(layer, coord, mode)
+        if mode in ('driver', 'in'):
             self.get_physical(name).drive()
-        elif driver is False:
+        elif mode in ('user', 'out'):
             self.get_physical(name).use()
 
     def check(self, good=True):
