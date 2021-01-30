@@ -119,32 +119,34 @@ class Instance:
 class RoutingColumn:
     """Represents a routing column."""
 
-    def __init__(self, x_coord, net_names):
+    def __init__(self, x, net):
         super().__init__()
-        self._x_coord = x_coord
-        self._horizontals = {net: [] for net in net_names}
+        self._net = net
+        self._x = x
+        self._y_min = None
+        self._y_max = None
+        self._horizontals = []
         self._bridges = []
-        self._ranges = {}
 
     def get_x_coord(self):
-        return self._x_coord
+        return self._x
 
     def register(self, net, router_x, coord, layer):
-        horizontals = self._horizontals.get(net, None)
-        if horizontals is not None:
-            horizontals.append((coord, layer))
-            rnge = self._ranges.get(net, None)
-            if rnge is None:
-                rnge = [coord[1], coord[1]]
-                self._ranges[net] = rnge
+        if net == self._net:
+            self._horizontals.append((coord, layer))
+            if self._y_min is None:
+                self._y_min = coord[1]
             else:
-                rnge[0] = min(rnge[0], coord[1])
-                rnge[1] = max(rnge[1], coord[1])
-            assert router_x == self._x_coord
+                self._y_min = min(self._y_min, coord[1])
+            if self._y_max is None:
+                self._y_max = coord[1]
+            else:
+                self._y_max = max(self._y_max, coord[1])
+            assert router_x == self._x
         else:
             min_x = min(router_x, coord[0])
             max_x = max(router_x, coord[0])
-            if self._x_coord >= min_x and self._x_coord <= max_x:
+            if self._x >= min_x and self._x <= max_x:
                 self._bridges.append(coord[1])
 
     def generate(self, pcb, transformer, translate, rotate):
@@ -153,79 +155,104 @@ class RoutingColumn:
         NP = 3
         b = sorted(self._bridges)
         bi = 0
-        x = self._x_coord
-        endpoints = set()
-        for min_y, max_y in sorted(self._ranges.values()):
-            endpoints.add(min_y)
-            endpoints.add(max_y)
-            y = min_y
-            bridging = False
-            path = []
-            def add_to_path(coord):
-                if path and path[-1] == coord:
-                    return
-                path.append(coord)
-            while y < max_y:
-                while bi < len(b) and b[bi] <= y and b[bi] < max_y:
-                    bi += 1
-                if not bridging:
-                    y0 = None                       # no previous bridge
-                    y1 = y                          # start of line
-                    if bi == len(b) or b[bi] > max_y:
-                        y2 = max_y                  # end of line
-                        y3 = None                   # no next bridge
-                    else:
-                        y2 = max(y1, b[bi] - BW)    # end of line, start of next bridge
-                        y3 = b[bi]                  # middle of next bridge
+        x = self._x
+        y = self._y_min
+        min_y = self._y_min
+        max_y = self._y_max
+        bridging = False
+        any_bridges = False
+        path = []
+        def add_to_path(coord):
+            if path and path[-1] == coord:
+                return
+            path.append(coord)
+        while y < max_y:
+            while bi < len(b) and b[bi] <= y and b[bi] < max_y:
+                bi += 1
+            if not bridging:
+                y0 = None                       # no previous bridge
+                y1 = y                          # start of line
+                if bi == len(b) or b[bi] > max_y:
+                    y2 = max_y                  # end of line
+                    y3 = None                   # no next bridge
                 else:
-                    y0 = y                          # middle of previous bridge
-                    if bi == len(b) or b[bi] > max_y:
-                        y1 = min(y0 + BW, max_y)    # end of previous bridge, start of line
-                        y2 = max_y                  # end of line
-                        y3 = None                   # no next bridge
-                    else:
-                        y1 = y + BW                 # end of previous bridge, start of line
-                        y2 = b[bi] - BW             # end of line, start of next bridge
-                        y3 = b[bi]                  # middle of next bridge
-                        if y1 > y2:
-                            y1 = None               # no room for bridge
-                            y2 = None
+                    y2 = max(y1, b[bi] - BW)    # end of line, start of next bridge
+                    y3 = b[bi]                  # middle of next bridge
+            else:
+                y0 = y                          # middle of previous bridge
+                if bi == len(b) or b[bi] > max_y:
+                    y1 = min(y0 + BW, max_y)    # end of previous bridge, start of line
+                    y2 = max_y                  # end of line
+                    y3 = None                   # no next bridge
+                else:
+                    y1 = y + BW                 # end of previous bridge, start of line
+                    y2 = b[bi] - BW             # end of line, start of next bridge
+                    y3 = b[bi]                  # middle of next bridge
+                    if y1 > y2:
+                        y1 = None               # no room for bridge
+                        y2 = None
 
-                if y0 is not None:
-                    add_to_path((x + BH, y0))
-                if y0 is not None and y1 is not None:
-                    for i in range(1, NP):
-                        a = i / NP * math.pi * 0.5
-                        add_to_path((x + math.cos(a) * BH, y0 + math.sin(a) * (y1 - y0)))
-                if y1 is not None:
-                    add_to_path((x, y1))
-                if y2 is not None:
-                    add_to_path((x, y2))
-                if y2 is not None and y3 is not None:
-                    for i in range(1, NP):
-                        a = i / NP * math.pi * 0.5
-                        add_to_path((x + math.sin(a) * BH, y3 + math.cos(a) * (y2 - y3)))
-                if y3 is not None:
-                    add_to_path((x + BH, y3))
+            if y0 is not None:
+                add_to_path((x + BH, y0))
+            if y0 is not None and y1 is not None:
+                for i in range(1, NP):
+                    a = i / NP * math.pi * 0.5
+                    add_to_path((x + math.cos(a) * BH, y0 + math.sin(a) * (y1 - y0)))
+            if y1 is not None:
+                add_to_path((x, y1))
+            if y2 is not None:
+                add_to_path((x, y2))
+            if y2 is not None and y3 is not None:
+                for i in range(1, NP):
+                    a = i / NP * math.pi * 0.5
+                    add_to_path((x + math.sin(a) * BH, y3 + math.cos(a) * (y2 - y3)))
+            if y3 is not None:
+                add_to_path((x + BH, y3))
 
-                bridging = y3 is not None
-                y = y2 if y3 is None else y3
+            bridging = y3 is not None
+            if bridging:
+                any_bridges = bridging
+            y = y2 if y3 is None else y3
 
-            if path:
+        # Columns with no bridges stay on the top layer.
+        hori_layer = 'GTL'
+        if not any_bridges:
+            vert_layer = 'GTL'
+        else:
+            vert_layer = 'GBL'
+
+        # Draw vertical trace on silkscreen.
+        if path:
+            path = transformer.path_to_global(path, translate, rotate, True)
+            pcb.add_trace('GTO', from_mm(0.2), *path)
+
+        # Draw vertical copper trace.
+        path = transformer.path_to_global([(x, min_y), (x, max_y)], translate, rotate, True)
+        pcb.add_trace(vert_layer, from_mm(0.2), *path)
+
+        for coord, pin_layer in self._horizontals:
+            path = [coord, (x, coord[1])]
+            if path[0] != path[1]:
                 path = transformer.path_to_global(path, translate, rotate, True)
+
+                # Draw horizontal trace on silkscreen.
                 pcb.add_trace('GTO', from_mm(0.2), *path)
-
-
-                #pcb.add_trace('GTL', from_mm(0.2), *path)
-
-        for horizontal in self._horizontals.values():
-            for coord, layer in horizontal:
-                path = [coord, (x, coord[1])]
-                path = transformer.path_to_global(path, translate, rotate, True)
-                pcb.add_trace('GTO', from_mm(0.2), *path)
-                if coord[1] not in endpoints:
+                if coord[1] not in (self._y_min, self._y_max):
                     pcb.add_trace('GTO', from_mm(0.6), path[-1])
 
+                # Draw horizontal copper trace.
+                pcb.add_trace(hori_layer, from_mm(0.2), *path)
+
+                # Add vias on either end if needed.
+                if vert_layer != hori_layer:
+                    pcb.add_via(path[1])
+                if pin_layer != hori_layer:
+                    pcb.add_via(path[0])
+            else:
+
+                # The pin is directly on the vertical layer.
+                if pin_layer != vert_layer:
+                    pcb.add_via(transformer.to_global(coord, translate, rotate, True))
 
 class Subcircuit:
     """Represents a subcircuit for PCB composition."""
@@ -370,7 +397,7 @@ class Subcircuit:
                 pcb.add_net(name, layer, coord, mode)
 
         # Perform routing.
-        routers = [RoutingColumn(*x) for x in self._routers]
+        routers = [RoutingColumn(x, net) for x, nets in self._routers for net in nets]
         x_coords = {net: x for x, nets in self._routers for net in nets}
         for net in netlist.iter_logical():
             for layer, coord, _ in net.iter_points():
