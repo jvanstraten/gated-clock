@@ -5,23 +5,22 @@ class Part:
 
     def __init__(self, name):
         super().__init__()
+        print('loading part {}...'.format(name))
         if not os.path.isdir(os.path.join('parts', name)):
             raise ValueError('part {} does not exist'.format(name))
-        try:
-            self._name = name
-            self._meta = {}
-            with open(os.path.join('parts', name, 'meta.txt'), 'r') as f:
-                for line in f.read().split('\n'):
-                    line = line.strip()
-                    if not line:
-                        continue
-                    line = line.split(maxsplit=1)
-                    if len(line) != 2:
-                        raise ValueError('line is not key/value: {}'.format(line))
-                    self._meta[line[0]] = line[1]
-        except:
-            print('error while loading part {}'.format(name))
-            raise
+        if not os.path.isfile(os.path.join('parts', name, '{}.meta.txt'.format(name))):
+            raise ValueError('missing .meta.txt file for part {}'.format(name))
+        self._name = name
+        self._meta = {}
+        with open(os.path.join('parts', name, '{}.meta.txt'.format(name)), 'r') as f:
+            for line in f.read().split('\n'):
+                line = line.strip()
+                if not line:
+                    continue
+                line = line.split(maxsplit=1)
+                if len(line) != 2:
+                    raise ValueError('line is not key/value: {}'.format(line))
+                self._meta[line[0]] = line[1]
 
     def get_name():
         """Returns the name of the part."""

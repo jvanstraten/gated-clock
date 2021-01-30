@@ -95,7 +95,7 @@ with open(bpy.data.filepath + '.txt', 'w') as f:
     for ob in bpy.data.objects:
         for c in ob.users_collection:
             print('parsing object {} on layer {}: '.format(ob.name, c.name), end='')
-            if c not in known_layers:
+            if c.name in known_layers:
                 if ob.type == 'MESH' and c.name not in ('Ctop', 'Cbottom'):
                     if c.name == 'Drill':
                         print('hole/via object', end='')
