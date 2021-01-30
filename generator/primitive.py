@@ -74,15 +74,15 @@ class Primitive:
                         layer = layer[:2] + 'L'
                     if layer in ('GTL', 'GBL', 'G1', 'G2'):
                         if name[0] == '>':
-                            mode = 'in'
+                            self._pins.add(name[1:], 'in', layer, coord)
+                            mode = 'user'
                             name = '.' + name[1:]
                         elif name[0] == '<':
-                            mode = 'out'
+                            self._pins.add(name[1:], 'out', layer, coord)
+                            mode = 'driver'
                             name = '.' + name[1:]
                         else:
                             mode = 'passive'
-                        if mode != 'passive':
-                            self._pins.add(name[1:], mode, layer, coord)
                         self._board.add_net(name, layer, coord, mode)
                         continue
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     from coordinates import LinearTransformer, CircularTransformer
     import math
     t = CircularTransformer((0, from_mm(-5.0)), from_mm(5))
-    get_primitive('nand1').instantiate(pcb, t, (from_mm(-8), 0), 0.0, '', {})
-    get_primitive('nand1').instantiate(pcb, t, (0, 0), 0.0, '', {})
-    get_primitive('nand1').instantiate(pcb, t, (from_mm(8), 0), 0.0, '', {})
+    get_primitive('nand1').instantiate(pcb, t, (from_mm(-8), 0), 0.0, 'a', {})
+    get_primitive('nand1').instantiate(pcb, t, (0, 0), 0.0, 'b', {})
+    get_primitive('nand1').instantiate(pcb, t, (from_mm(8), 0), 0.0, 'c', {})
     pcb.to_file('kek')

@@ -270,6 +270,12 @@ class CircuitBoard:
         self._netlist = Netlist()
         self._parts = []
 
+    def get_netlist(self):
+        return self._netlist
+
+    def get_parts(self):
+        return self._parts
+
     def add_trace(self, layer, thickness, *path):
         """Adds a trace. Dimensions are integer nanometers."""
         self._layers[layer].add_path(thickness, *path)
@@ -325,6 +331,16 @@ class CircuitBoard:
         for layer in self._layers.values():
             layer.to_file(fname)
         self._drill.to_file(fname)
+        self._netlist.to_file(fname)
+        with open('{}.parts.txt'.format(fname), 'w') as f:
+            for inst in self._parts:
+                f.write('{} {} {} {} {}\n'.format(
+                    inst.get_name(),
+                    inst.get_layer(),
+                    to_mm(inst.get_coord()[0]),
+                    to_mm(inst.get_coord()[1]),
+                    inst.get_rotation() * 180 / math.pi
+                ))
 
     def instantiate(self, pcb, transformer, translate, rotate, warpable, net_prefix, net_override):
         """Instantiates the contents of this PCB onto the given PCB with the
@@ -347,8 +363,6 @@ class CircuitBoard:
             elif name.startswith('.'):
                 name = net_prefix + name
             for layer, coord, mode in net.iter_points():
-                if mode in ('in', 'out'):
-                    mode = 'passive'
                 pcb.add_net(
                     name,
                     layer,

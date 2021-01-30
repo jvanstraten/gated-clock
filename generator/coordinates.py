@@ -125,7 +125,10 @@ class Transformer:
         global_path = [self.to_global(path[0], translate, rotate, warpable)]
         for i in range(1, len(path)):
             if warpable:
-                n = self._num_segments(path[i-1], path[i])
+                n = self._num_segments(
+                    self.to_local(self.to_global(path[i-1], translate, rotate, warpable)),
+                    self.to_local(self.to_global(path[i], translate, rotate, warpable))
+                )
             else:
                 n = 1
             for j in reversed(range(n)):

@@ -1,46 +1,46 @@
 columns 6x1.5C 1x9.0C 5x1.5C 1x9.0C 2x1.5C 13
-rows 1x1.5B 1x4B 1x8B 14x4B 0
+rows 1x1.0B 1x1.5B 1x3.5B 1x7B 14x3.5B 0
 
-in b0               0  0
-in b0n              1  0
-in b1               2  0
-in b1n              3  0
-in b2               4  0
-in b2n             13  0
-in b3n             14  0
+in b0      GBL      0  0
+in b0n     GBL      1  0
+in b1      GBL      2  0
+in b1n     GBL      3  0
+in b2      GBL      4  0
+in b2n     GBL     13  0
+in b3n     GBL     14  0
 
 # First stage: generate X signal, high for 0..3.
-prim nand2 Xn  -90 12  1 Y=Xn A=b2n B=b3n
-prim nand1 X   -90  6  1 Y=X A=Xn
+prim nand2 Xn  -90 12  2 Y=Xn A=b2n B=b3n
+prim nand1 X   -90  6  2 Y=X A=Xn
 
 # Second stage operates on b0, b0n, b1, b1n, b2, and X to make the internal AOI
 # signals.
-prim feed b0n*1 90  6  0 A=b0n B=b0n*1
-prim nand2 X0u  90  6  2 Y=X0u B=X A=b1n
-prim nand3 X01  90  6  4 Y=X01 C=X B=b1n A=b0
-prim nand3 X10  90  6  6 Y=X10 C=X B=b1 A=b0n
-prim nand2 X1u  90  6  8 Y=X1u B=X A=b1
-prim nand3 Y00  90  6 10 Y=Y00 C=b2 B=b1n A=b0n
-prim nand3 Y01  90  6 12 Y=Y01 C=b2 B=b1n A=b0
-prim nand3 Y10  90  6 14 Y=Y10 C=b2 B=b1 A=b0n
-prim nand3 Y11  90  6 16 Y=Y11 C=b2 B=b1 A=b0
+prim feed b0n*1 90  6  1 A=b0n B=b0n*1
+prim nand2 X0u  90  6  3 Y=X0u B=X A=b1n
+prim nand3 X01  90  6  5 Y=X01 C=X B=b1n A=b0
+prim nand3 X10  90  6  7 Y=X10 C=X B=b1 A=b0n
+prim nand2 X1u  90  6  9 Y=X1u B=X A=b1
+prim nand3 Y00  90  6 11 Y=Y00 C=b2 B=b1n A=b0n
+prim nand3 Y01  90  6 13 Y=Y01 C=b2 B=b1n A=b0
+prim nand3 Y10  90  6 15 Y=Y10 C=b2 B=b1 A=b0n
+prim nand3 Y11  90  6 17 Y=Y11 C=b2 B=b1 A=b0
 
 # Third stage generates the outputs.
-prim nand2 An   90 12 15 Y=An A=X01 B=Y00
-prim nand2 Bn   90 12 13 Y=Bn B=Y01 A=Y10
-prim nand1 Cn   90 12 11 Y=Cn A=X10
-prim nand3 Dn   90 12  9 Y=Dn A=X01 B=Y00 C=Y11
-prim nand2 En   90 12  7 Y=En B=b0n*1 A=Y00
-prim nand3 Fn   90 12  5 Y=Fn B=X01 A=X1u C=Y11
-prim nand2 Gn   90 12  3 Y=Gn B=X0u A=Y11
+prim nand2 An   90 12 16 Y=An A=X01 B=Y00
+prim nand2 Bn   90 12 14 Y=Bn B=Y01 A=Y10
+prim nand1 Cn   90 12 12 Y=Cn A=X10
+prim nand3 Dn   90 12 10 Y=Dn A=X01 B=Y00 C=Y11
+prim nand2 En   90 12  8 Y=En B=b0n*1 A=Y00
+prim nand3 Fn   90 12  6 Y=Fn B=X01 A=X1u C=Y11
+prim nand2 Gn   90 12  4 Y=Gn B=X0u A=Y11
 
-out An             13 15
-out Bn             13 13
-out Cn             13 11
-out Dn             13  9
-out En             13  7
-out Fn             13  5
-out Gn             13  3
+out An     GTL     13 16
+out Bn     GTL     13 14
+out Cn     GTL     13 12
+out Dn     GTL     13 10
+out En     GTL     13  8
+out Fn     GTL     13  6
+out Gn     GTL     13  4
 
 route               0    b0
 route               1    b0n

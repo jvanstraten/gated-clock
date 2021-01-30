@@ -64,7 +64,7 @@ class PinMap:
             if pin not in remain:
                 raise ValueError('pin {} does not exist'.format(pin))
             remain.remove(pin)
-            self._connections[pin] = (pins.get(pin), net)
+            self._connections[pin] = (pins.get(pin), '.{}'.format(net))
         for pin in remain:
             raise ValueError('pin {} is not connected'.format(pin))
 

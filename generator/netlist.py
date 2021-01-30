@@ -1,3 +1,5 @@
+import math
+from coordinates import to_mm
 
 class LogicalNet:
     """Represents a logical net."""
@@ -23,8 +25,6 @@ class PhysicalNet:
     def __init__(self, name):
         super().__init__()
         self._name = name
-        self._n_drivers = 0
-        self._n_users = 0
         self._logical_nets = []
 
     def get_name(self):
@@ -38,22 +38,45 @@ class PhysicalNet:
             for data in logical_net.iter_points():
                 yield data
 
-    def use(self):
-        self._n_users += 1
-
-    def drive(self):
-        self._n_drivers += 1
-
-    def check(self, good=True):
-        if self._n_users == 0:
-            print('DRC error: net {} is never used'.format(self._name))
+    def check(self, is_subcircuit, good=True):
+        users = 0
+        drivers = 0
+        inputs = 0
+        outputs = 0
+        total = 0
+        for _, (_, _), mode in self.iter_points():
+            if mode == 'driver':
+                drivers += 1
+            elif mode == 'user':
+                users += 1
+            elif mode == 'in':
+                inputs += 1
+            elif mode == 'out':
+                outputs += 1
+            total += 1
+        if is_subcircuit:
+            drivers += inputs
+            users += outputs
+        if total < 2:
+            print('DRC error: net {} has only one connection point'.format(self._name))
             good = False
-        if self._n_drivers == 0:
-            print('DRC error: net {} has no drivers'.format(self._name))
-            good = False
-        if self._n_drivers > 1:
-            print('DRC error: net {} has multiple drivers'.format(self._name))
-            good = False
+        if users or drivers:
+            if users == 0:
+                print('DRC error: net {} is never used'.format(self._name))
+                good = False
+            if drivers == 0:
+                print('DRC error: net {} has no drivers'.format(self._name))
+                good = False
+            if drivers > 1:
+                print('DRC error: net {} has multiple drivers'.format(self._name))
+                good = False
+        if not is_subcircuit:
+            if inputs < outputs:
+                print('DRC error: net {} has unconnected subcircuit outputs'.format(self._name))
+                good = False
+            if inputs > outputs:
+                print('DRC error: net {} has unconnected subcircuit inputs'.format(self._name))
+                good = False
         return good
 
 class Netlist:
@@ -98,15 +121,39 @@ class Netlist:
         """Marks that the given coordinate on the given layer is part of the
         given logical net. mode must be 'passive', 'driver', 'user', 'in', or
         'out'."""
+        if mode not in {'passive', 'driver', 'user', 'in', 'out'}:
+            raise ValueError('invalid net mode')
         logical_net = self.get_logical(name)
         logical_net.add_point(layer, coord, mode)
-        if mode in ('driver', 'in'):
-            self.get_physical(name).drive()
-        elif mode in ('user', 'out'):
-            self.get_physical(name).use()
 
-    def check(self, good=True):
-        """Checks the netlist for subcircuit DRC errors."""
+    def check_subcircuit(self, good=True):
+        """Checks the (physical) netlist for subcircuit DRC errors. That is:
+         - all nets need at least two connection points;
+         - every net with non-passive connection points must have:
+            - one driver or input connection;
+            - one or more user or output connections.
+        """
         for net in self._physical_nets.values():
-            good = net.check(good)
+            good = net.check(True, good)
         return good
+
+    def check_composite(self, good=True):
+        """Checks the (physical) netlist for subcircuit DRC errors. That is:
+         - all nets need at least two connection points;
+         - every net with non-passive connection points must have:
+            - one driver;
+            - one or more user.
+         - all nets must have an equal number of inputs and outputs.
+        """
+        for net in self._physical_nets.values():
+            good = net.check(False, good)
+        return good
+
+    def to_file(self, fname):
+        with open('{}.nets.txt'.format(fname), 'w') as f:
+            for net in self.iter_physical():
+                f.write('net {}\n'.format(net.get_name()))
+                for layer, (x, y), mode in net.iter_points():
+                    f.write('  {} {} {} {}\n'.format(
+                        mode, layer, to_mm(x), to_mm(y)))
+
