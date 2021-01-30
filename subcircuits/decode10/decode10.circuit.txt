@@ -1,6 +1,5 @@
-columns 6x1.5C 1x9.0C 5x1.5C 1x9.0C 2x1.5C
-rows 1x1.5B 1x4B 1x8B 14x4B
-ref 13 0
+columns 6x1.5C 1x9.0C 5x1.5C 1x9.0C 2x1.5C 13
+rows 1x1.5B 1x4B 1x8B 14x4B 0
 
 in b0               0  0
 in b0n              1  0
@@ -16,7 +15,7 @@ prim nand1 X   -90  6  1 Y=X A=Xn
 
 # Second stage operates on b0, b0n, b1, b1n, b2, and X to make the internal AOI
 # signals.
-prim feed b0n*1 90  6  0 A=b0n Y=b0n*1
+prim feed b0n*1 90  6  0 A=b0n B=b0n*1
 prim nand2 X0u  90  6  2 Y=X0u B=X A=b1n
 prim nand3 X01  90  6  4 Y=X01 C=X B=b1n A=b0
 prim nand3 X10  90  6  6 Y=X10 C=X B=b1 A=b0n

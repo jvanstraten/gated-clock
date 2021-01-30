@@ -1,6 +1,7 @@
 import os
-from circuit_board import CircuitBoard, from_mm
-from pin import Pin
+from coordinates import from_mm
+from circuit_board import CircuitBoard
+from pin_map import Pins
 
 class Primitive:
     """Represents a manually-drawn primitive for PCB composition."""
@@ -12,8 +13,9 @@ class Primitive:
             raise ValueError('primitive {} does not exist'.format(name))
         if not os.path.isfile(os.path.join('primitives', name, '{}.blend.txt'.format(name))):
             raise ValueError('missing .blend.txt file for primitive {}'.format(name))
+        self._name = name
         self._board = CircuitBoard()
-        self._pins = []
+        self._pins = Pins()
         with open(os.path.join('primitives', name, '{}.blend.txt'.format(name)), 'r') as f:
             layer = None
             aperture = None
@@ -72,10 +74,10 @@ class Primitive:
                         layer = layer[:2] + 'L'
                     if layer in ('GTL', 'GBL', 'G1', 'G2'):
                         if name[0] == '>':
-                            self._pins.append(Pin(name[1:], 'in', layer, coord))
+                            self._pins.add(name[1:], 'in', layer, coord)
                             name = '.' + name[1:]
                         elif name[0] == '<':
-                            self._pins.append(Pin(name[1:], 'out', layer, coord))
+                            self._pins.add(name[1:], 'out', layer, coord)
                             name = '.' + name[1:]
                         self._board.add_net(name, layer, coord)
                         continue
@@ -89,6 +91,12 @@ class Primitive:
                     continue
 
                 print('warning: unknown construct for layer {}: {}'.format(layer, line))
+
+    def get_name(self):
+        return self._name
+
+    def get_pins(self):
+        return self._pins
 
 _primitives = {}
 

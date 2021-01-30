@@ -8,21 +8,20 @@ the information to do local routing as well.
 Local placement and routing can only be done in an axis-aligned grid layout, of
 which the gridpoints are described via the `columns` and `rows` directives.
 These directives have a list of arguments of which each has the form
-`<count>x<length><alignment>`:
+`<count>x<length><alignment>`, followed by one argument of the form `<ref>`,
+where:
 
  - `<count>` indicates a number of rows/columns which are specified at once;
- - `<length>` specifies the width/height of the row/column in mm; and
+ - `<length>` specifies the width/height of the row/column in mm;
  - `<align>` specifies the alignment of the components w.r.t. the column/row,
    where `C` is centered, `L`/`T` is at the lower end of the axis, and `R`/`B`
-   is at the upper end.
+   is at the upper end; and
+ - `<ref>` is the grid position that should be at the subcircuit origin.
 
 Note that columns and rows are specified from top-left to bottom-right, as you
 would read a table. That means the Y axis is flipped as the grid coordinates
-are converted to PCB coordinates.
-
-The reference for the center of the circuit is specified using
-`ref <col> <row>`, where `<col>` and `<row>` are zero-referenced grid
-coordinates.
+are converted to PCB coordinates. Note also that fractional grid positions can
+be used, which will then be linearly interpolated.
 
 Input and output pins of the subcircuit are placed using
 `<in|out> <net> <col> <row>`, where `<net>` is a local netname and `<col>` and

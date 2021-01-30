@@ -1,34 +1,6 @@
+from coordinates import *
 from part import get_part
-
-def from_mm(x):
-    """Converts millimeters into internal dimension format."""
-    return int(round(float(x) * 1e5) * 1e1)
-
-def to_mm(x):
-    """Converts internal dimension format into millimeters."""
-    return float(x / 1e6)
-
-def _gi(x):
-    """Converts internal dimension format into a Gerber integer."""
-    return str(x // 100)
-
-def _gm(x):
-    """Converts internal dimension format into a Gerber float."""
-    return '{:0.4f}'.format(x / 1e6)
-
-def _ni(x):
-    """Converts internal dimension format into an NC drill integer."""
-    s = '{:+010.4f}'.format(x / 1e6)
-    s = s[0:5] + s[6:10]
-    while len(s) > 2 and s[-1] == '0':
-        s = s[:-1]
-    if s[0] == '+':
-        s = s[1:]
-    return s
-
-def _nm(x):
-    """Converts internal dimension format into an NC drill float."""
-    return '{:0.4f}'.format(x / 1e6)
+from netlist import Netlist
 
 class Paths:
     """Given a bunch of short paths (or just segments) and flashes, tries to
@@ -103,11 +75,11 @@ class GerberLayer:
                 idx = len(data) + 10
                 data.append((idx, paths))
                 if isinstance(aper, int):
-                    f.write('%ADD{:02}C,{}*%\n'.format(idx, _gm(aper)))
+                    f.write('%ADD{:02}C,{}*%\n'.format(idx, to_grb_mm(aper)))
                 else:
                     f.write('%AMSHAPE{}*\n4,1,{},'.format(idx, len(aper)))
                     for coord in list(aper) + [aper[0]]:
-                        f.write('{},{},'.format(_gm(coord[0]), _gm(coord[1])))
+                        f.write('{},{},'.format(to_grb_mm(coord[0]), to_grb_mm(coord[1])))
                     f.write('0.0*\n%\n%ADD{:02}SHAPE{}*%\n'.format(idx, idx))
             f.write('%LPD*%\n')
             x = None
@@ -118,10 +90,10 @@ class GerberLayer:
                     for i, coord in enumerate(path):
                         if x != coord[0]:
                             x = coord[0]
-                            f.write('X{}'.format(_gi(x)))
+                            f.write('X{}'.format(to_grb_int(x)))
                         if y != coord[1]:
                             y = coord[1]
-                            f.write('Y{}'.format(_gi(y)))
+                            f.write('Y{}'.format(to_grb_int(y)))
                         if i == 0:
                             f.write('D02*\n')
                         else:
@@ -164,7 +136,7 @@ class DrillLayer:
                         first = False
                     idx = len(data) + 1
                     data.append((idx, points))
-                    f.write('T{}F00S00C{}\n'.format(idx, _nm(dia)))
+                    f.write('T{}F00S00C{}\n'.format(idx, to_ncd_mm(dia)))
             f.write('%\n')
             x = None
             y = None
@@ -174,11 +146,11 @@ class DrillLayer:
                     either = False
                     if x != coord[0]:
                         x = coord[0]
-                        f.write('X{}'.format(_ni(x)))
+                        f.write('X{}'.format(to_ncd_int(x)))
                         either = True
                     if y != coord[1]:
                         y = coord[1]
-                        f.write('Y{}'.format(_ni(y)))
+                        f.write('Y{}'.format(to_ncd_int(y)))
                         either = True
                     assert either
                     f.write('\n')
@@ -236,7 +208,7 @@ class CircuitBoard:
             ]
         }
         self._drill = DrillLayer()
-        self._nets = {}
+        self._netlist = Netlist()
         self._parts = []
 
     def add_trace(self, layer, thickness, *path):
@@ -280,14 +252,12 @@ class CircuitBoard:
         self.add_flash('G2', outer, coord)
         self.add_flash('GBL', outer, coord)
 
-    def add_net(self, name, layer, coord):
+    def add_net(self, name, layer, coord, driver=None):
         """Indicates that the copper at layer/coord is connected to the given
-        net. Dimensions are integer nanometers."""
-        net = self._nets.get(name, None)
-        if net is None:
-            net = Net(name)
-            self._nets[name] = net
-        net.add_point(layer, coord)
+        net. Dimensions are integer nanometers. If driver is set to True, a
+        driver is also added for the net. If driver is set to False, a user
+        is added for the net."""
+        self._netlist.add(name, layer, coord, driver)
 
     def add_part(self, name, layer, coord, rotation):
         """Adds a soldered part to the PCB."""
