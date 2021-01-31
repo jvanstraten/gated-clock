@@ -1,6 +1,7 @@
 from coordinates import *
 from part import get_part
 from netlist import Netlist
+import gerbertools
 
 class Paths:
     """Given a bunch of short paths (or just segments) and flashes, tries to
@@ -51,15 +52,27 @@ class Paths:
 class GerberLayer:
     """Represents a Gerber layer of a PCB."""
 
-    def __init__(self, name):
+    def __init__(self, name, expansion=0.0):
         super().__init__()
         self._name = name
+        self._expansion = expansion
         self._paths = {}
 
     def get_name(self):
         return self._name
 
     def add_path(self, aper, *path):
+
+        if self._expansion > 0.0:
+            if isinstance(aper, tuple):
+                s = gerbertools.Shape(1e6)
+                s.append_int(aper)
+                s = s.offset(self._expansion, True)
+                assert len(s) == 1
+                aper = tuple(s.get_int(0))
+            else:
+                aper += from_mm(self._expansion)
+
         paths = self._paths.get(aper, None)
 
         # Due to roundoff error during rotation, some almost-identical
@@ -82,6 +95,7 @@ class GerberLayer:
                     aper = ap2
                     paths = self._paths[aper]
                     break
+
         if paths is None:
             paths = Paths()
             self._paths[aper] = paths
@@ -259,7 +273,7 @@ class CircuitBoard:
     def __init__(self):
         super().__init__()
         self._layers = {
-            layer: GerberLayer(layer) for layer in [
+            layer: GerberLayer(layer, 0.05 if layer.endswith('S') else 0.0) for layer in [
                 'GTO', 'GTS',
                 'GTL', 'G1', 'G2', 'GBL',
                 'GBS', 'GBO',

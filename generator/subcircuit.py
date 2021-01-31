@@ -426,6 +426,7 @@ if __name__ == '__main__':
     from coordinates import LinearTransformer, CircularTransformer
     from circuit_board import CircuitBoard
     import math
+    import gerbertools
     pcb = CircuitBoard()
     pcb.add_outline(
         (from_mm(-45), from_mm(-45)),
@@ -439,4 +440,4 @@ if __name__ == '__main__':
     get_subcircuit('decode10').instantiate(pcb, t, (from_mm(30), from_mm(-30)), -math.pi/2, '', {})
     pcb.get_netlist().check_composite()
     pcb.to_file('kek')
-
+    gerbertools.read('./kek').write_svg('kek.svg', 20, gerbertools.color.mask_white(), gerbertools.color.silk_black())
