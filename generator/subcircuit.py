@@ -15,7 +15,7 @@ class GridDimension:
 
     def _convert_mm(self, pos):
         """Converts a grid position to millimeters."""
-        if pos < 0 or pos > len(self._positions):
+        if pos < 0 or pos >= len(self._positions):
             raise ValueError('invalid grid position')
         idx1 = int(pos)
         if idx1 == len(self._positions) - 1:
@@ -230,14 +230,19 @@ class RoutingColumn:
         path = transformer.path_to_global([(x, min_y), (x, max_y)], translate, rotate, True)
         pcb.add_trace(vert_layer, from_mm(0.2), *path)
 
-        for coord, pin_layer in self._horizontals:
+        prev_y = None
+        via_placed_in_column = False
+        for coord, pin_layer in sorted(self._horizontals, key=lambda x: x[0][1]):
+            same_y = prev_y is not None and coord[1] - prev_y < from_mm(0.1)
+            if not same_y:
+                via_placed_in_column = False
             path = [coord, (x, coord[1])]
-            if path[0] != path[1]:
+            if math.hypot(path[0][0] - path[1][0], path[0][1] - path[1][1]) > from_mm(0.01):
                 path = transformer.path_to_global(path, translate, rotate, True)
 
                 # Draw horizontal trace on silkscreen.
                 pcb.add_trace('GTO', from_mm(0.2), *path)
-                if coord[1] not in (self._y_min, self._y_max):
+                if coord[1] not in (self._y_min, self._y_max) or (same_y and self._y_max - self._y_min > from_mm(0.1)):
                     pcb.add_trace('GTO', from_mm(0.6), path[-1])
 
                 # Draw horizontal copper trace.
@@ -245,14 +250,23 @@ class RoutingColumn:
 
                 # Add vias on either end if needed.
                 if vert_layer != hori_layer:
-                    pcb.add_via(path[1])
+                    if not same_y or not via_placed_in_column:
+                        print(path[1], 'a')
+                        pcb.add_via(path[1])
+                        via_placed_in_column = True
                 if pin_layer != hori_layer:
+                    print(path[0], 'b')
                     pcb.add_via(path[0])
             else:
 
-                # The pin is directly on the vertical layer.
+                # The pin is directly on the vertical column.
                 if pin_layer != vert_layer:
-                    pcb.add_via(transformer.to_global(coord, translate, rotate, True))
+                    if not same_y or not via_placed_in_column:
+                        print(transformer.to_global(coord, translate, rotate, True), 'c')
+                        pcb.add_via(transformer.to_global(coord, translate, rotate, True))
+                        via_placed_in_column = True
+
+            prev_y = coord[1]
 
 class Subcircuit:
     """Represents a subcircuit for PCB composition."""
@@ -428,16 +442,17 @@ if __name__ == '__main__':
     import math
     import gerbertools
     pcb = CircuitBoard()
-    pcb.add_outline(
-        (from_mm(-45), from_mm(-45)),
-        (from_mm(50), from_mm(-45)),
-        (from_mm(50), from_mm(45)),
-        (from_mm(-45), from_mm(45)),
-        (from_mm(-45), from_mm(-45)),
-    )
+    path = [(from_mm(math.sin(x/50*math.pi)*190), from_mm(math.cos(x/50*math.pi)*190)) for x in range(101)]
+    pcb.add_outline(*path)
+        #(from_mm(-45), from_mm(-45)),
+        #(from_mm(50), from_mm(-45)),
+        #(from_mm(50), from_mm(45)),
+        #(from_mm(-45), from_mm(45)),
+        #(from_mm(-45), from_mm(-45)),
+    #)
     t = LinearTransformer()
-    t = CircularTransformer((from_mm(200), 0), from_mm(200), math.pi/2)
-    get_subcircuit('decode10').instantiate(pcb, t, (from_mm(30), from_mm(-30)), -math.pi/2, '', {})
+    t = CircularTransformer((0, 0), from_mm(160), math.pi/2)
+    get_subcircuit('decode2d5').instantiate(pcb, t, (from_mm(30), from_mm(-10)), -math.pi/2, '', {})
     pcb.get_netlist().check_composite()
     pcb.to_file('kek')
-    gerbertools.read('./kek').write_svg('kek.svg', 20, gerbertools.color.mask_white(), gerbertools.color.silk_black())
+    gerbertools.read('./kek').write_svg('kek.svg', 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
