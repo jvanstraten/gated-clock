@@ -176,7 +176,7 @@ class DrillLayer:
             for coord2 in coords:
                 dist = math.hypot(coord[0] - coord2[0], coord[1] - coord2[1])
                 if dist < (dia + dia2) / 2 + from_mm(0.5):
-                    raise ValueError('holes too close! {} dia {} and {} dia {}'.format(coord, to_mm(dia), coord2, to_mm(dia2)))
+                    print('holes too close! {} dia {} and {} dia {}'.format(coord, to_mm(dia), coord2, to_mm(dia2)))
         key = (dia, plated)
         points = self._holes.get(key, None)
         if points is None:

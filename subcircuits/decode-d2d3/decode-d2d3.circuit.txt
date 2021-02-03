@@ -1,0 +1,42 @@
+columns 1x1.0R 1x1.5R 1x1R 1x1.5R 1x1R 1x1.5R 1x1R 1x5.5R 1x5.5R 3x1.5R 1x5.5R 1x5.5R 13
+rows 1x2.5T 43x1.1T 0
+
+in d3bp    GBL      1  0
+in d3bn    GBL      2  0
+in d3ap    GBL      3  0
+in d3an    GBL      4  0
+in d2p     GBL      5  0
+in d2n     GBL      6  0
+
+prim nand3 f0   90  7  1   Y=f0  A=d3bn B=d3an C=d2n
+prim nand3 f1   90  7  7   Y=f1  A=d3bn B=d3an C=d2n
+prim nand2 f2   90  7 13   Y=f2  A=d3ap B=d2n
+prim nand2 f3   90  7 19   Y=f3  A=d3ap B=d2p
+prim feed d2n*1 90  7 24.5 A=d2n B=d2n*1
+prim nand2 f4   90  7 30   Y=f4  A=d3bp B=d2n
+prim nand2 f5   90  7 36   Y=f5  A=d3bp B=d2p
+
+prim nand2 Gn   90 12  1   Y=Gn  A=f1 B=f0
+prim nand1 Cn   90 12  8   Y=Cn  A=f2
+prim nand3 Fn   90 12 15   Y=Fn  A=f3 B=f1 C=f2
+prim nand2 ADn  90 12 22   Y=ADn A=f4 B=f1
+prim nand2 En   90 12 29   Y=En  A=f4 B=d2n*1
+prim nand1 Bn   90 12 36   Y=Bn  A=f5
+
+out Gn     GTL     13  1
+out Cn     GTL     13  8
+out Fn     GTL     13 15
+out ADn    GTL     13 22
+out En     GTL     13 29
+out Bn     GTL     13 36
+
+route               1    d3bp
+route               2    d3bn
+route               3    d3ap
+route               4    d3an
+route               5    d2p
+route               6    d2n
+route               8    f0
+route               9    f1 d2n*1 f5
+route              10    f2 f3 f4
+route              13    ADn Bn Cn En Fn Gn

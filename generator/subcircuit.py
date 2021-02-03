@@ -233,11 +233,11 @@ class RoutingColumn:
         prev_y = None
         via_placed_in_column = False
         for coord, pin_layer in sorted(self._horizontals, key=lambda x: x[0][1]):
-            same_y = prev_y is not None and coord[1] - prev_y < from_mm(0.1)
+            same_y = prev_y is not None and coord[1] - prev_y < from_mm(0.2)
             if not same_y:
                 via_placed_in_column = False
             path = [coord, (x, coord[1])]
-            if math.hypot(path[0][0] - path[1][0], path[0][1] - path[1][1]) > from_mm(0.01):
+            if math.hypot(path[0][0] - path[1][0], path[0][1] - path[1][1]) > from_mm(0.1):
                 path = transformer.path_to_global(path, translate, rotate, True)
 
                 # Draw horizontal trace on silkscreen.
@@ -452,7 +452,8 @@ if __name__ == '__main__':
     #)
     t = LinearTransformer()
     t = CircularTransformer((0, 0), from_mm(160), math.pi/2)
-    get_subcircuit('decode2d5').instantiate(pcb, t, (from_mm(30), from_mm(-10)), -math.pi/2, '', {})
+    get_subcircuit('decode-d2d5').instantiate(pcb, t, (from_mm(0), from_mm(-10)), -math.pi/2, 'x', {})
+    get_subcircuit('decode-d2d3').instantiate(pcb, t, (from_mm(60), from_mm(-10)), -math.pi/2, 'y', {})
     pcb.get_netlist().check_composite()
     pcb.to_file('kek')
     gerbertools.read('./kek').write_svg('kek.svg', 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
