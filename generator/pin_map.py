@@ -78,7 +78,7 @@ class PinMap:
             if full_names is None:
                 full_names = []
                 remain[name] = full_names
-            full_names.append(name)
+            full_names.append(full_name)
         for cmd in cmds:
             name, net = cmd.split('=', maxsplit=1)
             if name in self._connections:

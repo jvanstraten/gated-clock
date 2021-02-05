@@ -1,0 +1,17 @@
+columns 3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C 0
+rows 1x0.0C 1x35C 2x1.5C 1
+
+fwd_in  ClkIn
+fwd_in  ArnA
+fwd_in  ArnB
+fwd_out ClkOut  GBL 8   0
+out     d2p     GBL 7   3
+out     d2n     GBL 8   3
+
+subc dffn  A    0   0   1 Clk=ClkIn ArnA=ArnA ArnB=ArnB Dn=d2n*1 Q=d2p Qn=d2n
+prim tie   f1   0   8   0 A=d2n Y=ClkOut
+prim feed  f2   0   5   2 A=d2n B=d2n*1
+
+route               2    d2n*1
+route               7    d2p
+route               8    d2n

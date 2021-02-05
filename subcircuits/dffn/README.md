@@ -24,7 +24,7 @@ vertical columns in the divider subcircuits. The reset and clock pins are
 to be routed using horizontal routing outside the divider circuits.
 
 ```
-Clk Arn~1         Arn~2
+Clk ArnA          ArnB
   | | .----..       |
   | '-|A     \      |      ,-.
 .-)---|4   P3 |()-. |     |   |- Q~1
