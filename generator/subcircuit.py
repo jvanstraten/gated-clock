@@ -365,6 +365,14 @@ class RoutingColumn:
                 # limits.
                 assert False
 
+        # The first and last span should each have at least one knot.
+        if not spans[0][4] or not spans[-1][4]:
+            print('spans for net {}:'.format(self._net))
+            for oa, ob, ia, ib, knots in spans:
+                print(' - span from {} to {} ({} to {}) has {} knots'.format(
+                    to_mm(oa), to_mm(ob), to_mm(ia), to_mm(ib), len(knots)))
+            assert False
+
         # Now combine knots that are too close together, starting with the
         # closest ones.
         for _, _, _, _, knots in spans:
@@ -609,6 +617,7 @@ class Subcircuit:
         self._net_insns = []
         self._instances = []
         self._routers = []
+        forwarded_pins = []
         with open(os.path.join('subcircuits', name, '{}.circuit.txt'.format(name)), 'r') as f:
             for line in f.read().split('\n'):
                 line = line.split('#', maxsplit=1)[0].strip()
@@ -626,9 +635,13 @@ class Subcircuit:
 
                 if args[0] in ('in', 'out'):
                     coord = (cols.convert(args[3]), rows.convert(args[4]))
-                    self._pins.add(args[1], args[0], args[2], coord)
+                    self._pins.add(args[1], args[0], args[2], (0, 0), coord, 0.0)
                     name = '.{}'.format(args[1])
-                    self._net_insns.append((name, args[2], (0, 0), coord, 0.0, False, args[0]))
+                    self._net_insns.append((name, args[2], (0, 0), coord, 0.0, args[0]))
+                    continue
+
+                if args[0] in ('fwd_in', 'fwd_out'):
+                    forwarded_pins.append((args[0][4:], args[1]))
                     continue
 
                 if args[0] in ('prim', 'subc'):
@@ -646,8 +659,9 @@ class Subcircuit:
                         self._net_insns.append((
                             net,
                             pin.get_layer(),
-                            pin.get_coord(), coord, rotation,
-                            args[0] == 'prim',
+                            pin.get_coord(),
+                            transrot(pin.get_translate(), coord, rotation),
+                            pin.get_rotate() + rotation,
                             mode
                         ))
                     self._instances.append(instance)
@@ -659,9 +673,24 @@ class Subcircuit:
 
                 print('warning: unknown subcircuit construct: {}'.format(line))
 
+        forwarded_pin_nets = set()
+        for direction, name in forwarded_pins:
+            insns = []
+            for insn in self._net_insns:
+                if insn[0] == '.' + name:
+                    insns.append(insn)
+            if not insns:
+                raise ValueError('cannot forward pins for nonexistant net {}'.format(name))
+            if len(insns) != 1:
+                raise ValueError('multiple pins exist for forwarded pin {}; this is not supported'.format(name))
+            net, layer, coord, translate, rotate, mode = insns[0]
+            self._pins.add(name, direction, layer, coord, translate, rotate)
+            self._net_insns.append((net, layer, coord, translate, rotate, direction))
+            forwarded_pin_nets.add(net)
+
         print('doing basic DRC for subcircuit {}...'.format(self._name))
         netlist = Netlist()
-        for net, layer, coord, translate, rotate, _, mode in self._net_insns:
+        for net, layer, coord, translate, rotate, mode in self._net_insns:
             netlist.add(net, layer, transrot(coord, translate, rotate), mode)
         good = netlist.check_subcircuit()
         unrouted = set(map(lambda x: x.get_name(), netlist.iter_logical()))
@@ -696,6 +725,15 @@ class Subcircuit:
                         ranges[i][2], to_mm(ranges[i][1]),
                         to_mm(x)))
                     good = False
+        for net in forwarded_pin_nets:
+            if net in routed:
+                print('net {} is routed multiple times'.format(net))
+                good = False
+            elif net not in unrouted:
+                print('net {} cannot be routed because it does not exist'.format(net))
+                good = False
+            routed.add(net)
+            unrouted.remove(net)
         for net in unrouted:
             print('net {} is not routed'.format(net))
             good = False
@@ -717,10 +755,10 @@ class Subcircuit:
 
         # Rebuild netlist with the correct transformations.
         netlist = Netlist()
-        for net, layer, coord, trans, rot, prim, mode in self._net_insns:
+        for net, layer, coord, trans, rot, mode in self._net_insns:
             trans = transrot(trans, translate, rotate)
             rot += rotate
-            netlist.add(net, layer, transformer.to_global(coord, trans, rot, not prim), mode)
+            netlist.add(net, layer, transformer.to_global(coord, trans, rot, False), mode)
 
         # Handle primitive artwork and netlist.
         for instance in self._instances:
@@ -738,13 +776,16 @@ class Subcircuit:
         routers = [RoutingColumn(x, net, 'GTL', 'GBL') for x, nets in self._routers for net in nets]
         x_coords = {net: x for x, nets in self._routers for net in nets}
         for net in netlist.iter_logical():
+            name = net.get_name()
+            router_x = x_coords.get(name, None)
+            if router_x is None:
+                continue
             for layer, coord, _ in net.iter_points():
-                name = net.get_name()
                 coord = transformer.to_local(coord)
                 coord = transrot(coord, (-translate[0], -translate[1]), 0.0)
                 coord = transrot(coord, (0, 0), -rotate)
                 for router in routers:
-                    router.register(name, x_coords[name], coord, layer)
+                    router.register(name, router_x, coord, layer)
         for router in routers:
             router.generate(pcb, transformer, translate, rotate)
 
@@ -778,6 +819,7 @@ if __name__ == '__main__':
     t = CircularTransformer((0, 0), from_mm(160), math.pi/2)
     get_subcircuit('decode-d2d5').instantiate(pcb, t, (from_mm(0), from_mm(-10)), -math.pi/2, 'x', {})
     get_subcircuit('decode-d2d3').instantiate(pcb, t, (from_mm(60), from_mm(-10)), -math.pi/2, 'y', {})
+    get_subcircuit('dffn').instantiate(pcb, t, (from_mm(120), from_mm(0)), 0, 'y', {})
     pcb.get_netlist().check_composite()
     pcb.to_file('kek')
-    gerbertools.read('./kek').write_svg('kek.svg', 12.5)#, gerbertools.color.mask_white(), gerbertools.color.silk_black())
+    gerbertools.read('./kek').write_svg('kek.svg', 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())

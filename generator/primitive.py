@@ -74,11 +74,11 @@ class Primitive:
                         layer = layer[:2] + 'L'
                     if layer in ('GTL', 'GBL', 'G1', 'G2'):
                         if name[0] == '>':
-                            self._pins.add(name[1:], 'in', layer, coord)
+                            self._pins.add(name[1:], 'in', layer, coord, (0, 0), 0.0)
                             mode = 'user'
                             name = '.' + name[1:]
                         elif name[0] == '<':
-                            self._pins.add(name[1:], 'out', layer, coord)
+                            self._pins.add(name[1:], 'out', layer, coord, (0, 0), 0.0)
                             mode = 'driver'
                             name = '.' + name[1:]
                         else:

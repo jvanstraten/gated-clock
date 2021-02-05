@@ -1,0 +1,32 @@
+columns 3x1.5C 1x9.5C 2x1.5C 1x9.5C 0
+rows 1x0.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 4
+
+in      Clk    GBL  1   0
+in      Arn~1  GBL  2   0
+in      Arn~2  GBL  5   0
+fwd_in  Dn
+fwd_in  Q~1
+fwd_in  Q~2
+fwd_out Q~3
+fwd_out Qn~1
+fwd_in  Qn~2
+
+prim nand3 P3   90  3   1 Y=P3*1   A=P1*1   B=P4*1   C=Arn~1
+prim cross f1   0   3   2 A=P1*1   B=P1*2   X=P3*2   Y=P3*1
+prim nand2 P1   90  3   3 Y=P1*2   A=Clk    B=P3*2
+prim feed  f2   0   3   4 A=P1*3   B=P1*2
+prim feeda f2   90  2.5 5 A=P4*1   B=P4*2
+prim nand3 P2   90  3   5 Y=P2*1   A=P4*2   B=Clk    C=P1*3
+prim cross f3   0   3   6 A=P4*2   B=P4*3   X=P2*2   Y=P2*1
+prim nand2 P4   90  3   7 Y=P4*3   A=Dn     B=P2*2
+
+prim ffled LED  0   6   1 A=Q~1
+prim nand3 Qn   90  6   3 Y=Qn~1   A=Q~2*1  B=P1*2   C=Arn~2
+prim cross f4   0   6   4 A=Q~2*1  B=Q~2    X=Qn~2*1 Y=Qn~2
+prim nand2 Q    90  6   5 Y=Q~3    A=P2*1   B=Qn~2*1
+
+route               0    P4*1
+route               1    Clk
+route               2    Arn~1 P1*1 P3*2 P1*3 P4*2 P2*2
+route               4    P3*1 P1*2 P2*1 P4*3
+route               5    Arn~2 Q~2*1 Qn~2*1

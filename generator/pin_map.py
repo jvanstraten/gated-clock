@@ -1,8 +1,15 @@
 
 class Pin:
-    """Represents an input or output of a primitive or subcircuit."""
+    """Represents an input or output of a primitive or subcircuit.
 
-    def __init__(self, name, direction, layer, coord):
+    translate and rotate specify the transformation of the primitive the
+    pin is tied to with respect to the parent subcircuit, while coord
+    specifies the coordinate in linearized primitive coordinates. If the
+    pin is not tied to a primitive, translate will contain all the
+    coordinate information; rotate is not needed, and coord will be
+    (0, 0)."""
+
+    def __init__(self, name, direction, layer, coord, translate, rotate):
         if layer not in ('GTL', 'GBL', 'G1', 'G2'):
             raise ValueError('layer must be GTL, GBL, G1, or G2')
         if direction not in ('in', 'out'):
@@ -12,6 +19,8 @@ class Pin:
         self._direction = direction
         self._layer = layer
         self._coord = coord
+        self._translate = translate
+        self._rotate = rotate
 
     def get_name(self):
         return self._name
@@ -31,6 +40,12 @@ class Pin:
     def get_coord(self):
         return self._coord
 
+    def get_translate(self):
+        return self._translate
+
+    def get_rotate(self):
+        return self._rotate
+
 class Pins:
     """Set of pins of a primitive or subcircuit."""
 
@@ -38,10 +53,10 @@ class Pins:
         super().__init__()
         self._pins = {}
 
-    def add(self, name, direction, layer, coord):
+    def add(self, name, direction, layer, coord, translate, rotate):
         if name in self._pins:
             raise ValueError('duplicate pin {}'.format(name))
-        self._pins[name] = Pin(name, direction, layer, coord)
+        self._pins[name] = Pin(name, direction, layer, coord, translate, rotate)
 
     def get(self, name):
         return self._pins[name]
@@ -56,15 +71,23 @@ class PinMap:
     def __init__(self, pins, *cmds):
         super().__init__()
         self._connections = {}
-        remain = pins.names()
+        remain = {}
+        for full_name in pins.names():
+            name = full_name.split('~')[0]
+            full_names = remain.get(name, None)
+            if full_names is None:
+                full_names = []
+                remain[name] = full_names
+            full_names.append(name)
         for cmd in cmds:
-            pin, net = cmd.split('=', maxsplit=1)
-            if pin in self._connections:
-                raise ValueError('pin {} connected multiple times'.format(pin))
-            if pin not in remain:
-                raise ValueError('pin {} does not exist'.format(pin))
-            remain.remove(pin)
-            self._connections[pin] = (pins.get(pin), '.{}'.format(net))
+            name, net = cmd.split('=', maxsplit=1)
+            if name in self._connections:
+                raise ValueError('pin {} connected multiple times'.format(name))
+            full_names = remain.pop(name, None)
+            if full_names is None:
+                raise ValueError('pin {} does not exist'.format(name))
+            for full_name in full_names:
+                self._connections[full_name] = (pins.get(full_name), '.{}'.format(net))
         for pin in remain:
             raise ValueError('pin {} is not connected'.format(pin))
 
