@@ -5,8 +5,21 @@ This circuit performs a frequency division by 2. It's just a single D flipflop
 trivially hooked up as a T flipflop, but the additional routing is such that it
 can be placed in the border.
 
+Order:
+
 ```
-ClkIn ArnA          ArnB           ClkOut
+    .----.---------.
+    | d2 | decimal |
+.---+----+---------|
+| 0 | 0  |    0    |
+| 1 | 1  |    1    |
+'---'----'---------'
+```
+
+Circuit:
+
+```
+ClkIn Arn~1         Arn~2          ClkOut
     | | .----..       |               |
     | '-|A     \      |      ,-.      |
   .-)---|4   P3 |()-. |     |   |---. |
