@@ -176,13 +176,16 @@ class DrillLayer:
             for coord2 in coords:
                 dist = math.hypot(coord[0] - coord2[0], coord[1] - coord2[1])
                 if dist < (dia + dia2) / 2 + from_mm(0.5):
-                    print('holes too close! {} dia {} and {} dia {}'.format(coord, to_mm(dia), coord2, to_mm(dia2)))
+                    print('holes too close! {} dia {} and {} dia {}, dist {}, former ignored'.format(
+                        coord, to_mm(dia), coord2, to_mm(dia2), to_mm(dist)))
+                    return False
         key = (dia, plated)
         points = self._holes.get(key, None)
         if points is None:
             points = []
             self._holes[key] = points
         points.append(coord)
+        return True
 
     def to_file(self, fname):
         fname = '{}.TXT'.format(fname)
@@ -326,7 +329,13 @@ class CircuitBoard:
 
     def add_hole(self, coord, dia, plated=False):
         """Drills a hole. Dimensions are integer nanometers."""
-        self._drill.add_hole(coord, dia, plated)
+        if not self._drill.add_hole(coord, dia, plated):
+            for i in range(5):
+                a = math.pi * i / 2.5
+                self.add_trace('GTO', from_mm(0.1), coord, (
+                    int(coord[0] + from_mm(3)*math.sin(a)),
+                    int(coord[1] + from_mm(3)*math.cos(a))
+                ))
 
     def add_via(self, coord, inner=from_mm(0.35), outer=from_mm(0.65)):
         """Adds a via. Dimensions are integer nanometers."""

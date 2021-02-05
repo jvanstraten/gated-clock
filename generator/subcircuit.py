@@ -119,154 +119,478 @@ class Instance:
 class RoutingColumn:
     """Represents a routing column."""
 
-    def __init__(self, x, net):
+    def __init__(self, x, net, primary_layer, secondary_layer):
+        """Creates a routing column at the given x coordinate for the given
+        net. The primary layer and secondary layer are used for routing. They
+        must be the same for all routing columns in the subcircuit. The primary
+        layer is used for horizontal traces, as well as vertical traces that do
+        not cross a horizontal trace. The secondary layer is used for vertical
+        traces that bridge horizontal traces."""
         super().__init__()
         self._net = net
         self._x = x
-        self._y_min = None
-        self._y_max = None
-        self._horizontals = []
+        self._targets = []
         self._bridges = []
+        self._pl = primary_layer
+        self._sl = secondary_layer
+        assert primary_layer != secondary_layer
 
     def get_x_coord(self):
         return self._x
 
     def register(self, net, router_x, coord, layer):
+        """Registers a connection point (aka pin) for the given net, coordinate,
+        and layer, to be connected to the routing column at router_x."""
         if net == self._net:
-            self._horizontals.append((coord, layer))
-            if self._y_min is None:
-                self._y_min = coord[1]
-            else:
-                self._y_min = min(self._y_min, coord[1])
-            if self._y_max is None:
-                self._y_max = coord[1]
-            else:
-                self._y_max = max(self._y_max, coord[1])
+
+            # Connection point is to be connected to this column, so add it to
+            # our target list. Targets are always connected to the column using
+            # the primary layer, so if the connection point is on another layer,
+            # a via will be inserted at that point.
             assert router_x == self._x
+            self._targets.append((coord, layer))
+
         else:
+
+            # Connection point is for a different net. If it crosses our
+            # column, register a bridge. Targets are always connected to their
+            # column using the primary layer, so a bridge implies that our
+            # column must duck under the primary layer using the secondary
+            # layer (in addition to depicting the bridge on the silkscreen).
             min_x = min(router_x, coord[0])
             max_x = max(router_x, coord[0])
             if self._x >= min_x and self._x <= max_x:
                 self._bridges.append(coord[1])
 
     def generate(self, pcb, transformer, translate, rotate):
-        BH = from_mm(0.3)
-        BW = from_mm(0.5)
-        NP = 3
-        b = sorted(self._bridges)
-        bi = 0
-        x = self._x
-        y = self._y_min
-        min_y = self._y_min
-        max_y = self._y_max
-        bridging = False
-        any_bridges = False
-        path = []
-        def add_to_path(coord):
-            if path and path[-1] == coord:
-                return
-            path.append(coord)
-        while y < max_y:
-            while bi < len(b) and b[bi] <= y and b[bi] < max_y:
-                bi += 1
-            if not bridging:
-                y0 = None                       # no previous bridge
-                y1 = y                          # start of line
-                if bi == len(b) or b[bi] > max_y:
-                    y2 = max_y                  # end of line
-                    y3 = None                   # no next bridge
-                else:
-                    y2 = max(y1, b[bi] - BW)    # end of line, start of next bridge
-                    y3 = b[bi]                  # middle of next bridge
-            else:
-                y0 = y                          # middle of previous bridge
-                if bi == len(b) or b[bi] > max_y:
-                    y1 = min(y0 + BW, max_y)    # end of previous bridge, start of line
-                    y2 = max_y                  # end of line
-                    y3 = None                   # no next bridge
-                else:
-                    y1 = y + BW                 # end of previous bridge, start of line
-                    y2 = b[bi] - BW             # end of line, start of next bridge
-                    y3 = b[bi]                  # middle of next bridge
-                    if y1 > y2:
-                        y1 = None               # no room for bridge
-                        y2 = None
+        if len(self._targets) < 2:
+            return
 
-            if y0 is not None:
-                add_to_path((x + BH, y0))
-            if y0 is not None and y1 is not None:
-                for i in range(1, NP):
-                    a = i / NP * math.pi * 0.5
-                    add_to_path((x + math.cos(a) * BH, y0 + math.sin(a) * (y1 - y0)))
-            if y1 is not None:
-                add_to_path((x, y1))
-            if y2 is not None:
-                add_to_path((x, y2))
-            if y2 is not None and y3 is not None:
-                for i in range(1, NP):
-                    a = i / NP * math.pi * 0.5
-                    add_to_path((x + math.sin(a) * BH, y3 + math.cos(a) * (y2 - y3)))
-            if y3 is not None:
-                add_to_path((x + BH, y3))
+        def glob(coord):
+            return transformer.to_global(coord, translate, rotate, True)
 
-            bridging = y3 is not None
-            if bridging:
-                any_bridges = bridging
-            y = y2 if y3 is None else y3
+        def get_scale(coord, r=from_mm(1)):
+            a = glob((coord[0] + r, coord[1]))
+            b = glob((coord[0] - r, coord[1]))
+            x = 2*r / math.hypot(a[0] - b[0], a[1] - b[1])
+            a = glob((coord[0], coord[1] + r))
+            b = glob((coord[0], coord[1] - r))
+            y = 2*r / math.hypot(a[0] - b[0], a[1] - b[1])
+            return (x, y)
 
-        # Columns with no bridges stay on the top layer.
-        hori_layer = 'GTL'
-        if not any_bridges:
-            vert_layer = 'GTL'
-        else:
-            vert_layer = 'GBL'
-
-        # Draw vertical trace on silkscreen.
-        if path:
+        def trace(path, layer, t=0.2):
             path = transformer.path_to_global(path, translate, rotate, True)
-            pcb.add_trace('GTO', from_mm(0.2), *path)
+            pcb.add_trace(layer, from_mm(t), *path)
 
-        # Draw vertical copper trace.
-        path = transformer.path_to_global([(x, min_y), (x, max_y)], translate, rotate, True)
-        pcb.add_trace(vert_layer, from_mm(0.2), *path)
-
-        prev_y = None
-        via_placed_in_column = False
-        for coord, pin_layer in sorted(self._horizontals, key=lambda x: x[0][1]):
-            same_y = prev_y is not None and coord[1] - prev_y < from_mm(0.2)
-            if not same_y:
-                via_placed_in_column = False
-            path = [coord, (x, coord[1])]
-            if math.hypot(path[0][0] - path[1][0], path[0][1] - path[1][1]) > from_mm(0.1):
-                path = transformer.path_to_global(path, translate, rotate, True)
-
-                # Draw horizontal trace on silkscreen.
-                pcb.add_trace('GTO', from_mm(0.2), *path)
-                if coord[1] not in (self._y_min, self._y_max) or (same_y and self._y_max - self._y_min > from_mm(0.1)):
-                    pcb.add_trace('GTO', from_mm(0.6), path[-1])
-
-                # Draw horizontal copper trace.
-                pcb.add_trace(hori_layer, from_mm(0.2), *path)
-
-                # Add vias on either end if needed.
-                if vert_layer != hori_layer:
-                    if not same_y or not via_placed_in_column:
-                        print(path[1], 'a')
-                        pcb.add_via(path[1])
-                        via_placed_in_column = True
-                if pin_layer != hori_layer:
-                    print(path[0], 'b')
-                    pcb.add_via(path[0])
+        # First, turn the bridge points into ranges: both the arc for the
+        # visual representation and potential vias/knots right next to it cost
+        # space. We can move the vias/knots slightly, but we can't move the
+        # bridges, because the horizontal traces they cross are generated by
+        # other routing columns. Note that we might have bridges registered
+        # with us that lie beyond the actual column; we ignore those here.
+        # The final result is an ordered list of four-tuples representing
+        # non-overlapping ranges of local Y coordinates (first and second
+        # element being the lower and upper coordinate) of at least 2ry in
+        # length, where rx/ry is the local radius of the graphic needed to
+        # get the desired radius in global coordinates, as stored in the third
+        # and fourth tuple element.
+        def get_bridge_r(y):
+            sx, sy = get_scale((self._x, y))
+            rx = int(round(sx * from_mm(0.3))) # <-- desired global X radius
+            ry = int(round(sy * from_mm(0.5))) # <-- desired global Y radius
+            return rx, ry
+        all_y_targets = [y for (_, y), _ in self._targets]
+        min_y = min(all_y_targets)
+        max_y = max(all_y_targets)
+        bridge_reqs = []
+        for y in self._bridges:
+            if y < min_y or y > max_y:
+                continue
+            rx, ry = get_bridge_r(y)
+            bridge_reqs.append((y - ry, y + ry, rx, ry))
+        bridge_reqs.sort()
+        combined_bridges = []
+        for a, b, rx, ry in bridge_reqs:
+            if not combined_bridges or combined_bridges[-1][1] < a:
+                combined_bridges.append((a, b, rx, ry))
             else:
+                combined_bridges[-1] = (combined_bridges[-1][0], b, None, None)
+        bridges = []
+        for a, b, rx, ry in combined_bridges:
+            if rx is None or ry is None:
+                rx, ry = get_bridge_r((a + b) / 2)
+            if b - a < 2 * ry:
+                ry = int(b - a) // 2
+            bridges.append((a, b, rx, ry))
 
-                # The pin is directly on the vertical column.
-                if pin_layer != vert_layer:
-                    if not same_y or not via_placed_in_column:
-                        print(transformer.to_global(coord, translate, rotate, True), 'c')
-                        pcb.add_via(transformer.to_global(coord, translate, rotate, True))
-                        via_placed_in_column = True
+        for i in range(len(bridges)-1):
+            assert bridges[i+1][0] >= bridges[i][1]
 
-            prev_y = coord[1]
+        # Let's call the bits before, between, and after the bridges spans
+        # (note that by definition there is at least one of these). Two Y
+        # coordinate ranges are involved in a span; the outer range specifies
+        # which connection points are mapped to which span, while the inner
+        # range specifies the outermost coordinates that a knot may exist at.
+        # Let's set up those ranges first.
+        spans = []
+        min_y -= from_mm(10)
+        max_y += from_mm(10)
+        for i in range(len(bridges) + 1):
+            spans.append((
+                min_y if i == 0            else (bridges[i-1][0] + bridges[i-1][1]) / 2,
+                max_y if i == len(bridges) else (bridges[i  ][0] + bridges[i  ][1]) / 2,
+                min_y if i == 0            else bridges[i-1][1],
+                max_y if i == len(bridges) else bridges[i  ][0],
+                []
+            ))
+
+        # Spans consist of zero or more knots. A knot is a point in the routing
+        # column where the column meets with one or more connection points;
+        # depending on the amount, and where the knot is in the column, the
+        # point will be rendered as a bend or as a thick dot, and may or may
+        # not receive a via at its centerpoint. While it's possible that there
+        # are two connection points with the same Y coordinate on either side
+        # of the column, multiple connection points on the same side may also
+        # be routed to the same knot if they are too close. In this case the
+        # final stretch of the horizontal trace will bend toward the
+        # centerpoint of the knot.
+        class Knot:
+            def __init__(self, x, y):
+                super().__init__()
+                self._x = x
+                self._y = y
+                self._r = None
+                self._targets = [] # (x, y), layer
+                self._min_y = y
+                self._max_y = y
+                self._type = 'knot' # or 'upper', 'lower', or 'single' for endpoints
+                self.prev_layer = None
+                self.next_layer = None
+
+            def get_coord(self):
+                return (self._x, self._y)
+
+            def get_y(self):
+                return self._y
+
+            def set_y(self, y):
+                self._y = y
+                self._r = None
+
+            def recenter_y(self):
+                self.set_y(int(round((self._min_y + self._max_y) / 2)))
+
+            def add_target(self, coord, layer):
+                self._targets.append((coord, layer))
+                self._min_y = min(self._min_y, coord[1])
+                self._max_y = max(self._max_y, coord[1])
+
+            def iter_targets(self):
+                for target in self._targets:
+                    yield target
+
+            def get_r(self):
+                if self._r is None:
+                    sx, sy = get_scale((self._x, self._y))
+                    rx = int(round(sx * from_mm(0.4))) # <-- desired global X radius
+                    ry = int(round(sy * from_mm(0.4))) # <-- desired global Y radius
+                    self._r = (rx, ry)
+                return self._r
+
+            def mark_constrained(self):
+                self._constrained = True
+
+            def mark_endpoint(self, typ, limit=None):
+                if len(self._targets) > (2 if typ == 'single' else 1):
+                    return
+                self._type = typ
+                if typ == 'upper':
+                    self.set_y(max(self._y - self.get_r()[1], limit))
+                elif typ == 'lower':
+                    self.set_y(min(self._y + self.get_r()[1], limit))
+                else:
+                    self.recenter_y()
+
+            def get_layers(self):
+                layers = set()
+                for _, layer in self._targets:
+                    layers.add(layer)
+                if self.prev_layer is not None:
+                    layers.add(self.prev_layer)
+                if self.next_layer is not None:
+                    layers.add(self.next_layer)
+                return layers
+
+            def layer_preference(self):
+                layers = self.get_layers()
+                if len(layers) == 1:
+                    return next(iter(layers))
+                return None
+
+            def needs_via(self, primary_layer):
+                return len(self.get_layers()) > 1
+
+            def needs_dot(self):
+                return int(self.prev_layer is not None) + int(self.next_layer is not None) + len(self._targets) > 2
+
+            def bend_90(self):
+                return self._type in ('upper', 'lower')
+
+        # Now lets assign connection points to the spans. Initially, we'll just
+        # give each point its own knot. We'll also immediately place vias for
+        # points that don't connect on the primary layer.
+        for (tx, ty), layer in sorted(self._targets, key=lambda x: x[0][1]):
+            for a, b, _, _, knots in spans:
+                if ty >= a and ty <= b:
+                    k = Knot(self._x, ty)
+
+                    # If the point is not on the primary layer and it's close
+                    # enough to our column, we'll actually route the horizontal
+                    # on that layer, to prevent vias from getting too close.
+                    # But otherwise, place a via at the connection point now
+                    # and route on primary.
+                    if layer != self._pl:
+                        a = glob((tx, ty))
+                        b = glob((self._x, ty))
+                        if math.hypot(a[0] - b[0], a[1] - b[1]) > from_mm(0.5):
+                            layer = self._pl
+                            pcb.add_via(a)
+
+                    k.add_target((tx, ty), layer)
+                    knots.append(k)
+                    break
+            else:
+                # This should never happen; if it does, min_y and max_y are not
+                # correct or the outer spans do not properly extend to those
+                # limits.
+                assert False
+
+        # Now combine knots that are too close together, starting with the
+        # closest ones.
+        for _, _, _, _, knots in spans:
+            done = False
+            while not done:
+                i = -1
+                done = True
+                while i < len(knots) - 2:
+                    i += 1
+                    k1 = knots[i]
+                    k2 = knots[i+1]
+                    d12 = k2.get_y() - k1.get_y()
+                    assert d12 >= 0
+                    if i+2 < len(knots):
+                        k3 = knots[i+2]
+                        d23 = k3.get_y() - k2.get_y()
+                        assert d23 >= 0
+                        if d23 < d12:
+
+                            # The next two knots are closer together than
+                            # these two; try combining those first.
+                            continue
+
+                    min_d = k1.get_r()[1] + k2.get_r()[1]
+                    if d12 < min_d:
+
+                        # Knots k1 and k2 are too close, combine.
+                        del knots[i+1]
+                        for target in k2.iter_targets():
+                            k1.add_target(*target)
+                        k1.recenter_y()
+                        done = False
+
+        # The knots at the start and end of the span may interfere with
+        # bridges. Combine any knots that interfere this way for the
+        # lower end of the column...
+        for _, _, a, _, knots in spans:
+            ka = Knot(self._x, a)
+            endpt_min_y = a + ka.get_r()[1]
+            ka.set_y(endpt_min_y)
+            ka.mark_constrained()
+            a = ka.get_y()
+            any_merged = False
+            while knots:
+                k = knots[0]
+                if k.get_y() - k.get_r()[1] < a:
+                    del knots[0]
+                    any_merged = True
+                    for target in k.iter_targets():
+                        ka.add_target(*target)
+                    a = ka.get_y() + ka.get_r()[1] * 2
+                else:
+                    break
+            if any_merged:
+                knots.insert(0, ka)
+
+        # ...and for the upper end.
+        for _, _, _, b, knots in reversed(spans):
+            kb = Knot(self._x, b)
+            endpt_max_y = b - kb.get_r()[1]
+            kb.set_y(endpt_max_y)
+            kb.mark_constrained()
+            b = kb.get_y()
+            any_merged = False
+            while knots:
+                k = knots[-1]
+                if k.get_y() + k.get_r()[1] > b:
+                    del knots[-1]
+                    any_merged = True
+                    for target in k.iter_targets():
+                        kb.add_target(*target)
+                    b = kb.get_y() - kb.get_r()[1] * 2
+                else:
+                    break
+            if any_merged:
+                knots.append(kb)
+
+        # We don't need the span ranges anymore now, so we can simplify the
+        # data structure for them.
+        spans = [knots for _, _, _, _, knots in spans]
+
+        # Mark the last knots at each end as endpoints. This may move their
+        # "center" inwards to make way for a bend, but no further than the
+        # constraint for the next bridge.
+        if len(spans) == 1 and len(spans[0]) == 1:
+            # Special case for just one knot.
+            spans[0][0].mark_endpoint('single')
+        else:
+            # Multiple knots, mark endpoints.
+            spans[0][0].mark_endpoint('lower', endpt_max_y)
+            spans[-1][-1].mark_endpoint('upper', endpt_min_y)
+
+        # Now we have our topology mostly worked out. The only thing that
+        # remains is to figure out what layers to place the vertical components
+        # of the traces on. We'll actually draw the traces as we do so.
+        kp = None
+        ks = None
+        force_nonprimary = False
+        for knots in spans:
+            for k in knots:
+                if kp is not None:
+
+                    # We have two knots that need to be connected on a layer.
+                    # Figure out what the best layer would be.
+                    preference = kp.layer_preference()
+                    if preference is not None:
+                        layer = preference
+                    else:
+                        preference = k.layer_preference()
+                        if preference is not None:
+                            layer = preference
+                        else:
+                            layer = self._pl
+                    if force_nonprimary and layer == self._pl:
+                        layer = self._sl
+
+                    # Store the layers in the knots.
+                    kp.next_layer = layer
+                    k.prev_layer = layer
+
+                    # Don't render the trace immediately; optimize by drawing
+                    # contiguous lines with one path.
+                    if ks is not None and ks.next_layer != layer:
+
+                        # Draw from ks to k.
+                        trace([ks.get_coord(), kp.get_coord()], ks.next_layer)
+                        ks = kp
+
+                if ks is None:
+                    ks = k
+
+                kp = k
+
+                # Next knot in this span (if any remain) will not cross
+                # bridges, and thus can be routed on the primary layer.
+                force_nonprimary = False
+
+            # Next knot (if any) will cross bridges. So we need to route
+            # on secondary.
+            force_nonprimary = True
+
+        if ks is not None and ks is not kp:
+            trace([ks.get_coord(), kp.get_coord()], ks.next_layer)
+
+        # Place vias for the knots that need one.
+        for knots in spans:
+            for knot in knots:
+                if knot.needs_via(self._pl):
+                    pcb.add_via(glob(knot.get_coord()))
+
+        # Render the connections from the column to the connection points.
+        for knots in spans:
+            for knot in knots:
+                kx, ky = knot.get_coord()
+                rx, ry = knot.get_r()
+                for (tx, ty), layer in knot.iter_targets():
+                    if ty == ky and tx == kx:
+
+                        # No trace necessary, we're already there.
+                        continue
+
+                    elif ty == ky or tx == kx:
+
+                        # No curvature necessary.
+                        path = [(kx, ky), (tx, ty)]
+
+                    else:
+
+                        bend_90 = knot.bend_90()
+
+                        # X coordinate for the bend.
+                        if bend_90:
+                            bx = min(max(kx - rx, tx), kx + rx)
+                        else:
+                            bx = min(max(kx - rx * 1.5, tx), kx + rx * 1.5)
+
+                        path = []
+                        N = 3
+                        for i in range(N+1):
+                            f = i / N
+                            if bend_90:
+                                a = f * math.pi / 2
+                                c = 1 - math.cos(a)
+                                s = math.sin(a)
+                            else:
+                                a = (1 + f) * math.pi / 4
+                                c = 1 - math.cos(a) * math.sqrt(2)
+                                s = (math.sin(a) - 1/math.sqrt(2)) * 3.4142135623730945
+                            x = kx + (bx - kx) * c
+                            y = ky + (ty - ky) * s
+                            path.append((int(x), int(y)))
+                        path.append((tx, ty))
+
+                    path = transformer.path_to_global(path, translate, rotate, True)
+                    pcb.add_trace(layer, from_mm(0.2), *path)
+                    pcb.add_trace('GTO', from_mm(0.2), *path)
+
+        # Place dots on the knots that need one.
+        for knots in spans:
+            for knot in knots:
+                if knot.needs_dot():
+                    trace([knot.get_coord()], 'GTO', 0.65)
+
+        # Finally, draw the top overlay path for the vertical column.
+        path = [spans[0][0].get_coord()]
+        if spans[-1][-1].get_coord() != path[0]:
+            N = 3
+            for a, b, rx, ry in bridges:
+                for i in range(N+1):
+                    f = i / N
+                    th = f * math.pi / 2
+                    c = 1 - math.cos(th)
+                    s = math.sin(th)
+                    x = self._x + s * rx
+                    y = a + c * ry
+                    path.append((int(x), int(y)))
+                for i in reversed(range(N+1)):
+                    f = i / N
+                    th = f * math.pi / 2
+                    c = 1 - math.cos(th)
+                    s = math.sin(th)
+                    x = self._x + s * rx
+                    y = b - c * ry
+                    path.append((int(x), int(y)))
+            path.append(spans[-1][-1].get_coord())
+            trace(path, 'GTO')
 
 class Subcircuit:
     """Represents a subcircuit for PCB composition."""
@@ -411,7 +735,7 @@ class Subcircuit:
                 pcb.add_net(name, layer, coord, mode)
 
         # Perform routing.
-        routers = [RoutingColumn(x, net) for x, nets in self._routers for net in nets]
+        routers = [RoutingColumn(x, net, 'GTL', 'GBL') for x, nets in self._routers for net in nets]
         x_coords = {net: x for x, nets in self._routers for net in nets}
         for net in netlist.iter_logical():
             for layer, coord, _ in net.iter_points():
@@ -456,4 +780,4 @@ if __name__ == '__main__':
     get_subcircuit('decode-d2d3').instantiate(pcb, t, (from_mm(60), from_mm(-10)), -math.pi/2, 'y', {})
     pcb.get_netlist().check_composite()
     pcb.to_file('kek')
-    gerbertools.read('./kek').write_svg('kek.svg', 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
+    gerbertools.read('./kek').write_svg('kek.svg', 12.5)#, gerbertools.color.mask_white(), gerbertools.color.silk_black())
