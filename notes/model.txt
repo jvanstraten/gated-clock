@@ -1,0 +1,19 @@
+PCB trace parameters:
+
+    R = 0.00238 Ohm/mm
+    L = 0.23 nH/mm
+    C = 0.1462 pF/mm
+    t = 5.72 ps/mm (if properly matched, which it isn't)
+
+Gate parameters:
+
+    Cin = 3 pF
+    Rout = 64 Ohm ~ 84 Ohm
+    tpd = 1 ns ~ 3.6 ns
+
+Propagation time with loading:
+
+    tpd_min = fanout * 192 + length * 366 + 1000 ps
+    tpd_max = fanout * 252 + length * 480 + 3600 ps
+
+ 
