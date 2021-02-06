@@ -9,19 +9,32 @@ in d2p     GBL      5  0
 in d2n     GBL      6  0
 
 prim nand3 f0   90  7  1   Y=f0  A=d3bn B=d3an C=d2n
+text 0\         0   7  1   2.6 1.2 1.0 0.0
 prim nand3 f1   90  7  7   Y=f1  A=d3bn B=d3an C=d2n
+text 1\         0   7  7   2.6 1.2 1.0 0.0
 prim nand2 f2   90  7 13   Y=f2  A=d3ap B=d2n
+text 2\         0   7 13   2.6 1.2 1.0 0.0
 prim nand2 f3   90  7 19   Y=f3  A=d3ap B=d2p
+text 3\         0   7 19   2.6 1.2 1.0 0.0
 prim feed d2n*1 90  7 24.5 A=d2n B=d2n*1
+text 135\       0   7 24.5 2.3 0.4 1.0 0.0
 prim nand2 f4   90  7 30   Y=f4  A=d3bp B=d2n
+text 4\         0   7 30   2.6 1.2 1.0 0.0
 prim nand2 f5   90  7 36   Y=f5  A=d3bp B=d2p
+text 5\         0   7 36   2.6 1.2 1.0 0.0
 
 prim nand2 Gn   90 12  1   Y=Gn  A=f1 B=f0
+text G\         0  12  1   2.6 1.2 1.0 0.0
 prim nand1 Cn   90 12  8   Y=Cn  A=f2
+text C\         0  12  8   2.6 1.2 1.0 0.0
 prim nand3 Fn   90 12 15   Y=Fn  A=f3 B=f1 C=f2
+text F\         0  12 15   2.6 1.2 1.0 0.0
 prim nand2 ADn  90 12 22   Y=ADn A=f4 B=f1
+text AD\        0  12 22   2.6 1.2 1.0 0.0
 prim nand2 En   90 12 29   Y=En  A=f4 B=d2n*1
+text E\         0  12 29   2.6 1.2 1.0 0.0
 prim nand1 Bn   90 12 36   Y=Bn  A=f5
+text B\         0  12 36   2.6 1.2 1.0 0.0
 
 out Gn     GTL     13  1
 out Cn     GTL     13  8

@@ -1,4 +1,4 @@
-columns   3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C   0
+columns   3x1.5C 1x9.5C 1x1.5C 1x9.5C 3x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C   0
 rows 1x0.0C 1x35C 3x1.5C 1
 
 fwd_in  ClkIn~1
@@ -16,7 +16,7 @@ out     d3bn    GBL 18   4
 subc dffn  A    0    0   1 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 Dn=fb Q=d3ap Qn=d3an
 subc dffn  B    0   10   1 Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=d3an Q=d3bp Qn=d3bn
 prim tie   f1   0   18   0 A=d3bn Y=ClkOut
-prim nand2 fb  -90   6   2 Y=fb A=d3an B=d3bn
+prim nand2 fb  -90   5   2 Y=fb A=d3an B=d3bn
 
 route                2    fb
 route                7    d3ap

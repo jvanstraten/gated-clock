@@ -49,6 +49,21 @@ class Paths:
                 ids.add(id(path))
                 yield path
 
+class Region:
+    """Represents a filled region."""
+
+    def __init__(self, path, polarity=True):
+        super().__init__()
+        assert path[0] == path[-1]
+        self._path = path
+        self._polarity = polarity
+
+    def get_path(self):
+        return tuple(self._path)
+
+    def get_polarity(self):
+        return self._polarity
+
 class GerberLayer:
     """Represents a Gerber layer of a PCB."""
 
@@ -57,6 +72,7 @@ class GerberLayer:
         self._name = name
         self._expansion = expansion
         self._paths = {}
+        self._regions = []
 
     def get_name(self):
         return self._name
@@ -101,10 +117,24 @@ class GerberLayer:
             self._paths[aper] = paths
         paths.add(*path)
 
+    def add_region(self, polarity, *path):
+        if self._expansion > 0.0:
+            s = gerbertools.Shape(1e6)
+            s.append_int(aper)
+            s = s.offset(self._expansion, True)
+            assert len(s) == 1
+            path = tuple(s.get_int(0))
+        self._regions.append(Region(path, polarity))
+
     def to_file(self, fname):
         fname = '{}.{}'.format(fname, self._name if self._name != 'Mill' else 'GM1')
         with open(fname, 'w') as f:
+
+            # Header. More or less the same as what Altium does.
             f.write('%FSLAX44Y44*%\n%MOMM*%\nG71*\nG01*\nG75*\n')
+
+            # Configure apertures. We write the data out in the same order that
+            # the apertures are defined in because that's what Altium does.
             data = []
             for aper, paths in self._paths.items():
                 idx = len(data) + 10
@@ -116,9 +146,39 @@ class GerberLayer:
                     for coord in list(aper) + [aper[0]]:
                         f.write('{},{},'.format(to_grb_mm(coord[0]), to_grb_mm(coord[1])))
                     f.write('0.0*\n%\n%ADD{:02}SHAPE{}*%\n'.format(idx, idx))
-            f.write('%LPD*%\n')
+
+            # Write the regions.
+            polarity = None
+            for region in self._regions:
+                x = None
+                y = None
+                pol = region.get_polarity()
+                if polarity != pol:
+                    if pol:
+                        f.write('%LPD*%\n')
+                    else:
+                        f.write('%LPC*%\n')
+                    polarity = pol
+                f.write('G36*\n')
+                for i, coord in enumerate(region.get_path()):
+                    if x != coord[0]:
+                        x = coord[0]
+                        f.write('X{}'.format(to_grb_int(x)))
+                    if y != coord[1]:
+                        y = coord[1]
+                        f.write('Y{}'.format(to_grb_int(y)))
+                    if i == 0:
+                        f.write('D02*\n')
+                    else:
+                        f.write('D01*\n')
+                f.write('D02*\nG37*\n')
+
+            # Write traces and flashes.
             x = None
             y = None
+            if polarity is not True:
+                f.write('%LPD*%\n')
+                polarity = True
             for idx, paths in data:
                 f.write('D{:02}*\n'.format(idx))
                 for path in paths:
@@ -135,6 +195,8 @@ class GerberLayer:
                             f.write('D01*\n')
                     if len(path) == 1:
                         f.write('D03*\n')
+
+            # M02 to terminate file.
             f.write('M02*\n')
 
     def instantiate(self, pcb, transformer, translate, rotate, warpable):
@@ -231,7 +293,7 @@ class DrillLayer:
         for (dia, plated), points in self._holes.items():
             for coord in points:
                 coord = transformer.to_global(coord, translate, rotate, warpable)
-                pcb.add_hole(coord, dia, plated)
+                pcb.add_hole(coord, dia, plated, True)
 
 class Net:
     """Represents a physical net."""
@@ -323,11 +385,21 @@ class CircuitBoard:
         aperture = tuple(((x - mx, y - my) for x, y in path))
         self.add_flash(layer, aperture, (mx, my))
 
+    def add_region(self, layer, polarity, *path):
+        """Adds a region. Dimensions are integer nanometers. The path must
+        explicitly start and end in the same location. polarity True means
+        dark, False means clear. Regions are written to the Gerber file before
+        traces and flashes, so a clear region won't remove those, but clear
+        regions will make holes in previously added dark regions."""
+        assert path[0] == path[-1]
+        self._layers[layer].add_region(polarity, *path)
+
     def add_outline(self, *path):
         """Adds a trace to the outline. Dimensions are integer nanometers."""
+        assert path[0] == path[-1]
         self.add_trace('Mill', from_mm(0.1), *path)
 
-    def add_hole(self, coord, dia, plated=False):
+    def add_hole(self, coord, dia, plated=False, tented=False):
         """Drills a hole. Dimensions are integer nanometers."""
         if not self._drill.add_hole(coord, dia, plated):
             for i in range(5):
@@ -336,10 +408,13 @@ class CircuitBoard:
                     int(coord[0] + from_mm(3)*math.sin(a)),
                     int(coord[1] + from_mm(3)*math.cos(a))
                 ))
+        if not tented:
+            self.add_flash('GTS', dia, coord)
+            self.add_flash('GBS', dia, coord)
 
     def add_via(self, coord, inner=from_mm(0.35), outer=from_mm(0.65)):
         """Adds a via. Dimensions are integer nanometers."""
-        self.add_hole(coord, inner, True)
+        self.add_hole(coord, inner, True, True)
         self.add_flash('GTL', outer, coord)
         self.add_flash('G1', outer, coord)
         self.add_flash('G2', outer, coord)

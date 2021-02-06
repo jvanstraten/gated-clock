@@ -1,0 +1,35 @@
+columns   3x1.5C 1x9.5C 1x1.5C 1x9.5C 3x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C   0
+rows 1x0.0C 1x35C 3x1.5C 1
+
+fwd_in  ClkIn~1
+fwd_in  ClkIn~2
+fwd_in  ClkIn~3
+fwd_in  Arn~1
+fwd_in  Arn~2
+fwd_in  Arn~3
+fwd_in  Arn~4
+fwd_in  Arn~5
+fwd_in  Arn~6
+fwd_out ClkOut  GBL 28   0
+out     d5ap    GBL  7   4
+out     d5an    GBL  8   4
+out     d5bp    GBL 17   4
+out     d5bn    GBL 18   4
+out     d5cp    GBL 27   4
+out     d5cn    GBL 28   4
+
+subc dffn  A    0    0   1 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 Dn=fb Q=d5ap Qn=d5an
+subc dffn  B    0   10   1 Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=d5an Q=d5bp Qn=d5bn
+subc dffn  C    0   20   1 Clk=ClkIn~3 ArnA=Arn~5 ArnB=Arn~6 Dn=d5bn Q=d5cp Qn=d5cn
+prim tie   f1   0   28   0 A=d5cn Y=ClkOut
+prim feed  f2   0   11   2 A=d5cn B=d5cn*1
+prim nand2 fb  -90   5   2 Y=fb A=d5cn*1 B=d5bn
+
+route                2    fb
+route                7    d5ap
+route                8    d5an
+route               10    d5cn*1
+route               17    d5bp
+route               18    d5bn
+route               27    d5cp
+route               28    d5cn

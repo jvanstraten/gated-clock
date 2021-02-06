@@ -19,6 +19,12 @@ single negated input, and complementary output. Logic function:
 '-----'-----'-----'-------'-----'-----'
 ```
 
+It's based on the following circuit. Note that Q and Qn are swapped to make
+the D input inverted. Note that in the dual the asynchronous reset is actually
+an asynchronous set; hence the difference.
+
+![Flip flop circuit](flipflop.jpg?raw=true "Flip flop circuit")
+
 The data input and output pins are placed such that they can be routed with
 vertical columns in the divider subcircuits. The reset and clock pins are
 to be routed using horizontal routing outside the divider circuits.

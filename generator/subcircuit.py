@@ -4,6 +4,7 @@ from coordinates import from_mm, to_mm, transrot
 from pin_map import Pins, PinMap
 from netlist import Netlist
 from primitive import get_primitive
+from text import Label
 
 class GridDimension:
     """Represents one of the two dimensions of the table grid."""
@@ -341,7 +342,7 @@ class RoutingColumn:
         # points that don't connect on the primary layer.
         for (tx, ty), layer in sorted(self._targets, key=lambda x: x[0][1]):
             for a, b, _, _, knots in spans:
-                if ty >= a and ty <= b:
+                if ty >= a and ty < b:
                     k = Knot(self._x, ty)
 
                     # If the point is not on the primary layer and it's close
@@ -617,6 +618,7 @@ class Subcircuit:
         self._net_insns = []
         self._instances = []
         self._routers = []
+        self._labels = []
         forwarded_pins = []
         with open(os.path.join('subcircuits', name, '{}.circuit.txt'.format(name)), 'r') as f:
             for line in f.read().split('\n'):
@@ -669,6 +671,16 @@ class Subcircuit:
 
                 if args[0] == 'route':
                     self._routers.append((cols.convert(args[1]), ['.{}'.format(x) for x in args[2:]]))
+                    continue
+
+                if args[0] == 'text':
+                    text = args[1].replace('~', ' ')
+                    coord = (cols.convert(args[3]) + from_mm(args[5]), rows.convert(args[4]) + from_mm(args[6]))
+                    rotation = float(args[2]) / 180 * math.pi
+                    scale = float(args[7]) if len(args) > 7 else 1.0
+                    halign = float(args[8]) if len(args) > 8 else 0.5
+                    valign = float(args[9]) if len(args) > 9 else None
+                    self._labels.append(Label(text, coord, rotation, scale, halign, valign))
                     continue
 
                 print('warning: unknown subcircuit construct: {}'.format(line))
@@ -789,6 +801,10 @@ class Subcircuit:
         for router in routers:
             router.generate(pcb, transformer, translate, rotate)
 
+        # Add labels.
+        for label in self._labels:
+            label.instantiate(pcb, transformer, translate, rotate)
+
 
 _subcircuits = {}
 
@@ -819,7 +835,9 @@ if __name__ == '__main__':
     t = CircularTransformer((0, 0), from_mm(160), math.pi/2)
     get_subcircuit('decode-d2d5').instantiate(pcb, t, (from_mm(0), from_mm(-10)), -math.pi/2, 'x', {})
     get_subcircuit('decode-d2d3').instantiate(pcb, t, (from_mm(60), from_mm(-10)), -math.pi/2, 'y', {})
+    get_subcircuit('div2').instantiate(pcb, t, (from_mm(90), from_mm(0)), 0, 'y', {})
     get_subcircuit('div3').instantiate(pcb, t, (from_mm(120), from_mm(0)), 0, 'y', {})
+    get_subcircuit('div5').instantiate(pcb, t, (from_mm(180), from_mm(0)), 0, 'y', {})
     pcb.get_netlist().check_composite()
     pcb.to_file('kek')
     gerbertools.read('./kek').write_svg('kek.svg', 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
