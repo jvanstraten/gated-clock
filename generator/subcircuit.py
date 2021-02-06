@@ -753,6 +753,62 @@ class Subcircuit:
             raise ValueError('basic DRC failed for subcircuit {}'.format(self._name))
         print('finished loading subcircuit {}, basic DRC passed'.format(self._name))
 
+        # Write VHDL for the netlist.
+        with open(os.path.join('subcircuits', self._name, '{}.gen.vhd'.format(self._name)), 'w') as f:
+            f.write('library ieee;\nuse ieee.std_logic_1164.all;\n\nentity {} is\n  port (\n'.format(self._name))
+
+            pin_directions = {}
+            for pin in self._pins:
+                direction = pin.get_direction()
+                pin = pin.get_name().split('~')[0].split('*')[0]
+                if pin in pin_directions:
+                    if direction == 'out':
+                        pin_directions[pin] = 'out'
+                else:
+                    pin_directions[pin] = direction
+
+            first = True
+            nets = set()
+            for pin in self._pins:
+                pin = pin.get_name().split('~')[0].split('*')[0]
+                direction = pin_directions[pin]
+                if pin in nets:
+                    continue
+                nets.add(pin)
+                if first:
+                    first = False
+                else:
+                    f.write(';\n')
+                f.write('    {} : {} std_logic'.format(pin, direction))
+            f.write('\n  );\nend entity;\n\narchitecture model of {} is\n'.format(self._name))
+            for net, *_ in self._net_insns:
+                if not net.startswith('.'):
+                    continue
+                net = net[1:].split('~')[0].split('*')[0]
+                if net in nets:
+                    continue
+                f.write('  signal {} : std_logic;\n'.format(net))
+                nets.add(net)
+            f.write('begin\n\n')
+            for instance in self._instances:
+                name = instance.get_name().replace('*', '').replace('~', '')
+                f.write('  {}_inst: entity work.{}\n    port map (\n'.format(name, instance.get_data().get_name()))
+                pins = set()
+                first = True
+                for pin, net in instance.get_pinmap():
+                    pin = pin.get_name().split('~')[0].split('*')[0]
+                    if pin in pins:
+                        continue
+                    pins.add(pin)
+                    net = net[1:].split('~')[0].split('*')[0]
+                    if first:
+                        first = False
+                    else:
+                        f.write(',\n')
+                    f.write('      {} => {}'.format(pin, net))
+                f.write('\n    );\n\n')
+            f.write('end architecture;\n')
+
     def get_name(self):
         return self._name
 
@@ -833,8 +889,8 @@ if __name__ == '__main__':
     #)
     t = LinearTransformer()
     t = CircularTransformer((0, 0), from_mm(160), math.pi/2)
-    get_subcircuit('decode-d2d5').instantiate(pcb, t, (from_mm(0), from_mm(-10)), -math.pi/2, 'x', {})
-    get_subcircuit('decode-d2d3').instantiate(pcb, t, (from_mm(60), from_mm(-10)), -math.pi/2, 'y', {})
+    get_subcircuit('decode_d2d5').instantiate(pcb, t, (from_mm(0), from_mm(-10)), -math.pi/2, 'x', {})
+    get_subcircuit('decode_d2d3').instantiate(pcb, t, (from_mm(60), from_mm(-10)), -math.pi/2, 'y', {})
     get_subcircuit('div2').instantiate(pcb, t, (from_mm(90), from_mm(0)), 0, 'y', {})
     get_subcircuit('div3').instantiate(pcb, t, (from_mm(120), from_mm(0)), 0, 'y', {})
     get_subcircuit('div5').instantiate(pcb, t, (from_mm(180), from_mm(0)), 0, 'y', {})

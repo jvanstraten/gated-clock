@@ -64,6 +64,9 @@ class Pins:
     def names(self):
         return set(self._pins)
 
+    def __iter__(self):
+        return iter(self._pins.values())
+
 class PinMap:
     """Mapping of pins of a primitive or subcircuit to net names in the parent
     circuit."""

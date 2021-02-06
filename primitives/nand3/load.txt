@@ -1,0 +1,7 @@
+load A 3 pF
+load A 1 mm
+load B 3 pF
+load B 1 mm
+load C 3 pF
+load C 6 mm
+load Y 13 mm

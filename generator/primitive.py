@@ -96,6 +96,29 @@ class Primitive:
 
                 print('warning: unknown construct for layer {}: {}'.format(layer, line))
 
+        #load_fname = os.path.join('primitives', name, 'load.txt')
+        #if os.path.isfile(load_fname):
+            #with open(load_fname, 'r') as f:
+                #for line in f.read().split('\n'):
+                    #line = line.split('#')[0].strip()
+                    #if not line:
+                        #continue
+                    #args = line.split()
+
+                    #if args[0] == 'load':
+                        #pin = self._pins.get(args[1])
+                        #amount = float(args[2])
+                        #if args[3] == 'mm':
+                            #pin.add_load_mm(amount)
+                        #elif args[3] == 'pF':
+                            #pin.add_load_pf(amount)
+                        #else:
+                            #raise ValueError('invalid load parameter')
+                        #continue
+
+                    #print('warning: unknown construct in load.txt')
+
+
     def get_name(self):
         return self._name
 
