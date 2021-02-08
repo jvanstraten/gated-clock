@@ -8,7 +8,7 @@ PCB trace parameters:
 Gate parameters:
 
     Cin = 3 pF
-    Rout = 64 Ohm ~ 84 Ohm
+    Rout = 17 Ohm ~ 37 Ohm
     tpd = 1 ns ~ 3.6 ns
 
 Propagation time with loading:
@@ -16,4 +16,11 @@ Propagation time with loading:
     tpd_min = fanout * 192 + length * 366 + 1000 ps
     tpd_max = fanout * 252 + length * 480 + 3600 ps
 
- 
+Let's forget about all of this. Just add a series resistor and load capacitor
+to each gate to get a more controlled propagation time. Furthermore, to ease
+the hold timing constraint, just use a larger capacitor for the P4 gate of each
+flipflop. 100R/330pF for the normal gates and 100R/2200pF seems to work with
+pretty dire worst-case assumptions for everything else. Even then, the
+flipflops still seem to work at 500kHz, with only 5.5mA dynamic power for the
+slow gates and 0.826mA for the fast gates. A self-test at that frequency thus
+runs at 10000x real-time, which is only 8.64s to go through a full day.

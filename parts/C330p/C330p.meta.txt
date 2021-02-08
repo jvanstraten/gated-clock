@@ -1,0 +1,4 @@
+mouser TODO
+model 0603C
+value 330pF
+voltage TODO

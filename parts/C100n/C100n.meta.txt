@@ -1,4 +1,4 @@
 mouser 80-C0603C104M4R7411
-model 0603R
+model 0603C
 value 100nF
 voltage 16V

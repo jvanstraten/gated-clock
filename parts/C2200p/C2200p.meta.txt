@@ -1,0 +1,4 @@
+mouser TODO
+model 0603C
+value 2200pF
+voltage TODO

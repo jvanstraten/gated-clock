@@ -1,5 +1,5 @@
-1-input NAND (so, an inverter)
-==============================
+2-input NAND, slow variant
+==========================
 
 ```
       Vcc          Vcc
@@ -13,8 +13,8 @@ A)-----+------|A   Vcc    `.
        |    3 |             \  _  4   X      ____
        o------|B           Y |(_)-----o-----[____]-----o-----(Y
        |    6 |             /         |      100R      |
-       o------|C   Gnd    ,'         .-.               |
-       |      '---------''           | | 680R        ----- 330pF
+B)-----+------|C   Gnd    ,'         .-.               |
+       |      '---------''           | | 680R        ----- 2.2nF
        |            | 2              | |             -----
        |            |                '-'               |
        |            |                 |                |
@@ -47,10 +47,10 @@ Vcc to Gnd design voltage is 5V.
 All gates use the 74LVS1G10 triple-input NAND gate for simplicity; the unused
 inputs are simply tied to Vcc.
 
-The 100R/330pF RC circuit should effectively reduce ringing due to long traces
+The 100R/2.2nF RC circuit should effectively reduce ringing due to long traces
 to zero, and also serves to control the propagation time of the gate, as
 opposed to this varying wildly based on routing and fanout. Specifically, the
-propagation time is at least 13ns and at most (roughly) 80ns. This is based on
+propagation time is at least 83ns and at most (roughly) 420ns. This is based on
 process corners for the source and sink gate, 1% resistor tolerance, 10%
 capacitor tolerance, and capacitive loading of up to 30cm of PCB trace and 10
 gate inputs.

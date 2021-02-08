@@ -1,3 +1,0 @@
-load A 3 pF
-load A 2 mm
-load Y 13 mm

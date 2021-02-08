@@ -81,6 +81,10 @@ class Primitive:
                             self._pins.add(name[1:], 'out', layer, coord, (0, 0), 0.0)
                             mode = 'driver'
                             name = '.' + name[1:]
+                        elif name[0] == '~':
+                            name = name[1:]
+                            mode = 'passive'
+                            # TODO
                         else:
                             mode = 'passive'
                         self._board.add_net(name, layer, coord, mode)
@@ -95,29 +99,6 @@ class Primitive:
                     continue
 
                 print('warning: unknown construct for layer {}: {}'.format(layer, line))
-
-        #load_fname = os.path.join('primitives', name, 'load.txt')
-        #if os.path.isfile(load_fname):
-            #with open(load_fname, 'r') as f:
-                #for line in f.read().split('\n'):
-                    #line = line.split('#')[0].strip()
-                    #if not line:
-                        #continue
-                    #args = line.split()
-
-                    #if args[0] == 'load':
-                        #pin = self._pins.get(args[1])
-                        #amount = float(args[2])
-                        #if args[3] == 'mm':
-                            #pin.add_load_mm(amount)
-                        #elif args[3] == 'pF':
-                            #pin.add_load_pf(amount)
-                        #else:
-                            #raise ValueError('invalid load parameter')
-                        #continue
-
-                    #print('warning: unknown construct in load.txt')
-
 
     def get_name(self):
         return self._name
@@ -142,32 +123,3 @@ def get_primitive(name):
         prim = Primitive(name)
         _primitives[name] = prim
     return prim
-
-
-# TODO removeme
-if __name__ == '__main__':
-    #p = get_primitive('nand1')
-    #p._board.add_outline(
-        #(from_mm(-10), from_mm(-10)),
-        #(from_mm(10), from_mm(-10)),
-        #(from_mm(10), from_mm(10)),
-        #(from_mm(-10), from_mm(10)),
-        #(from_mm(-10), from_mm(-10)),
-    #)
-    #p._board.to_file('kek')
-
-    pcb = CircuitBoard()
-    pcb.add_outline(
-        (from_mm(-15), from_mm(-10)),
-        (from_mm(15), from_mm(-10)),
-        (from_mm(15), from_mm(10)),
-        (from_mm(-15), from_mm(10)),
-        (from_mm(-15), from_mm(-10)),
-    )
-    from coordinates import LinearTransformer, CircularTransformer
-    import math
-    t = CircularTransformer((0, from_mm(-5.0)), from_mm(5))
-    get_primitive('nand1').instantiate(pcb, t, (from_mm(-8), 0), 0.0, 'a', {})
-    get_primitive('nand1').instantiate(pcb, t, (0, 0), 0.0, 'b', {})
-    get_primitive('nand1').instantiate(pcb, t, (from_mm(8), 0), 0.0, 'c', {})
-    pcb.to_file('kek')

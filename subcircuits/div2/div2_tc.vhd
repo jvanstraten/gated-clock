@@ -53,9 +53,9 @@ begin
   begin
     Arn <= '0';
     ClkIn <= '0';
-    wait for 1 us;
+    wait for 2 us;
     Arn <= '1';
-    wait for 1 us;
+    wait for 2 us;
     check(0);
     clock(1);
     clock(0);

@@ -134,10 +134,13 @@ to be adhered to for the scripts to make sense of them.
  - Objects not within the classes above are ignored, and may thus be used for
    notes.
 
- - Four type of net labels are distinguished by a symbol prefix:
+ - Five type of net labels are distinguished by a symbol prefix:
 
     - no prefix: global net. The name will appear in the final netlist as
       written.
+    - `~`: global net connection point. The name will appear in the final
+      netlist as written, and a global routing connection point is added to the
+      primitive for that layer and coordinate.
     - `.` prefix: local net. The name will be prefixed with the instance name
       to make it unique.
     - `>` prefix: input port. Same as `.`, but the net is treated as an input

@@ -21,7 +21,7 @@ prim feeda f3   90  2.5 5   A=P4*1   B=P4*2
 prim nand3 P2   90  3   5   Y=P2*1   A=P4*2   B=Clk    C=P1*3
 text P2         0   3   5   2.6 1.2 1.0 0.0
 prim cross f4   0   3   6   A=P4*2   B=P4*3   X=P2*2   Y=P2*1
-prim nand2 P4   90  3   7   Y=P4*3   A=Dn     B=P2*2
+prim nand2s P4  90  3   7   Y=P4*3   A=Dn     B=P2*2
 text P4         0   3   7   2.6 1.2 1.0 0.0
 
 prim ffled LED  0   6   1   A=Q~1
