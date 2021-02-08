@@ -340,10 +340,10 @@ class PartInstance:
 class CircuitBoard:
     """Represents (part of) a PCB."""
 
-    def __init__(self):
+    def __init__(self, mask_expansion=0.0):
         super().__init__()
         self._layers = {
-            layer: GerberLayer(layer, 0.05 if layer.endswith('S') else 0.0) for layer in [
+            layer: GerberLayer(layer, mask_expansion if layer.endswith('S') else 0.0) for layer in [
                 'GTO', 'GTS',
                 'GTL', 'G1', 'G2', 'GBL',
                 'GBS', 'GBO',

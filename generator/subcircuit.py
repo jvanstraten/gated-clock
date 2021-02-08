@@ -878,7 +878,7 @@ if __name__ == '__main__':
     from circuit_board import CircuitBoard
     import math
     import gerbertools
-    pcb = CircuitBoard()
+    pcb = CircuitBoard(mask_expansion=0.05)
     path = [(from_mm(math.sin(x/50*math.pi)*190), from_mm(math.cos(x/50*math.pi)*190)) for x in range(101)]
     pcb.add_outline(*path)
         #(from_mm(-45), from_mm(-45)),
