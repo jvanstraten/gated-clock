@@ -9,8 +9,8 @@ in d5an    GBL      4  0
 in d2p     GBL      5  0
 in d2n     GBL      6  0
 
-prim nand2 f01  90  7  1   Y=f01 A=d5cn B=d5an
-text 01\        0   7  1   2.6 1.2 1.0 0.0
+prim nand3 f0   90  7  1   Y=f0 A=d5cn B=d5an C=d2n
+text 0\         0   7  1   2.6 1.2 1.0 0.0
 prim nand3 f1   90  7  7   Y=f1  A=d5cn B=d5an C=d2p
 text 1\         0   7  7   2.6 1.2 1.0 0.0
 prim nand3 f2   90  7 13   Y=f2  A=d5bn B=d5ap C=d2n
@@ -28,7 +28,7 @@ text 6\         0   7 37   2.6 1.2 1.0 0.0
 prim nand3 f7   90  7 43   Y=f7  A=d5bp B=d5an C=d2n
 text 7\         0   7 43   2.6 1.2 1.0 0.0
 
-prim nand2 Gn   90 12  1   Y=Gn A=f7 B=f01
+prim nand3 Gn   90 12  1   Y=Gn A=f7 B=f1 C=f0
 text G\         0  12  1   2.6 1.2 1.0 0.0
 prim nand1 Cn   90 12  8   Y=Cn A=f2
 text C\         0  12  8   2.6 1.2 1.0 0.0
@@ -58,8 +58,8 @@ route               3    d5ap
 route               4    d5an
 route               5    d2p
 route               6    d2n
-route               8    d2n*1 f2 f5 f6
-route               9    f01 f1
+route               8    d2n*1 f0 f2 f5 f6
+route               9    f1
 route              10    f7
 route              11    f23 f4
 route              13    An Bn Cn Dn En Fn Gn
