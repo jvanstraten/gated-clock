@@ -43,13 +43,13 @@ begin
     procedure clock(val : in natural) is
     begin
       ClkIn_n <= '0';
-      wait for 1 us;
+      wait for 5 us;
       assert counter = val
         report integer'image(counter) & " rising clock edges have occured, "
           & "but expected " & integer'image(val)
         severity failure;
       ClkIn_n <= '1';
-      wait for 1 us;
+      wait for 5 us;
       assert counter = val
         report integer'image(counter) & " rising clock edges have occured, "
           & "but expected " & integer'image(val)
@@ -67,13 +67,13 @@ begin
     clock(0);
     clock(0);
     clock(0);
-    --clock(0); -- 60Hz only
+    clock(0); -- 60Hz only
     clock(1);
     clock(1);
     clock(1);
     clock(1);
     clock(1);
-    --clock(1); -- 60Hz only
+    clock(1); -- 60Hz only
     clock(2);
     wait;
   end process;

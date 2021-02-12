@@ -11,5 +11,5 @@ end entity;
 
 architecture behavior of jumper is
 begin
-  y <= a;
+  y <= b;
 end architecture;

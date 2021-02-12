@@ -25,10 +25,10 @@ prim nand2  P4  90  3   7   Y=P4*3   A=Dn     B=P2*2
 text P4         0   3   7   2.6 1.2 1.0 0.0
 
 prim ffled LED  0   6   1   A=Q~1
-prim nand3 Qn   90  6   3   Y=Qn~1   A=Q~2*1  B=P1*2   C=ArnB
+prim nand3qn Qn 90  6   3   Y=Qn~1   A=Q~2*1  B=P1*2   C=ArnB
 text Q\         0   6   3   2.6 1.2 1.0 0.0
 prim cross f5   0   6   4   A=Q~2*1  B=Q~2    X=Qn~2*1 Y=Qn~2
-prim nand2 Q    90  6   5   Y=Q~3    A=P2*1   B=Qn~2*1
+prim nand2q Q   90  6   5   Y=Q~3    A=P2*1   B=Qn~2*1
 text Q          0   6   5   2.6 1.2 1.0 0.0
 
 route               0       P4*1

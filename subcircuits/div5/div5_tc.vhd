@@ -55,10 +55,10 @@ begin
     procedure clock(val : in integer) is
     begin
       ClkIn <= '1';
-      wait for 1 us;
+      wait for 2 us;
       check(val);
       ClkIn <= '0';
-      wait for 1 us;
+      wait for 2 us;
       check(val);
     end procedure;
 
