@@ -11,17 +11,17 @@ fwd_out Q~3
 fwd_out Qn~1
 fwd_in  Qn~2
 
-prim nand3 P3   90  3   1   Y=P3*1   A=P1*1   B=P4*1   C=ArnA
+prim nand3  P3  90  3   1   Y=P3*1   A=P1*1   B=P4*1   C=ArnA
 text P3         0   3   1   2.6 1.2 1.0 0.0
 prim cross f1   0   3   2   A=P1*1   B=P1*2   X=P3*2   Y=P3*1
-prim nand2 P1   90  3   3   Y=P1*2   A=Clk    B=P3*2
+prim nand2s P1  90  3   3   Y=P1*2   A=Clk    B=P3*2
 text P1         0   3   3   2.6 1.2 1.0 0.0
 prim feed  f2   0   3   4   A=P1*3   B=P1*2
 prim feeda f3   90  2.5 5   A=P4*1   B=P4*2
-prim nand3 P2   90  3   5   Y=P2*1   A=P4*2   B=Clk    C=P1*3
+prim nand3s P2  90  3   5   Y=P2*1   A=P4*2   B=Clk    C=P1*3
 text P2         0   3   5   2.6 1.2 1.0 0.0
 prim cross f4   0   3   6   A=P4*2   B=P4*3   X=P2*2   Y=P2*1
-prim nand2s P4  90  3   7   Y=P4*3   A=Dn     B=P2*2
+prim nand2  P4  90  3   7   Y=P4*3   A=Dn     B=P2*2
 text P4         0   3   7   2.6 1.2 1.0 0.0
 
 prim ffled LED  0   6   1   A=Q~1

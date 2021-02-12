@@ -197,8 +197,8 @@ class RoutingColumn:
         # and fourth tuple element.
         def get_bridge_r(y):
             sx, sy = get_scale((self._x, y))
-            rx = int(round(sx * from_mm(0.3))) # <-- desired global X radius
-            ry = int(round(sy * from_mm(0.5))) # <-- desired global Y radius
+            rx = int(round(sx * from_mm(0.5))) # <-- desired global X radius
+            ry = int(round(sy * from_mm(0.7))) # <-- desired global Y radius
             return rx, ry
         all_y_targets = [y for (_, y), _ in self._targets]
         min_y = min(all_y_targets)
@@ -293,8 +293,8 @@ class RoutingColumn:
             def get_r(self):
                 if self._r is None:
                     sx, sy = get_scale((self._x, self._y))
-                    rx = int(round(sx * from_mm(0.4))) # <-- desired global X radius
-                    ry = int(round(sy * from_mm(0.4))) # <-- desired global Y radius
+                    rx = int(round(sx * from_mm(0.6))) # <-- desired global X radius
+                    ry = int(round(sy * from_mm(0.6))) # <-- desired global Y radius
                     self._r = (rx, ry)
                 return self._r
 
@@ -367,6 +367,10 @@ class RoutingColumn:
                 assert False
 
         # The first and last span should each have at least one knot.
+        while not spans[0][4]:
+            del spans[0]
+        while not spans[-1][4]:
+            del spans[-1]
         if not spans[0][4] or not spans[-1][4]:
             print('spans for net {}:'.format(self._net))
             for oa, ob, ia, ib, knots in spans:
@@ -415,7 +419,7 @@ class RoutingColumn:
             endpt_min_y = a + ka.get_r()[1]
             ka.set_y(endpt_min_y)
             ka.mark_constrained()
-            a = ka.get_y()
+            #a = ka.get_y()
             any_merged = False
             while knots:
                 k = knots[0]
@@ -436,7 +440,7 @@ class RoutingColumn:
             endpt_max_y = b - kb.get_r()[1]
             kb.set_y(endpt_max_y)
             kb.mark_constrained()
-            b = kb.get_y()
+            #b = kb.get_y()
             any_merged = False
             while knots:
                 k = knots[-1]
@@ -575,7 +579,7 @@ class RoutingColumn:
         for knots in spans:
             for knot in knots:
                 if knot.needs_dot():
-                    trace([knot.get_coord()], 'GTO', 0.65)
+                    trace([knot.get_coord()], 'GTO', 0.8)
 
         # Finally, draw the top overlay path for the vertical column.
         path = [spans[0][0].get_coord()]
@@ -894,6 +898,9 @@ if __name__ == '__main__':
     get_subcircuit('div2').instantiate(pcb, t, (from_mm(90), from_mm(0)), 0, 'y', {})
     get_subcircuit('div3').instantiate(pcb, t, (from_mm(120), from_mm(0)), 0, 'y', {})
     get_subcircuit('div5').instantiate(pcb, t, (from_mm(180), from_mm(0)), 0, 'y', {})
+    get_subcircuit('div2_n').instantiate(pcb, t, (from_mm(270), from_mm(0)), 0, 'y', {})
+    get_subcircuit('div5_n').instantiate(pcb, t, (from_mm(300), from_mm(0)), 0, 'y', {})
+    get_subcircuit('div5or6_n').instantiate(pcb, t, (from_mm(390), from_mm(0)), 0, 'y', {})
     pcb.get_netlist().check_composite()
     pcb.to_file('kek')
     gerbertools.read('./kek').write_svg('kek.svg', 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())

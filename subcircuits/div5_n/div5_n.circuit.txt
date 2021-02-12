@@ -11,12 +11,6 @@ fwd_in  Arn~4
 fwd_in  Arn~5
 fwd_in  Arn~6
 fwd_out ClkOut  GBL 28   0
-out     d5ap    GBL  7   4
-out     d5an    GBL  8   4
-out     d5bp    GBL 17   4
-out     d5bn    GBL 18   4
-out     d5cp    GBL 27   4
-out     d5cn    GBL 28   4
 
 subc dffn  A    0    0   1 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 Dn=fb Q=d5ap Qn=d5an
 subc dffn  B    0   10   1 Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=d5an Q=d5bp Qn=d5bn
@@ -26,9 +20,8 @@ prim feed  f2   0   11   2 A=d5bn B=d5bn*1
 prim nand2 fb  -90   5   2 Y=fb A=d5bn*1 B=d5cn
 
 route                2    fb
-route                7    d5ap
+route                7    d5ap d5bn*1
 route                8    d5an
-route               10    d5bn*1
 route               17    d5bp
 route               18    d5bn
 route               27    d5cp

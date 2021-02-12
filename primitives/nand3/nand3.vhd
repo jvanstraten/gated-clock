@@ -35,5 +35,13 @@ begin
   -- -> 80 ns
   y_max <= not (a and b and c) after 80 ns;
 
+  -- As above but switch at 45% and 55%:
+--   y_min <= not (a and b and c) after 26 ns;
+--   y_max <= not (a and b and c) after 48 ns;
+
+  -- As above but switch at 40% and 60%:
+--   y_min <= not (a and b and c) after 21 ns;
+--   y_max <= not (a and b and c) after 52 ns;
+
   y <= 'U' when y_min /= y_max else y_min;
 end architecture;

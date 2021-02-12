@@ -1,0 +1,3 @@
+mouser 855-M50-3530342
+model M50-3530342
+datasheet https://eu.mouser.com/datasheet/2/181/M50-353-1100851.pdf

@@ -21,7 +21,7 @@ begin
   --  - 2200pF-10% for load capacitor
   --  - no additional load
   --  - switch at 30%
-  -- -> 38 ns
+  -- -> 83 ns
   y_min <= not (a and b and c) after 83 ns;
 
   -- Minimum time:
@@ -34,6 +34,14 @@ begin
   --  - switch at 70%
   -- -> 200 ns
   y_max <= not (a and b and c) after 420 ns;
+
+  -- As above but switch at 45% and 55%:
+--   y_min <= not (a and b and c) after 140 ns;
+--   y_max <= not (a and b and c) after 278 ns;
+
+  -- As above but switch at 40% and 60%:
+--   y_min <= not (a and b and c) after 119 ns;
+--   y_max <= not (a and b and c) after 320 ns;
 
   y <= 'U' when y_min /= y_max else y_min;
 

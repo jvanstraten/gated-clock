@@ -1,0 +1,39 @@
+columns   3x1.5C 1x9.5C 1x1.5C 1x9.5C 3x1.5C  1x0C  3x1.5C 1x9.5C 1x1.5C 1x9.5C 3x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C   0
+rows 1x0.0C 1x35C 3x1.5C 1
+
+fwd_in  ClkIn~1
+fwd_in  ClkIn~2
+fwd_in  ClkIn~3
+fwd_in  Arn~1
+fwd_in  Arn~2
+fwd_in  Arn~3
+fwd_in  Arn~4
+fwd_in  Arn~5
+fwd_in  Arn~6
+fwd_out ClkOut  GBL 28   0
+
+subc dffn    A     0    0   1    Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 Dn=fb Q=d5ap Qn=d5an
+subc dffn    B     0   10   1    Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=d5an Q=d5bp Qn=d5bn
+subc dffn_sw C     0   20   1    ClkA=ClkIn~3 ClkB=d5bn ArnA=Arn~5 ArnB=Arn~6 Dn=d5yn Q=d5cp Qn=d5cn
+prim jumper  s1  -90    5.5 1.63 A=d5cn*1 B=d5an Y=d5xn
+prim jumper  s2  -90   16   1.63 A=d5bn B=d5cp*1 Y=d5yn
+text 50Hz          0   16   1.63 -1.5  1.0 1.2 1.0 0.5
+text 60Hz          0   16   1.63 -1.5 -1.0 1.2 1.0 0.5
+text (3x)          0   16   1.63  0.0 -3.0 1.0 0.5 1.0
+prim tie     f1    0   28   0    A=d5cn Y=ClkOut
+prim feed    f2    0   11   2    A=d5bn B=d5bn*1
+prim feed    f3    0   23   2    A=d5cp B=d5cp*1
+prim feed    f4    0   11   3    A=d5cn B=d5cn*1
+prim nand2   fb  -90   5    2    Y=fb A=d5xn B=d5bn*1
+
+
+route                2     fb
+route                6     d5xn d5bn*1
+route                7     d5ap d5cn*1
+route                8     d5an
+route               17     d5bp
+route               18     d5bn
+route               20     d5cp*1
+route               21     d5yn
+route               27     d5cp
+route               28     d5cn
