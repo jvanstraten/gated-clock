@@ -10,6 +10,8 @@ architecture test_case of border_tc is
   signal Arn    : std_logic;
   signal ClkIn  : std_logic;
   signal ClkOut : std_logic;
+  signal div2   : std_logic;
+  signal div5   : std_logic;
 
 begin
 
@@ -17,7 +19,11 @@ begin
     port map (
       Arn    => Arn,
       f50hz  => ClkIn,
-      f24h   => ClkOut
+      f24h_n => ClkOut,
+      h5p    => div2,
+      h5n    => div5,
+      div2   => div2,
+      div5   => div5
     );
 
   stim_proc: process is

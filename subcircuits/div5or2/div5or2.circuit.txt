@@ -1,0 +1,49 @@
+columns   3x1.5C 1x9.5C 1x1.5C 1x9.5C 3x1.5C  1x0C  3x1.5C 1x9.5C 1x1.5C 1x9.5C 3x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 3x1.5C   0
+rows 1x0.0C 1x35C 10x1.5C 1
+
+fwd_in  ClkIn~1
+fwd_in  ClkIn~2
+fwd_in  ClkIn~3
+fwd_in  Arn~1
+fwd_in  Arn~2
+fwd_in  Arn~3
+fwd_in  Arn~4
+fwd_in  Arn~5
+fwd_in  Arn~6
+out     d5ap        GBL  7  11
+out     d5an        GBL  8  11
+out     d5bp        GBL 17  11
+out     d5bn        GBL 18  11
+out     d5cp        GBL 27  11
+out     d5cn        GBL 28  11
+out     ClkOut      GTL 29  0
+in      Div2        GTL 29  7
+in      Div5        GTL 29  8
+
+subc dffn2 A        0    0   1 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 DnA=daan DnB=dabn Q=d5ap Qn=d5an
+subc dffn  B        0   10   1 Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=dbn Q=d5bp Qn=d5bn
+subc dffn  C        0   20   1 Clk=ClkIn~3 ArnA=Arn~5 ArnB=Arn~6 Dn=d5bn Q=d5cp Qn=d5cn
+prim feed  f1       0   15   5 A=d5ap B=d5ap*1
+prim feed  f2       0   15   6 A=ClkOut*1 B=ClkOut
+prim feed  f3       0   15   8 A=Div5 B=Div5*1
+prim feed  f4       0   15   9 A=d5cn B=d5cn*1
+prim feed  f5       0   15  10 A=d5bn B=d5bn*1
+prim nand2 dabn     -90  5   2 Y=dabn A=d5an B=Div2
+prim nand2 co       90   3   6 Y=ClkOut*1 A=daan B=dabn
+prim nand3 daan     -90  5   9 Y=daan A=Div5*1 B=d5cn*1 C=d5bn*1
+prim nand2 dbn      -90 15   2 Y=dbn A=Div5 B=d5ap*1
+
+route                    1    daan
+route                    2    dabn
+route                    4    ClkOut*1
+route                    6    Div2 Div5*1 d5cn*1 d5bn*1
+route                    7    d5ap
+route                    8    d5an
+route                   12    dbn
+route                   16    d5ap*1
+route                   17    d5bp
+route                   18    d5bn
+route                   20    Div5
+route                   27    d5cp
+route                   28    d5cn
+route                   29    ClkOut
