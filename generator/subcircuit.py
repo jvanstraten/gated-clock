@@ -853,7 +853,7 @@ class Subcircuit:
             if router_x is None:
                 continue
             for layer, coord, _ in net.iter_points():
-                coord = transformer.to_local(coord)
+                coord = transformer.to_local(coord, translate)
                 coord = transrot(coord, (-translate[0], -translate[1]), 0.0)
                 coord = transrot(coord, (0, 0), -rotate)
                 for router in routers:
@@ -892,15 +892,17 @@ if __name__ == '__main__':
         #(from_mm(-45), from_mm(-45)),
     #)
     t = LinearTransformer()
-    t = CircularTransformer((0, 0), from_mm(160), math.pi/2)
-    get_subcircuit('decode_d2d5').instantiate(pcb, t, (from_mm(0), from_mm(-10)), -math.pi/2, 'x', {})
-    get_subcircuit('decode_d2d3').instantiate(pcb, t, (from_mm(60), from_mm(-10)), -math.pi/2, 'y', {})
-    get_subcircuit('div2').instantiate(pcb, t, (from_mm(90), from_mm(0)), 0, 'y', {})
-    get_subcircuit('div3').instantiate(pcb, t, (from_mm(120), from_mm(0)), 0, 'y', {})
-    get_subcircuit('div5').instantiate(pcb, t, (from_mm(180), from_mm(0)), 0, 'y', {})
-    get_subcircuit('div2_n').instantiate(pcb, t, (from_mm(270), from_mm(0)), 0, 'y', {})
-    get_subcircuit('div5_n').instantiate(pcb, t, (from_mm(300), from_mm(0)), 0, 'y', {})
-    get_subcircuit('div5or6_n').instantiate(pcb, t, (from_mm(390), from_mm(0)), 0, 'y', {})
+    t = CircularTransformer((0, 0), from_mm(159.15), 0)
+    #get_subcircuit('decode_d2d5').instantiate(pcb, t, (from_mm(0), from_mm(-10)), -math.pi/2, 'x', {})
+    #get_subcircuit('decode_d2d3').instantiate(pcb, t, (from_mm(60), from_mm(-10)), -math.pi/2, 'y', {})
+    #get_subcircuit('div2').instantiate(pcb, t, (from_mm(90), from_mm(0)), 0, 'y', {})
+    #get_subcircuit('div3').instantiate(pcb, t, (from_mm(120), from_mm(0)), 0, 'y', {})
+    #get_subcircuit('div5').instantiate(pcb, t, (from_mm(180), from_mm(0)), 0, 'y', {})
+    #get_subcircuit('div2_n').instantiate(pcb, t, (from_mm(270), from_mm(0)), 0, 'y', {})
+    #get_subcircuit('div5_n').instantiate(pcb, t, (from_mm(300), from_mm(0)), 0, 'y', {})
+    #get_subcircuit('div5or6_n').instantiate(pcb, t, (from_mm(390), from_mm(0)), 0, 'y', {})
+    get_subcircuit('border').instantiate(pcb, t, (from_mm(500), from_mm(0.85)), math.pi/2, 'border', {})
+    #get_subcircuit('div2').instantiate(pcb, t, (from_mm(550), from_mm(0)), 0, 'y', {})
     pcb.get_netlist().check_composite()
     pcb.to_file('kek')
     gerbertools.read('./kek').write_svg('kek.svg', 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())

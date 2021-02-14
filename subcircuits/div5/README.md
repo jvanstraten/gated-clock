@@ -53,3 +53,9 @@ ClkIn~1 Arn~1         Arn~2           ClkIn~2 Arn~3         Arn~4           ClkI
                             ''----'   | |                                   | |                                   | |
                                    d5ap d5an                             d5bp d5bn                             d5cp d5cn
 ```
+
+Total width, not including borders, is:
+
+ - 6 gates x 8mm = 48mm;
+ - 26 wiring spacers x 1.5mm = 39mm;
+ - total 87mm.

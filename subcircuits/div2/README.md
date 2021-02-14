@@ -50,3 +50,9 @@ ClkIn Arn~1         Arn~2          ClkOut
                                     | |
                                   d2p d2n
 ```
+
+Total width, not including borders, is:
+
+ - 2 gates x 8mm = 16mm;
+ - 8 wiring spacers x 1.5mm = 12mm;
+ - total 28mm.

@@ -50,3 +50,9 @@ ClkIn~1 Arn~1         Arn~2           ClkIn~2 Arn~3         Arn~4           ClkO
                             ''----'   | |                                   | |
                                    d3ap d3an                             d3bp d3bn
 ```
+
+Total width, not including borders, is:
+
+ - 4 gates x 8mm = 32mm;
+ - 17 wiring spacers x 1.5mm = 25.5mm;
+ - total 57.5mm.

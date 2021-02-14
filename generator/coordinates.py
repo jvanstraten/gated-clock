@@ -97,7 +97,7 @@ class Transformer:
         # master, so to speak. Then we should have a mapping in our
         # transformation cache that we can use.
         global_coord = transrot(coord, translate, rotate)
-        local_coord = self.to_local(global_coord)
+        local_coord = self.to_local(global_coord, origin)
         return self._forward_lookup[local_coord], rotate + pre_rotation
 
     def to_global(self, coord, translate=None, rotate=0.0, warpable=False):
@@ -126,8 +126,8 @@ class Transformer:
         for i in range(1, len(path)):
             if warpable:
                 n = self._num_segments(
-                    self.to_local(self.to_global(path[i-1], translate, rotate, warpable)),
-                    self.to_local(self.to_global(path[i], translate, rotate, warpable))
+                    self.to_local(self.to_global(path[i-1], translate, rotate, warpable), transrot(path[i-1], translate, rotate)),
+                    self.to_local(self.to_global(path[i], translate, rotate, warpable), transrot(path[i], translate, rotate))
                 )
             else:
                 n = 1
@@ -151,14 +151,16 @@ class Transformer:
             raise ValueError('a part is being warped!')
         return self._to_global_int(comp_coord, translate, rotate, warpable)
 
-    def to_local(self, global_coord):
-        """Converts a global coordinate to its corresponding local
-        coordinate."""
+    def to_local(self, global_coord, near=(0, 0)):
+        """Converts a global coordinate to its corresponding local coordinate.
+        If multiple points are possible, choose the one nearest to near."""
         local_coord = self._reverse_lookup.get(global_coord, None)
         if local_coord is None:
             local_coord = self._reverse_transform(global_coord)
             self._forward_lookup[local_coord] = global_coord
             self._reverse_lookup[global_coord] = local_coord
+        local_coord = self._disambiguate(local_coord, near)
+        self._forward_lookup[local_coord] = global_coord
         return local_coord
 
     def _get_transform(self, local_coord):
@@ -174,6 +176,12 @@ class Transformer:
         """Returns the number of line segments needed to make a path between
         local coordinates c1 and c2."""
         return 1
+
+    def _disambiguate(self, coord, near):
+        """When multiple local coordinates share a global coordinate,
+        return the local coordinate nearest to near that shares coord's global
+        coordinate."""
+        return coord
 
 class LinearTransformer(Transformer):
     """A simple linear transformation, based on rotation followed by
@@ -239,6 +247,18 @@ class CircularTransformer(Transformer):
         th = math.acos(2.0 * x * x - 1.0) + 1e-3;
         dx = th * self._radius
         return int(math.ceil(abs(c1[0] - c2[0]) / dx + 0.01))
+
+    def _disambiguate(self, coord, near):
+        x, y = coord
+        if (coord[1]+self._radius > 0) != (near[1]+self._radius > 0):
+            x = x + math.pi * self._radius
+            y = -y - 2 * self._radius
+        period = 2 * math.pi * self._radius
+        while abs(x + period - near[0]) < abs(x - near[0]):
+            x += period
+        while abs(x - period - near[0]) < abs(x - near[0]):
+            x -= period
+        return (int(x), int(y))
 
 
 if __name__ == '__main__':
