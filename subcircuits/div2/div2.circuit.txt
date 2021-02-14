@@ -4,7 +4,7 @@ rows 1x0.0C 1x35C 2x1.5C 1
 fwd_in  ClkIn
 fwd_in  Arn~1
 fwd_in  Arn~2
-fwd_out ClkOut  GBL 8   0
+fwd_out ClkOut
 out     d2p     GBL 7   3
 out     d2n     GBL 8   3
 

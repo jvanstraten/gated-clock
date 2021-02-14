@@ -10,7 +10,7 @@ fwd_in  Arn~3
 fwd_in  Arn~4
 fwd_in  Arn~5
 fwd_in  Arn~6
-fwd_out ClkOut  GBL 28   0
+fwd_out ClkOut
 out     d5ap    GBL  7   4
 out     d5an    GBL  8   4
 out     d5bp    GBL 17   4

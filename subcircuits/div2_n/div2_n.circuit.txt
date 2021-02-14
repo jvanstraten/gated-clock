@@ -4,7 +4,7 @@ rows 1x0.0C 1x35C 2x1.5C 1
 fwd_in  ClkIn
 fwd_in  Arn~1
 fwd_in  Arn~2
-fwd_out ClkOut  GBL 8   0
+fwd_out ClkOut
 
 subc dffn  A    0   0   1 Clk=ClkIn ArnA=Arn~1 ArnB=Arn~2 Dn=d2p*1 Q=d2p Qn=d2n
 prim tie   f1   0   8   0 A=d2n Y=ClkOut

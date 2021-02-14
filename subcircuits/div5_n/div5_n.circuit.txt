@@ -10,7 +10,7 @@ fwd_in  Arn~3
 fwd_in  Arn~4
 fwd_in  Arn~5
 fwd_in  Arn~6
-fwd_out ClkOut  GBL 28   0
+fwd_out ClkOut
 
 subc dffn  A    0    0   1 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 Dn=fb Q=d5ap Qn=d5an
 subc dffn  B    0   10   1 Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=d5an Q=d5bp Qn=d5bn

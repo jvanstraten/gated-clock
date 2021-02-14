@@ -1,0 +1,4 @@
+mouser TODO
+model 0603R
+value 22k
+power TODO

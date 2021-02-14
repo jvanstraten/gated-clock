@@ -1,0 +1,5 @@
+mouser 859-LTST-C230TBKT
+model LTST-C230TBKT
+color blue
+wavelength 470nm
+datasheet https://eu.mouser.com/datasheet/2/239/Lite-On-LTST-C230TBKT-1175374.pdf

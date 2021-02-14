@@ -7,7 +7,7 @@ fwd_in  Arn~1
 fwd_in  Arn~2
 fwd_in  Arn~3
 fwd_in  Arn~4
-fwd_out ClkOut  GBL 18   0
+fwd_out ClkOut_n
 out     d3ap    GBL  7   4
 out     d3an    GBL  8   4
 out     d3bp    GBL 17   4
@@ -15,7 +15,7 @@ out     d3bn    GBL 18   4
 
 subc dffn  A    0    0   1 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 Dn=fb Q=d3ap Qn=d3an
 subc dffn  B    0   10   1 Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=d3an Q=d3bp Qn=d3bn
-prim tie   f1   0   18   0 A=d3bn Y=ClkOut
+prim tie   f1   0   17   0 A=d3bp Y=ClkOut_n
 prim nand2 fb  -90   5   2 Y=fb A=d3an B=d3bn
 
 route                2    fb

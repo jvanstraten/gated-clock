@@ -1,15 +1,18 @@
-columns 1x35C 1x1.5R 1x1.5R 1x1.5R 0
-rows 1x87T 1x10T 1x87T 1x10T 1x28T 1x10T     1x28T 1x10T 1x87T 1x10T  1x28T 1x10T 1x57.5T 1x10T  1x25T 1x10T     1x28T 1x10T 1x87T 1x10T  1x28T 1x10T 1x57.5T 1x10T  1x25T 1x10T    1x28T 1x10T 1x87T 1x10T 1x57.5T 1x10T 14.5
+columns 1x35C 1x1.5R 1x1.5R 1x3.0R 0
+rows 1x87T 1x10T 1x87T 1x10T 1x28T 1x10T     1x28T 1x10T 1x87T 1x10T  1x28T 1x10T 1x57.5T 1x10T  1x26.5T 1x10T     1x28T 1x10T 1x87T 1x10T  1x28T 1x10T 1x57.5T 1x10T  1x26.5T 1x10T    1x28T 1x10T 1x87T 1x10T 1x57.5T 1x10T 14.5
 
 in      Arn     GBL  2   0
 in      f50hz   GBL  1   0
-out     f24h    GBL  1   31
+out     f24h_n  GBL  1   31
 
 # Line frequency division
 
 subc div5_n     fd1    -90      0   0       Arn=Arn     ClkIn=f50hz     ClkOut=f10hz
+text 10/12½Hz~divider  -90      3   0.5     0.0 0.0 1.5 0.5 0.5
 subc div5or6_n  fd2    -90      0   2       Arn=Arn     ClkIn=f10hz     ClkOut=f2hz
+text 2Hz~divider       -90      3   2.5     0.0 0.0 1.5 0.5 0.5
 subc div2_n     fd3    -90      0   4       Arn=Arn     ClkIn=f2hz      ClkOut=f1s
+text 1Hz~divider       -90      3   4.5     0.0 0.0 1.5 0.5 0.5
 
 # Seconds dividers and outputs
 
@@ -29,9 +32,13 @@ fwd_out s6p
 fwd_out s6n
 
 subc div2       sd1    -90      0   6       Arn=Arn     ClkIn=f1s       ClkOut=f2s      d2p=s0p d2n=s0n
+text 2-second~divider  -90      3   6.5     0.0 0.0 1.5 0.5 0.5
 subc div5       sd2    -90      0   8       Arn=Arn     ClkIn=f2s       ClkOut=f10s     d5ap=s1p d5an=s1n d5bp=s2p d5bn=s2n d5cp=s3p d5cn=s3n
+text 10-second~divider -90      3   8.5     0.0 0.0 1.5 0.5 0.5
 subc div2       sd3    -90      0   10      Arn=Arn     ClkIn=f10s      ClkOut=f20s     d2p=s4p d2n=s4n
-subc div3       sd4    -90      0   12      Arn=Arn     ClkIn=f20s      ClkOut=f60s     d3ap=s5p d3an=s5n d3bp=s6p d3bn=s6n
+text 20-second~divider -90      3   10.5    0.0 0.0 1.5 0.5 0.5
+subc div3       sd4    -90      0   12      Arn=Arn     ClkIn=f20s      ClkOut_n=f60s_n d3ap=s5p d3an=s5n d3bp=s6p d3bn=s6n
+text 60-second~divider -90      3   12.5    0.0 0.0 1.5 0.5 0.5
 
 # Minutes dividers and outputs
 
@@ -50,10 +57,16 @@ fwd_out m5n
 fwd_out m6p
 fwd_out m6n
 
-subc div2       md1    -90      0   16      Arn=Arn     ClkIn=f60s      ClkOut=f2m      d2p=m0p d2n=m0n
+subc config     mcfg   -90      0   14                  ClkIn_n=f60s_n  ClkOut=f1m
+text Minutes~configuration -90  3   14.5    0.0 0.0 1.5 0.5 0.5
+subc div2       md1    -90      0   16      Arn=Arn     ClkIn=f1m       ClkOut=f2m      d2p=m0p d2n=m0n
+text 2-minute~divider  -90      3   16.5    0.0 0.0 1.5 0.5 0.5
 subc div5       md2    -90      0   18      Arn=Arn     ClkIn=f2m       ClkOut=f10m     d5ap=m1p d5an=m1n d5bp=m2p d5bn=m2n d5cp=m3p d5cn=m3n
+text 10-minute~divider -90      3   18.5    0.0 0.0 1.5 0.5 0.5
 subc div2       md3    -90      0   20      Arn=Arn     ClkIn=f10m      ClkOut=f20m     d2p=m4p d2n=m4n
-subc div3       md4    -90      0   22      Arn=Arn     ClkIn=f20m      ClkOut=f60m     d3ap=m5p d3an=m5n d3bp=m6p d3bn=m6n
+text 20-minute~divider -90      3   20.5    0.0 0.0 1.5 0.5 0.5
+subc div3       md4    -90      0   22      Arn=Arn     ClkIn=f20m      ClkOut_n=f60m_n d3ap=m5p d3an=m5n d3bp=m6p d3bn=m6n
+text 60-minute~divider -90      3   22.5    0.0 0.0 1.5 0.5 0.5
 
 # Hours dividers and outputs
 
@@ -70,11 +83,16 @@ fwd_out h4n
 fwd_out h5p
 fwd_out h5n
 
-subc div2       hd1    -90      0   26      Arn=Arn     ClkIn=f60m      ClkOut=f2h      d2p=h0p d2n=h0n
+subc config     hcfg   -90      0   24                  ClkIn_n=f60m_n  ClkOut=f1h
+text Hours~configuration -90    3   24.5    0.0 0.0 1.5 0.5 0.5
+subc div2       hd1    -90      0   26      Arn=Arn     ClkIn=f1h       ClkOut=f2h      d2p=h0p d2n=h0n
+text 2-hour~divider    -90      3   26.5    0.0 0.0 1.5 0.5 0.5
 subc div5       hd2    -90      0   28      Arn=Arn     ClkIn=f2h       ClkOut=f10h     d5ap=h1p d5an=h1n d5bp=h2p d5bn=h2n d5cp=h3p d5cn=h3n
-subc div3       hd3    -90      0   30      Arn=Arn     ClkIn=f10h      ClkOut=f24h     d3ap=h4p d3an=h4n d3bp=h5p d3bn=h5n
+text 10-hour~divider   -90      3   28.5    0.0 0.0 1.5 0.5 0.5
+subc div3       hd3    -90      0   30      Arn=Arn     ClkIn=f10h      ClkOut_n=f24h_n d3ap=h4p d3an=h4n d3bp=h5p d3bn=h5n
+text 24-hour~divider   -90      3   30.5    0.0 0.0 1.5 0.5 0.5
 
 
 
-route                1    f50hz f10hz f2hz f1s f2s f10s f20s f60s f2m f10m f20m f60m f2h f10h f24h
+route                1    f50hz f10hz f2hz f1s f2s f10s f20s f60s_n f1m f2m f10m f20m f60m_n f1h f2h f10h f24h_n
 route                2    Arn

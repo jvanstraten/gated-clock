@@ -198,7 +198,7 @@ class RoutingColumn:
         def get_bridge_r(y):
             sx, sy = get_scale((self._x, y))
             rx = int(round(sx * from_mm(0.5))) # <-- desired global X radius
-            ry = int(round(sy * from_mm(0.7))) # <-- desired global Y radius
+            ry = int(round(sy * from_mm(0.8))) # <-- desired global Y radius
             return rx, ry
         all_y_targets = [y for (_, y), _ in self._targets]
         min_y = min(all_y_targets)

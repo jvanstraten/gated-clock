@@ -7,25 +7,25 @@ end entity;
 
 architecture test_case of div3_tc is
 
-  signal Arn    : std_logic;
-  signal ClkIn  : std_logic;
-  signal ClkOut : std_logic;
-  signal d3ap   : std_logic;
-  signal d3an   : std_logic;
-  signal d3bp   : std_logic;
-  signal d3bn   : std_logic;
+  signal Arn      : std_logic;
+  signal ClkIn    : std_logic;
+  signal ClkOut_n : std_logic;
+  signal d3ap     : std_logic;
+  signal d3an     : std_logic;
+  signal d3bp     : std_logic;
+  signal d3bn     : std_logic;
 
 begin
 
   uut: entity work.div3
     port map (
-      Arn    => Arn,
-      ClkIn  => ClkIn,
-      ClkOut => ClkOut,
-      d3ap   => d3ap,
-      d3an   => d3an,
-      d3bp   => d3bp,
-      d3bn   => d3bn
+      Arn      => Arn,
+      ClkIn    => ClkIn,
+      ClkOut_n => ClkOut_n,
+      d3ap     => d3ap,
+      d3an     => d3an,
+      d3bp     => d3bp,
+      d3bn     => d3bn
     );
 
   stim_proc: process is
