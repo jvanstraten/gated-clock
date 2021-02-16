@@ -1,10 +1,11 @@
 
-from circuit_board import Paths
+from paths import Paths
 from coordinates import from_mm, to_mm
 import gerbertools
 import subprocess
+import os
 
-class LaseredAcrylatePlate:
+class LaseredAcrylitePlate:
 
     def __init__(self, material, thickness, flipped=False):
         super().__init__()
@@ -62,10 +63,20 @@ class LaseredAcrylatePlate:
                         x_max = max(x_max, x)
                         y_min = min(y_min, y)
                         y_max = max(y_max, y)
+        if x_min is None:
+            return 0, 0, 0, 0
         return x_min, x_max, y_min, y_max
 
+    def instantiate(self, plate, transformer, translate, rotate):
+        for path in self._cuts:
+            plate.add_cut(*transformer.path_to_global(path, translate, rotate, True))
+        for path in self._lines:
+            plate.add_line(*transformer.path_to_global(path, translate, rotate, True))
+        for path in self._regions:
+            plate.add_region(*transformer.path_to_global(path, translate, rotate, True))
 
-class LaseredAcrylate:
+
+class LaseredAcrylite:
 
     def __init__(self):
         super().__init__()
@@ -73,12 +84,22 @@ class LaseredAcrylate:
 
     def add(self, name, material, thickness, flipped=False):
         assert name not in self._plates
-        plate = LaseredAcrylatePlate(material, thickness, flipped)
+        plate = LaseredAcrylitePlate(material, thickness, flipped)
         self._plates[name] = plate
         return plate
 
     def get(self, name):
         return self._plates[name]
+
+    def has_plate(self, name):
+        return name in self._plates
+
+    def instantiate(self, plates, transformer, translate, rotate):
+        for name, data in self._plates.items():
+            plate = plates._plates.get(name, None)
+            if plate is None:
+                plate = plates.add(name, data.get_material(), data.get_thickness(), data.is_flipped())
+            data.instantiate(plate, transformer, translate, rotate)
 
     def to_file(self, fname, name='...', email='...', telephone='...'):
         cutting_layer = []
@@ -104,6 +125,8 @@ class LaseredAcrylate:
             x_min, x_max, y_min, y_max = plate.get_bounds()
             w = x_max - x_min
             h = y_max - y_min
+            if w == 0 or h == 0:
+                continue
             cx = (x_max + x_min) / 2
             cy = (y_max + y_min) / 2
             flipped = plate.is_flipped()
@@ -126,6 +149,7 @@ class LaseredAcrylate:
                     x, y = y, x
                 if flipped:
                     x = -x
+                y = -y
                 x += w_total / 2 + from_mm(50) + drawing_w
                 y += h_total / 2 + from_mm(400)
                 return to_svg(x), to_svg(y)
@@ -238,8 +262,15 @@ class LaseredAcrylate:
                 )
             )
 
-            drawing_w += w_total + from_mm(100)
+            drawing_w += w_total + from_mm(300)
             drawing_h = max(drawing_h, h_total + from_mm(450))
+
+        if drawing_w == 0:
+            if os.path.isfile('{}.svg'.format(fname)):
+                os.unlink('{}.svg'.format(fname))
+            if os.path.isfile('{}.pdf'.format(fname)):
+                os.unlink('{}.pdf'.format(fname))
+            return
 
         svg = []
         svg.append((
@@ -316,7 +347,7 @@ class LaseredAcrylate:
 
 if __name__ == '__main__':
     import math
-    plates = LaseredAcrylate()
+    plates = LaseredAcrylite()
     plate = plates.add('driehoek', 'kek', 'banaan')
     plate.add_cut(*((from_mm(100*math.sin(x/120*math.pi)), from_mm(200*math.cos(x/120*math.pi))) for x in range(241)))
     plate.add_line(*((from_mm(50*math.sin(x/120*math.pi)), from_mm(50*math.cos(x/120*math.pi))) for x in range(241)))

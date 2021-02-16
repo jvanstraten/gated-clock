@@ -39,7 +39,7 @@ def read_regions(layer, ob, f):
             assert c[2] == 0.0
             f.write('vert {} {}\n'.format(c[0], c[1]))
             n += 1
-    print(' with {} region(s)'.format(n))
+    print(' with {} vertex/vertices'.format(n))
 
 def read_label(layer, ob, f):
     assert ob.location[2] == 0
@@ -68,27 +68,6 @@ def read_via(ob, f):
     else:
         assert False
 
-def read_layer(layer, f):
-    c = bpy.data.collections.get(layer, None)
-    if c is None:
-        return
-    for ob in c.objects.values():
-        print('parsing object {} on layer {}: '.format(ob.name, layer), end='')
-        if ob.type == 'MESH':
-            if layer == 'Drill':
-                print('hole/via object', end='')
-                read_via(ob, f)
-            elif 'Solidify' in ob.modifiers:
-                thickness = round(ob.modifiers['Solidify'].thickness, 2)
-                print('line object with thickness = {}'.format(thickness), end='')
-                read_lines(layer, ob, f, thickness)
-            else:
-                print('region object', end='')
-                read_regions(layer, ob, f)
-        elif ob.type == 'FONT':
-            print('label', end='')
-            read_label(layer, ob, f)
-
 known_layers = {'Ctop', 'GTO', 'GTS', 'GTL', 'G1', 'G2', 'GBL', 'GBS', 'GBO', 'Cbottom', 'Mill', 'Drill'}
 
 with open(bpy.data.filepath + '.txt', 'w') as f:
@@ -114,6 +93,19 @@ with open(bpy.data.filepath + '.txt', 'w') as f:
                     print('label', end='')
                     read_label(c.name, ob, f)
                     continue
+            elif c.name.startswith('Acrylite.'):
+                _, name, mode = c.name.split('.')
+                assert mode in ('Cut', 'Engrave')
+                if ob.type == 'MESH':
+                    if 'Solidify' in ob.modifiers:
+                        thickness = round(ob.modifiers['Solidify'].thickness, 2)
+                        print('line object with thickness = {}'.format(thickness), end='')
+                        read_lines(c.name, ob, f, thickness)
+                        continue
+                    elif mode != 'Cut':
+                        print('region object', end='')
+                        read_regions(c.name, ob, f)
+                        continue
             print('UNKNOWN, treating as comment')
 
 print('DONE')
