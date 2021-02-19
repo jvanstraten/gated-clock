@@ -889,5 +889,5 @@ if __name__ == '__main__':
     t = CircularTransformer((0, 0), from_mm(159.15), 0)
     get_subcircuit('border').instantiate(pcb, t, (from_mm(500), from_mm(0.85)), math.pi/2, 'border', {})
     pcb.get_netlist().check_composite()
-    pcb.to_file('kek')
-    gerbertools.read('./kek').write_svg('kek.svg', False, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
+    pcb.to_file('mainboard')
+    gerbertools.read('./mainboard').write_svg('mainboard.svg', False, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())

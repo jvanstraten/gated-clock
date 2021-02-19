@@ -411,7 +411,7 @@ class CircuitBoard:
                     to_mm(inst.get_coord()[1]),
                     inst.get_rotation() * 180 / math.pi
                 ))
-        self._plates.to_file('{}_acrylic'.format(fname), *sys.argv[1:])
+        self._plates.to_file(fname, *sys.argv[1:])
 
     def instantiate(self, pcb, transformer, translate, rotate, warpable, net_prefix, net_override):
         """Instantiates the contents of this PCB onto the given PCB with the

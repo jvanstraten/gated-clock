@@ -75,6 +75,25 @@ class LaseredAcrylicPlate:
         for path in self._regions:
             plate.add_region(*transformer.path_to_global(path, translate, rotate, True))
 
+    def to_file(self, fname):
+        """Output the acylic plate as gerber files. This is fucking weird, I
+        know, and requires a circular module dependency because acrylic plates
+        were also shoehorned into CircuitBoard, but this is the easiest path
+        that I have right now for getting them rendered as SVGs and 3D
+        models."""
+        from circuit_board import GerberLayer
+
+        cuts = GerberLayer('GM1')
+        for path in self._cuts:
+            cuts.add_path(from_mm(0.3), *path)
+        cuts.to_file(fname)
+
+        engravings = GerberLayer('GM2')
+        for path in self._lines:
+            engravings.add_path(from_mm(0.3), *path)
+        for path in self._regions:
+            engravings.add_region(True, *path)
+        engravings.to_file(fname)
 
 class LaseredAcrylic:
 
@@ -120,7 +139,9 @@ class LaseredAcrylic:
             ident_counter[0] += 1
             return '{}{}'.format(prefix, ident_counter[0])
 
-        for index, plate in enumerate(self._plates.values()):
+        for index, (plate_name, plate) in enumerate(self._plates.items()):
+            plate.to_file('{}.{}'.format(fname, plate_name))
+
             sizes = list(map(from_mm, [200, 300, 450, 600, 900]))
             x_min, x_max, y_min, y_max = plate.get_bounds()
             w = x_max - x_min
@@ -266,10 +287,10 @@ class LaseredAcrylic:
             drawing_h = max(drawing_h, h_total + from_mm(450))
 
         if drawing_w == 0:
-            if os.path.isfile('{}.svg'.format(fname)):
-                os.unlink('{}.svg'.format(fname))
-            if os.path.isfile('{}.pdf'.format(fname)):
-                os.unlink('{}.pdf'.format(fname))
+            if os.path.isfile('{}.laserbeest.svg'.format(fname)):
+                os.unlink('{}.laserbeest.svg'.format(fname))
+            if os.path.isfile('{}.laserbeest.pdf'.format(fname)):
+                os.unlink('{}.laserbeest.pdf'.format(fname))
             return
 
         svg = []
@@ -340,10 +361,10 @@ class LaseredAcrylic:
         svg.append('</g>')
         svg.append('</svg>')
 
-        with open('{}.svg'.format(fname), 'w') as f:
+        with open('{}.laserbeest.svg'.format(fname), 'w') as f:
             f.write('\n'.join(svg) + '\n')
 
-        subprocess.run(['inkscape', '-C', '-A', '{}.pdf'.format(fname), '{}.svg'.format(fname)], check=True)
+        subprocess.run(['inkscape', '-C', '-A', '{}.laserbeest.pdf'.format(fname), '{}.laserbeest.svg'.format(fname)], check=True)
 
 if __name__ == '__main__':
     import math
