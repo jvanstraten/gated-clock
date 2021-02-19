@@ -398,9 +398,10 @@ class CircuitBoard:
         self._parts.append(PartInstance(name, layer, coord, rotation))
 
     def to_file(self, fname):
+        pcb_fname = '{}.PCB'.format(fname)
         for layer in self._layers.values():
-            layer.to_file(fname)
-        self._drill.to_file(fname)
+            layer.to_file(pcb_fname)
+        self._drill.to_file(pcb_fname)
         self._netlist.to_file(fname)
         with open('{}.parts.txt'.format(fname), 'w') as f:
             for inst in self._parts:

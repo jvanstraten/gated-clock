@@ -13,7 +13,7 @@ t = CircularTransformer((0, 0), from_mm(159.15), 0)
 get_subcircuit('border').instantiate(mainboard, t, (from_mm(500), from_mm(0.85)), math.pi/2, 'border', {})
 mainboard.to_file('output/mainboard')
 
-mainboard_gbr = gerbertools.read('output/mainboard')
+mainboard_gbr = gerbertools.read('output/mainboard.PCB')
 
 display_gbr = gerbertools.CircuitBoard('output/mainboard.Display', '.GM1', '')
 display_gbr.add_substrate_layer(3)
@@ -23,6 +23,10 @@ front_gbr = gerbertools.CircuitBoard('output/mainboard.Front', '.GM1', '')
 front_gbr.add_substrate_layer(3)
 front_gbr.add_mask_layer('', '.GM2')
 
+highlight_gbr = gerbertools.CircuitBoard('output/mainboard.Highlight', '.GM1', '')
+highlight_gbr.add_substrate_layer(3)
+highlight_gbr.add_mask_layer('', '.GM2')
+
 
 with open('output/mainboard.normal.svg', 'w') as f:
     f.write('<svg viewBox="0 0 410 410" width="5125" height="5125" xmlns="http://www.w3.org/2000/svg">\n')
@@ -31,6 +35,7 @@ with open('output/mainboard.normal.svg', 'w') as f:
     f.write('</g>\n')
     f.write('<g transform="translate(205 205) scale(1 -1) " filter="drop-shadow(0 0 3 rgba(0, 0, 0, 0.5))">\n')
     f.write(display_gbr.get_svg(False, soldermask=(0, 0, 0, 0), silkscreen=(0.7, 0.7, 0.7, 0.8), substrate=(0.1, 0.1, 0.1, 0.95), id_prefix='display'))
+    f.write(highlight_gbr.get_svg(False, soldermask=(0, 0, 0, 0), silkscreen=(0.7, 0.7, 0.7, 0.8), substrate=(0.95, 0.95, 0.95, 0.95), id_prefix='highlight'))
     f.write('</g>\n')
     f.write('<g transform="translate(205 205) scale(1 -1) " filter="drop-shadow(0 0 3 rgba(0, 0, 0, 0.5))">\n')
     f.write(front_gbr.get_svg(False, soldermask=(0, 0, 0, 0), silkscreen=(0.7, 0.7, 0.7, 0.8), substrate=(0.6, 0.6, 0.6, 0.05), id_prefix='front'))

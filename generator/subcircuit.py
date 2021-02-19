@@ -28,7 +28,10 @@ class GridDimension:
 
     def convert(self, pos):
         """Converts a grid position to internal units."""
-        return from_mm(self._convert_mm(float(pos)))
+        pos = float(pos)
+        if pos < 0:
+            pos += len(self._positions)
+        return from_mm(self._convert_mm(pos))
 
     def configure(self, *args):
         """Parses a grid layout command. The first N-1 arguments must be of the
@@ -622,6 +625,7 @@ class Subcircuit:
         self._net_insns = []
         self._instances = []
         self._routers = []
+        self._outlines = []
         self._labels = []
         forwarded_pins = []
         with open(os.path.join('subcircuits', name, '{}.circuit.txt'.format(name)), 'r') as f:
@@ -676,6 +680,17 @@ class Subcircuit:
                 if args[0] == 'route':
                     self._routers.append((cols.convert(args[1]), ['.{}'.format(x) for x in args[2:]]))
                     continue
+
+                if args[0] in 'outline':
+                    self._outlines.append((
+                        cols.convert(args[1]),
+                        rows.convert(args[2]),
+                        cols.convert(args[3]),
+                        rows.convert(args[4]),
+                        from_mm(args[5]), # expansion
+                        from_mm(args[6]), # corner radius
+                        args[7]
+                    ))
 
                 if args[0] == 'text':
                     text = args[1].replace('~', ' ')
@@ -865,6 +880,44 @@ class Subcircuit:
         for label in self._labels:
             label.instantiate(pcb, transformer, translate, rotate)
 
+        # Add outlines.
+        for x1, y2, x2, y1, expand, corner, plate in self._outlines:
+            plates = pcb.get_plates()
+            if not plates.has_plate(plate):
+                continue
+            plate = plates.get(plate)
+
+            x1 -= expand - corner
+            y1 -= expand - corner
+            x2 += expand - corner
+            y2 += expand - corner
+
+            path = []
+            def add(theta, x, y):
+                path.append((
+                    int(round(math.cos(theta) * corner)) + x,
+                    int(round(math.sin(theta) * corner)) + y
+                ))
+            x = x2
+            y = y2
+            for i in range(101):
+                add(i / 50 * math.pi, x, y)
+                if i == 25:
+                    x = x1
+                    add(i / 50 * math.pi, x, y)
+                elif i == 50:
+                    y = y1
+                    add(i / 50 * math.pi, x, y)
+                elif i == 75:
+                    x = x2
+                    add(i / 50 * math.pi, x, y)
+                elif i == 100:
+                    y = y2
+                    add(i / 50 * math.pi, x, y)
+            assert path[0] == path[-1]
+
+            plate.add_cut(*transformer.path_to_global(path, translate, rotate, True))
+
 
 _subcircuits = {}
 
@@ -875,19 +928,3 @@ def get_subcircuit(name):
         subcirc = Subcircuit(name)
         _subcircuits[name] = subcirc
     return subcirc
-
-# TODO removeme
-if __name__ == '__main__':
-    from coordinates import LinearTransformer, CircularTransformer
-    from circuit_board import CircuitBoard
-    import math
-    import gerbertools
-    pcb = CircuitBoard(mask_expansion=0.05)
-    t = LinearTransformer()
-    get_primitive('mainboard').instantiate(pcb, t, (0, 0), 0, 'mainboard', {})
-    #get_primitive('acrylic_test').instantiate(pcb, t, (0, 0), 0, 'mainboard', {})
-    t = CircularTransformer((0, 0), from_mm(159.15), 0)
-    get_subcircuit('border').instantiate(pcb, t, (from_mm(500), from_mm(0.85)), math.pi/2, 'border', {})
-    pcb.get_netlist().check_composite()
-    pcb.to_file('mainboard')
-    gerbertools.read('./mainboard').write_svg('mainboard.svg', False, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
