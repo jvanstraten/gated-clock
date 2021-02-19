@@ -2,7 +2,7 @@ from coordinates import *
 from part import get_part
 from netlist import Netlist
 from paths import Paths
-from laser import LaseredAcrylite
+from acrylic import LaseredAcrylic
 import gerbertools
 import sys
 
@@ -310,7 +310,7 @@ class CircuitBoard:
         self._drill = DrillLayer()
         self._netlist = Netlist()
         self._parts = []
-        self._plates = LaseredAcrylite()
+        self._plates = LaseredAcrylic()
 
     def get_plates(self):
         return self._plates
@@ -411,7 +411,7 @@ class CircuitBoard:
                     to_mm(inst.get_coord()[1]),
                     inst.get_rotation() * 180 / math.pi
                 ))
-        self._plates.to_file('{}_acrylite'.format(fname), *sys.argv[1:])
+        self._plates.to_file('{}_acrylic'.format(fname), *sys.argv[1:])
 
     def instantiate(self, pcb, transformer, translate, rotate, warpable, net_prefix, net_override):
         """Instantiates the contents of this PCB onto the given PCB with the
@@ -451,5 +451,5 @@ class CircuitBoard:
                 )
             )
 
-        # Lasered acrylite plates (if any).
+        # Lasered acrylic plates (if any).
         self._plates.instantiate(pcb.get_plates(), transformer, translate, rotate)

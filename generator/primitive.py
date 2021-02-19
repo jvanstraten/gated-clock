@@ -44,7 +44,7 @@ class Primitive:
                 if args[0] == 'layer':
                     plate = None
                     layer = args[1]
-                    if layer.startswith('Acrylite.'):
+                    if layer.startswith('Acrylic.'):
                         _, name, mode = layer.split('.')
                         assert mode in ('Cut', 'Engrave')
                         cut = mode == 'Cut'

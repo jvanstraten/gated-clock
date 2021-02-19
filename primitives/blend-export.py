@@ -93,7 +93,7 @@ with open(bpy.data.filepath + '.txt', 'w') as f:
                     print('label', end='')
                     read_label(c.name, ob, f)
                     continue
-            elif c.name.startswith('Acrylite.'):
+            elif c.name.startswith('Acrylic.'):
                 _, name, mode = c.name.split('.')
                 assert mode in ('Cut', 'Engrave')
                 if ob.type == 'MESH':

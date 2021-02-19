@@ -5,7 +5,7 @@ import gerbertools
 import subprocess
 import os
 
-class LaseredAcrylitePlate:
+class LaseredAcrylicPlate:
 
     def __init__(self, material, thickness, flipped=False):
         super().__init__()
@@ -76,7 +76,7 @@ class LaseredAcrylitePlate:
             plate.add_region(*transformer.path_to_global(path, translate, rotate, True))
 
 
-class LaseredAcrylite:
+class LaseredAcrylic:
 
     def __init__(self):
         super().__init__()
@@ -84,7 +84,7 @@ class LaseredAcrylite:
 
     def add(self, name, material, thickness, flipped=False):
         assert name not in self._plates
-        plate = LaseredAcrylitePlate(material, thickness, flipped)
+        plate = LaseredAcrylicPlate(material, thickness, flipped)
         self._plates[name] = plate
         return plate
 
@@ -347,7 +347,7 @@ class LaseredAcrylite:
 
 if __name__ == '__main__':
     import math
-    plates = LaseredAcrylite()
+    plates = LaseredAcrylic()
     plate = plates.add('driehoek', 'kek', 'banaan')
     plate.add_cut(*((from_mm(100*math.sin(x/120*math.pi)), from_mm(200*math.cos(x/120*math.pi))) for x in range(241)))
     plate.add_line(*((from_mm(50*math.sin(x/120*math.pi)), from_mm(50*math.cos(x/120*math.pi))) for x in range(241)))
