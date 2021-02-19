@@ -429,7 +429,7 @@ class CircuitBoard:
 
         # Netlist data.
         for net in self._netlist.iter_physical():
-            name = net.get_name()
+            name = net.get_name().split('~')[0].split('*')[0]
             if name in net_override:
                 name = net_override[name]
             elif name.startswith('.'):

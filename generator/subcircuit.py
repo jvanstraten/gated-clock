@@ -104,7 +104,8 @@ class Instance:
         # Figure out net override for the child instance.
         child_net_override = dict(net_override)
         for pin, net in self._pinmap:
-            pin = pin.get_name()
+            pin = pin.get_name().split('~')[0].split('*')[0]
+            net = net.split('~')[0].split('*')[0]
             if net in net_override:
                 net = net_override[net]
             elif net.startswith('.'):
@@ -851,9 +852,9 @@ class Subcircuit:
         for instance in self._instances:
             instance.instantiate(pcb, transformer, translate, rotate, net_prefix, net_override)
         for net in netlist.iter_physical():
-            name = net.get_name()
+            name = net.get_name().split('~')[0].split('*')[0]
             if name in net_override:
-                name = net_override[name]
+                name = net_override[name].split('~')[0].split('*')[0]
             elif name.startswith('.'):
                 name = net_prefix + name
             for layer, coord, mode in net.iter_points():

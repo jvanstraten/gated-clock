@@ -101,23 +101,3 @@ class Label:
         for polarity, path in self.iter_regions():
             path = transformer.path_to_global(path, translate, rotate, self._warpable)
             pcb.add_region(self._layer, polarity, *path)
-
-
-# TODO removeme
-if __name__ == '__main__':
-    from coordinates import LinearTransformer
-    from circuit_board import CircuitBoard
-    import math
-    import gerbertools
-    pcb = CircuitBoard()
-    pcb.add_outline(
-        (from_mm(-50), from_mm(-1)),
-        (from_mm(50), from_mm(-1)),
-        (from_mm(50), from_mm(3)),
-        (from_mm(-50), from_mm(3)),
-        (from_mm(-50), from_mm(-1)),
-    )
-    t = LinearTransformer()
-    Label('hello').instantiate(pcb, t, (0, 0), 0.0)
-    pcb.to_file('kek')
-    gerbertools.read('./kek').write_svg('kek.svg', 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
