@@ -1,6 +1,7 @@
 from matplotlib.textpath import TextPath
 from matplotlib.font_manager import FontProperties
 from coordinates import from_mm, transrot
+import math
 
 class Label:
     def __init__(
@@ -21,6 +22,8 @@ class Label:
         self._text = text
         self._warpable = warpable
         self._layer = layer
+        self._translate = translate
+        self._rotate = rotate
 
         # Render an overbar if the text ends in a backslash, sort of like
         # Altium (except not on character-basis).
@@ -98,6 +101,37 @@ class Label:
             yield False, poly
 
     def instantiate(self, pcb, transformer, translate, rotate):
+        _, angle = transformer.part_to_global((0, 0), 0, transrot(self._translate, translate, rotate), rotate + self._rotate)
+        angle += 0.5 * math.pi
+        while angle >= 2*math.pi:
+            angle -= 2*math.pi
+        while angle < 0:
+            angle += 2*math.pi
+        if angle > math.pi:
+            min_x = None
+            min_y = None
+            max_x = None
+            max_y = None
+            for polarity, path in self.iter_regions():
+                for x, y in path:
+                    if min_x is None:
+                        min_x = x
+                        min_y = y
+                        max_x = x
+                        max_y = y
+                    else:
+                        min_x = min(min_x, x)
+                        min_y = min(min_y, y)
+                        max_x = max(max_x, x)
+                        max_y = max(max_y, y)
+            cx2 = min_x + max_x
+            cy2 = min_y + max_y
+            def flip(coord):
+                return (cx2 - coord[0], cy2 - coord[1])
+        else:
+            def flip(coord):
+                return coord
         for polarity, path in self.iter_regions():
+            path = [flip(coord) for coord in path]
             path = transformer.path_to_global(path, translate, rotate, self._warpable)
             pcb.add_region(self._layer, polarity, *path)
