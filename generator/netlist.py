@@ -86,6 +86,7 @@ class Netlist:
         super().__init__()
         self._logical_nets = {}
         self._physical_nets = {}
+        self._net_ties = {}
 
     def get_physical(self, name):
         """Returns the physical net for the given name. Any * suffix is
@@ -98,7 +99,8 @@ class Netlist:
         return physical_net
 
     def iter_physical(self):
-        """Iterates over all physical nets."""
+        """Iterates over all physical nets, treating nets connected via net tie
+        as distinct."""
         for net in self._physical_nets.values():
             yield net
 
@@ -125,6 +127,22 @@ class Netlist:
             raise ValueError('invalid net mode')
         logical_net = self.get_logical(name)
         logical_net.add_point(layer, coord, mode)
+
+    def add_net_tie(self, master, slave):
+        """Indicates that the given two physical net names actually refer to
+        different parts of the same net, connected via a net tie."""
+        self._net_ties[master] = self._net_ties.get(slave, slave)
+
+    def iter_ties(self):
+        """Iterates over all the net ties."""
+        return iter(self._net_ties.items())
+
+    def get_true_net_name(self, name):
+        """Returns the master net name for the given net name. This gets rid
+        of ~ and * suffixes, and processes net ties."""
+        name = name.split('*', maxsplit=1)[0].split('~', maxsplit=1)[0]
+        name = self._net_ties.get(name, name)
+        return name
 
     def check_subcircuit(self, good=True):
         """Checks the (physical) netlist for subcircuit DRC errors. That is:

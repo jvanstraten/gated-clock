@@ -624,6 +624,7 @@ class Subcircuit:
         self._name = name
         self._pins = Pins()
         self._net_insns = []
+        self._net_ties = []
         self._instances = []
         self._routers = []
         self._outlines = []
@@ -658,6 +659,11 @@ class Subcircuit:
                 if args[0] in ('prim', 'subc'):
                     coord = (cols.convert(args[4]), rows.convert(args[5]))
                     rotation = float(args[3]) / 180 * math.pi
+                    if args[0] == 'prim' and args[1] == 'tie':
+                        master = args[-1].split('=', maxsplit=1)[1]
+                        for arg in args[6:-1]:
+                            slave = arg.split('=', maxsplit=1)[1]
+                            self._net_ties.append(('.' + master, '.' + slave))
                     instance = Instance(
                         args[0] == 'prim', args[1], args[2],
                         coord, rotation, *args[6:]
@@ -848,17 +854,25 @@ class Subcircuit:
             rot += rotate
             netlist.add(net, layer, transformer.to_global(coord, trans, rot, False), mode)
 
-        # Handle primitive artwork and netlist.
-        for instance in self._instances:
-            instance.instantiate(pcb, transformer, translate, rotate, net_prefix, net_override)
-        for net in netlist.iter_physical():
-            name = net.get_name().split('~')[0].split('*')[0]
+        def translate_net(name):
+            name = name.split('~')[0].split('*')[0]
             if name in net_override:
                 name = net_override[name].split('~')[0].split('*')[0]
             elif name.startswith('.'):
                 name = net_prefix + name
+            return name
+
+        # Handle primitive artwork and netlist.
+        for instance in self._instances:
+            instance.instantiate(pcb, transformer, translate, rotate, net_prefix, net_override)
+        for net in netlist.iter_physical():
+            name = translate_net(net.get_name())
             for layer, coord, mode in net.iter_points():
                 pcb.add_net(name, layer, coord, mode)
+
+        # Handle net ties.
+        for master, slave in self._net_ties:
+            pcb.add_net_tie(translate_net(master), translate_net(slave))
 
         # Perform routing.
         routers = [RoutingColumn(x, net, 'GTL', 'GBL') for x, nets in self._routers for net in nets]

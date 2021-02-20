@@ -393,6 +393,10 @@ class CircuitBoard:
         'driver', 'user', 'in', or 'out'."""
         self._netlist.add(name, layer, coord, mode)
 
+    def add_net_tie(self, master, slave):
+        print('TIE', master, slave)
+        self._netlist.add_net_tie(master, slave)
+
     def add_part(self, name, layer, coord, rotation):
         """Adds a soldered part to the PCB."""
         self._parts.append(PartInstance(name, layer, coord, rotation))

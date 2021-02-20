@@ -13,10 +13,35 @@ t = CircularTransformer((0, 0), from_mm(159.15), 0)
 get_subcircuit('border').instantiate(mainboard, t, (from_mm(500), from_mm(0.85)), math.pi/2, 'border', {})
 mainboard.to_file('output/mainboard')
 
+print('*** running circuit DRC...')
 mainboard.get_netlist().check_composite()
 
+print('*** building PCB...')
 mainboard_gbr = gerbertools.read('output/mainboard.PCB')
 
+print('*** running physical DRC...')
+nets = []
+nl = mainboard.get_netlist()
+for net in nl.iter_physical():
+    name = nl.get_true_net_name(net.get_name())
+    for layer, (x, y), mode in net.iter_points():
+        layer = {
+            'GBS': 0,
+            'GBL': 0,
+            'G2': 1,
+            'G1': 2,
+            'GTL': 3,
+            'GTS': 3,
+        }[layer]
+        nets.append(((to_mm(x), to_mm(y)), layer, name))
+violations = mainboard_gbr.build_netlist(nets, clearance=0.13, annular_ring=0.13).drc()
+if violations:
+    for violation in violations:
+        print(violation)
+else:
+    print('physical DRC passed!')
+
+print('*** building acrylic plates...')
 display_gbr = gerbertools.CircuitBoard('output/mainboard.Display', '.GM1', '')
 display_gbr.add_substrate_layer(3)
 display_gbr.add_mask_layer('', '.GM2')
@@ -29,6 +54,7 @@ highlight_gbr = gerbertools.CircuitBoard('output/mainboard.Highlight', '.GM1', '
 highlight_gbr.add_substrate_layer(3)
 highlight_gbr.add_mask_layer('', '.GM2')
 
+print('*** rendering to SVG...')
 
 with open('output/mainboard.normal.svg', 'w') as f:
     f.write('<svg viewBox="0 0 410 410" width="5125" height="5125" xmlns="http://www.w3.org/2000/svg">\n')
