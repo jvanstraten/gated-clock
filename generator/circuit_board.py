@@ -9,17 +9,21 @@ import sys
 class Region:
     """Represents a filled region."""
 
-    def __init__(self, path, polarity=True):
+    def __init__(self, path, polarity=True, plane_cutout=True):
         super().__init__()
         assert path[0] == path[-1]
         self._path = path
         self._polarity = polarity
+        self._plane_cutout = plane_cutout
 
     def get_path(self):
         return tuple(self._path)
 
     def get_polarity(self):
         return self._polarity
+
+    def is_plane_cutout(self):
+        return self._plane_cutout
 
 class GerberLayer:
     """Represents a Gerber layer of a PCB."""
@@ -74,14 +78,45 @@ class GerberLayer:
             self._paths[aper] = paths
         paths.add(*path)
 
-    def add_region(self, polarity, *path):
+    def _add_region(self, polarity, is_plane_cutout, *path):
         if self._expansion > 0.0:
             s = gerbertools.Shape(1e6)
             s.append_int(aper)
-            s = s.offset(self._expansion, True)
+            s = s.offset(self._expansion if polarity else -self._expansion, True)
+            if len(s) == 0:
+                return
             assert len(s) == 1
             path = tuple(s.get_int(0))
-        self._regions.append(Region(path, polarity))
+        self._regions.append(Region(path, polarity, is_plane_cutout))
+
+    def add_region(self, polarity, *path):
+        self._add_region(polarity, True, *path)
+
+    def add_region_no_cutout(self, polarity, *path):
+        self._add_region(polarity, False, *path)
+
+    def get_poly_cutout(self):
+        s = gerbertools.Shape(1e6)
+        for region in self._regions:
+            if region.is_plane_cutout():
+                x = gerbertools.Shape(1e6)
+                x.append_int(region.get_path())
+                if region.get_polarity():
+                    s = s + x
+                else:
+                    s = s - x
+        for aper, paths in self._paths.items():
+            for path in paths:
+                x = gerbertools.Shape(1e6)
+                if isinstance(aper, int):
+                    x.append_int(path)
+                    x = x.render(to_mm(aper), False)
+                else:
+                    assert len(path) == 1
+                    flash = path[0]
+                    x.append_int([(ap[0] + flash[0], ap[1] + flash[1]) for ap in list(aper) + [aper[0]]])
+                s = s + x
+        return s
 
     def to_file(self, fname):
         fname = '{}.{}'.format(fname, self._name if self._name != 'Mill' else 'GM1')
@@ -159,6 +194,7 @@ class GerberLayer:
     def instantiate(self, pcb, transformer, translate, rotate, warpable):
         """Instantiates the contents of this layer onto the given PCB with the
         given transformer and local translation + rotation."""
+        assert self._expansion == 0
         for aper, paths in self._paths.items():
             for path in paths:
                 if isinstance(aper, int):
@@ -181,6 +217,9 @@ class GerberLayer:
                         self._name,
                         *path
                     )
+        for region in self._regions:
+            path = transformer.path_to_global(region.get_path(), translate, rotate, warpable)
+            pcb.add_region(self._name, region.get_polarity(), *path)
 
 class DrillLayer:
     """Represents a drilling layer."""
@@ -400,6 +439,36 @@ class CircuitBoard:
     def add_part(self, name, layer, coord, rotation):
         """Adds a soldered part to the PCB."""
         self._parts.append(PartInstance(name, layer, coord, rotation))
+
+    def add_poly_pours(self, clearance=0.2):
+        """Adds the polygon pours for the inner layers."""
+        outline = gerbertools.Shape(1e6)
+        for aperture, paths in self._layers['Mill']._paths.items():
+            assert isinstance(aperture, int)
+            for path in paths:
+                assert path[0] == path[-1]
+                outline.append_int(path)
+
+        holes = gerbertools.Shape(1e6)
+        for (dia, _), points in self._drill._holes.items():
+            x = gerbertools.Shape(1e6)
+            for point in points:
+                x.append_int([point])
+            x = x.render(to_mm(dia), False)
+            holes = holes + x
+
+        outline = outline - holes
+        outline = outline.offset(-clearance)
+
+        for layer_name in ('G1', 'G2'):
+            shape = outline - self._layers[layer_name].get_poly_cutout().offset(clearance)
+            for i in range(len(shape)):
+                path = shape.get_int(i)
+                path = list(path) + [path[0]]
+                winding = 0
+                for (x1, y1), (x2, y2) in zip(path[1:], path[:-1]):
+                    winding += (x2 - x1) * (y2 + y1)
+                self.add_region(layer_name, winding > 0, *path)
 
     def to_file(self, fname):
         pcb_fname = '{}.PCB'.format(fname)
