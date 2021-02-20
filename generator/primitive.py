@@ -34,6 +34,8 @@ class Primitive:
                         if cut:
                             raise ValueError('region not supported for plate cutting')
                         plate.add_region(*flash_region, flash_region[0])
+                    elif layer in ('G1', 'G2'):
+                        self._board.add_region_no_cutout(layer, True, *flash_region, flash_region[0])
                     else:
                         self._board.add_flashed_region(layer, *flash_region)
                     flash_region = None

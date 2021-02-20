@@ -24,28 +24,6 @@ mainboard.get_netlist().check_composite()
 print('*** building PCB...')
 mainboard_gbr = gerbertools.read('output/mainboard.PCB')
 
-print('*** running physical DRC...')
-nets = []
-nl = mainboard.get_netlist()
-for net in nl.iter_physical():
-    name = nl.get_true_net_name(net.get_name())
-    for layer, (x, y), mode in net.iter_points():
-        layer = {
-            'GBS': 0,
-            'GBL': 0,
-            'G2': 1,
-            'G1': 2,
-            'GTL': 3,
-            'GTS': 3,
-        }[layer]
-        nets.append(((to_mm(x), to_mm(y)), layer, name))
-violations = mainboard_gbr.build_netlist(nets, clearance=0.13, annular_ring=0.13).drc()
-if violations:
-    for violation in violations:
-        print(violation)
-else:
-    print('physical DRC passed!')
-
 print('*** building acrylic plates...')
 display_gbr = gerbertools.CircuitBoard('output/mainboard.Display', '.GM1', '')
 display_gbr.add_substrate_layer(3)
@@ -97,4 +75,25 @@ with open('output/mainboard.normal.svg', 'w') as f:
 #mainboard_gbr.write_svg('output/mainboard.normal.svg', False, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
 #mainboard_gbr.write_svg('output/mainboard.flipped.svg', True, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
 
+print('*** running physical DRC...')
+nets = []
+nl = mainboard.get_netlist()
+for net in nl.iter_physical():
+    name = nl.get_true_net_name(net.get_name())
+    for layer, (x, y), mode in net.iter_points():
+        layer = {
+            'GBS': 0,
+            'GBL': 0,
+            'G2': 1,
+            'G1': 2,
+            'GTL': 3,
+            'GTS': 3,
+        }[layer]
+        nets.append(((to_mm(x), to_mm(y)), layer, name))
+violations = mainboard_gbr.build_netlist(nets, clearance=0.13, annular_ring=0.13).drc()
+if violations:
+    for violation in violations:
+        print(violation)
+else:
+    print('physical DRC passed!')
 

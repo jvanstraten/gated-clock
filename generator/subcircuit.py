@@ -698,6 +698,7 @@ class Subcircuit:
                         from_mm(args[6]), # corner radius
                         args[7]
                     ))
+                    continue
 
                 if args[0] == 'text':
                     text = args[1].replace('~', ' ')

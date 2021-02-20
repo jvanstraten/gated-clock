@@ -78,7 +78,7 @@ class GerberLayer:
             self._paths[aper] = paths
         paths.add(*path)
 
-    def _add_region(self, polarity, is_plane_cutout, *path):
+    def _add_region(self, polarity, is_plane_cutout, prefix, *path):
         if self._expansion > 0.0:
             s = gerbertools.Shape(1e6)
             s.append_int(aper)
@@ -87,13 +87,19 @@ class GerberLayer:
                 return
             assert len(s) == 1
             path = tuple(s.get_int(0))
-        self._regions.append(Region(path, polarity, is_plane_cutout))
+        if prefix:
+            self._regions.insert(0, Region(path, polarity, is_plane_cutout))
+        else:
+            self._regions.append(Region(path, polarity, is_plane_cutout))
 
     def add_region(self, polarity, *path):
-        self._add_region(polarity, True, *path)
+        self._add_region(polarity, True, False, *path)
+
+    def prefix_region(self, polarity, *path):
+        self._add_region(polarity, True, True, *path)
 
     def add_region_no_cutout(self, polarity, *path):
-        self._add_region(polarity, False, *path)
+        self._add_region(polarity, False, False, *path)
 
     def get_poly_cutout(self):
         s = gerbertools.Shape(1e6)
@@ -219,7 +225,10 @@ class GerberLayer:
                     )
         for region in self._regions:
             path = transformer.path_to_global(region.get_path(), translate, rotate, warpable)
-            pcb.add_region(self._name, region.get_polarity(), *path)
+            if region.is_plane_cutout():
+                pcb.add_region(self._name, region.get_polarity(), *path)
+            else:
+                pcb.add_region_no_cutout(self._name, region.get_polarity(), *path)
 
 class DrillLayer:
     """Represents a drilling layer."""
@@ -394,6 +403,18 @@ class CircuitBoard:
         assert path[0] == path[-1]
         self._layers[layer].add_region(polarity, *path)
 
+    def prefix_region(self, layer, polarity, *path):
+        """Same as add_region(), but places the region at the beginning of the
+        region list."""
+        assert path[0] == path[-1]
+        self._layers[layer].prefix_region(polarity, *path)
+
+    def add_region_no_cutout(self, layer, polarity, *path):
+        """Same as add_region(), but adds a region that the polygon pour logic
+        ignores, allowing connections to be made to the polygon pour."""
+        assert path[0] == path[-1]
+        self._layers[layer].add_region_no_cutout(polarity, *path)
+
     def add_outline(self, *path):
         """Adds a trace to the outline. Dimensions are integer nanometers."""
         assert path[0] == path[-1]
@@ -433,7 +454,6 @@ class CircuitBoard:
         self._netlist.add(name, layer, coord, mode)
 
     def add_net_tie(self, master, slave):
-        print('TIE', master, slave)
         self._netlist.add_net_tie(master, slave)
 
     def add_part(self, name, layer, coord, rotation):
@@ -462,13 +482,13 @@ class CircuitBoard:
 
         for layer_name in ('G1', 'G2'):
             shape = outline - self._layers[layer_name].get_poly_cutout().offset(clearance)
-            for i in range(len(shape)):
+            for i in reversed(range(len(shape))):
                 path = shape.get_int(i)
                 path = list(path) + [path[0]]
                 winding = 0
                 for (x1, y1), (x2, y2) in zip(path[1:], path[:-1]):
                     winding += (x2 - x1) * (y2 + y1)
-                self.add_region(layer_name, winding > 0, *path)
+                self.prefix_region(layer_name, winding > 0, *path)
 
     def to_file(self, fname):
         pcb_fname = '{}.PCB'.format(fname)
