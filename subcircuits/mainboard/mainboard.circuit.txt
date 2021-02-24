@@ -160,7 +160,7 @@ route  70.0  m6n*1
 
 # Hours, unit digit
 
-subc decode_d2d5 hu 180 50 875 d5cn=h3n d5bp=h2p d5bn=h2n d5ap=h1p d5an=h1n d2p=h0p d2n=h0n An=hu_An Bn=hu_Bn Cn=hu_Cn Dn=hu_Dn En=hu_En Fn=hu_Fn Gn=hu_Gn
+subc decode_d2d5 hu 180 51.5 876.5 d5cn=h3n d5bp=h2p d5bn=h2n d5ap=h1p d5an=h1n d2p=h0p d2n=h0n An=hu_An Bn=hu_Bn Cn=hu_Cn Dn=hu_Dn En=hu_En Fn=hu_Fn Gn=hu_Gn
 
 fwd_out hu_An
 fwd_out hu_Bn

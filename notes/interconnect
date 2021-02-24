@@ -1,0 +1,58 @@
+3+7+7+6+7+6
+
+
+top-left:
+    3x hours tens
+    7x hours units
+    4x hours config
+    2x gnd
+
+    = 16
+
+top-middle:
+    1x arn
+    1x clk
+    3x microcontroller button (up, mode, down)
+    3x microcontroller LED (GPS, activity, standby)
+    4x (probably) I/O expander port for synchroscope
+    2x PWM for synchroscope
+    2x gnd
+
+    = 16
+
+top-right:
+    7x seconds units
+    2x vcc
+    7x gnd
+
+    = 16
+
+bottom-left:
+    6x minutes tens
+    4x minutes config
+    1x vled gate
+    1x vled flipflop
+    2x vcc
+    2x gnd
+
+    = 16
+
+bottom-right:
+    7x minutes units
+    6x seconds tens
+    3x gnd
+
+    = 16
+
+
+TSW-108-12-T-S-RA or equivalent on mainboard, total length 26.16mm, so 24.66mm rising below board
+mouser: 200-TSW10812TSRA
+https://nl.mouser.com/datasheet/2/527/tsw_th-1348913.pdf
+
+SSQ-108-01-T-D or equivalent on opposite end, adds 2.67mm to length, so 27.33mm minimum between boards; round up to 27.5mm
+200-SSQ10801TD
+https://nl.mouser.com/datasheet/2/527/ssq_th-1370157.pdf
+
+power supply is 23mm high, leaving 4.5mm for 3D printed structure between power supply and back of mainboard.
+https://nl.mouser.com/datasheet/2/468/RAC20_K-1661844.pdf
+
