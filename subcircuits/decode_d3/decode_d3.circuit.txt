@@ -1,19 +1,18 @@
-columns 1x1.0R 1x1.5R 1x1R 1x1.5R 1x1R 1x1.5R 1x1R 1x5.5R 1x5.5R 3x1.5R 1x5.5R 1x5.5R 9
-rows 1x2.7C 1x11.7C 1x2.7C 1
+columns 1x1.0R 1x1.5R 1x1R 1x1.5R 1x1R 1x1.5R 1x1R 1x5.5R 1x5.5R 1x1.5R 1x5.5R 1x5.5R 9
+rows 1x11.7C 1x2.7C 1x2.7C 0
 
 fwd_in d3bp
 fwd_in d3bn
 fwd_in d3ap
 fwd_in d3an
 
-prim tie  f1    0   10 0   A=d3bp Y=ADEGn
+prim nand2 B    90  7  0   Y=B B=d3bn A=d3an
+text B          0   7  0   2.6 1.2 1.0 0.0
+prim nand1 Bn   90 10  0   Y=Bn A=B
+text B\         0  10  0   2.6 1.2 1.0 0.0
 
-prim nand2 B    90  7  1   Y=B A=d3bn B=d3an
-text B          0   7  1   2.6 1.2 1.0 0.0
-prim nand1 Bn   90 12  1   Y=Bn A=B
-text B\         0  12  1   2.6 1.2 1.0 0.0
-
-prim tie  f2    0   10 2   A=d3ap Y=Cn
+prim tie  f1    0   7  1   A=d3bp Y=ADEGn
+prim tie  f2    0   7  2   A=d3ap Y=Cn
 
 fwd_out Bn
 fwd_out Cn

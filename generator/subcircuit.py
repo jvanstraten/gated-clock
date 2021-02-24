@@ -222,8 +222,8 @@ class RoutingColumn:
         # and fourth tuple element.
         def get_bridge_r(y):
             sx, sy = get_scale((self._x, y))
-            rx = int(round(sx * from_mm(0.5))) # <-- desired global X radius
-            ry = int(round(sy * from_mm(0.8))) # <-- desired global Y radius
+            rx = int(round(sx * from_mm(0.4))) # <-- desired global X radius
+            ry = int(round(sy * from_mm(0.6))) # <-- desired global Y radius
             return rx, ry
         all_y_targets = [y for (_, y), _ in self._targets]
         min_y = min(all_y_targets)
@@ -318,8 +318,8 @@ class RoutingColumn:
             def get_r(self):
                 if self._r is None:
                     sx, sy = get_scale((self._x, self._y))
-                    rx = int(round(sx * from_mm(0.6))) # <-- desired global X radius
-                    ry = int(round(sy * from_mm(0.6))) # <-- desired global Y radius
+                    rx = int(round(sx * from_mm(0.5))) # <-- desired global X radius
+                    ry = int(round(sy * from_mm(0.5))) # <-- desired global Y radius
                     self._r = (rx, ry)
                 return self._r
 

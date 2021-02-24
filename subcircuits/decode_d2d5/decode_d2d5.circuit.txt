@@ -32,23 +32,23 @@ fwd_in d2n~3
 fwd_in d2n~4
 fwd_in d2n~5
 
-prim nand3 f0   90  7  1   Y=f0 A=d5cn~1 B=d5an~1 C=d2n~1
+prim nand3 f0   90  7  1   Y=f0 C=d5cn~1 B=d5an~1 A=d2n~1
 text 0\         0   7  1   2.6 1.2 1.0 0.0
-prim nand3 f1   90  7  7   Y=f1  A=d5cn~2 B=d5an~2 C=d2p~1
+prim nand3 f1   90  7  7   Y=f1  C=d5cn~2 B=d5an~2 A=d2p~1
 text 1\         0   7  7   2.6 1.2 1.0 0.0
-prim nand3 f2   90  7 13   Y=f2  A=d5bn~1 B=d5ap~1 C=d2n~2
+prim nand3 f2   90  7 13   Y=f2  C=d5bn~1 B=d5ap~1 A=d2n~2
 text 2\         0   7 13   2.6 1.2 1.0 0.0
-prim nand2 f23  90  7 19   Y=f23 A=d5bn~2 B=d5ap~2
+prim nand2 f23  90  7 19   Y=f23 B=d5bn~2 A=d5ap~2
 text 23\        0   7 19   2.6 1.2 1.0 0.0
 prim feed d2n*1 90  7 22   A=d2n~3 B=d2n~1*1
 text odd\       0   7 22   2.1 0.4 1.0 0.0
-prim nand3 f4   90  7 25   Y=f4  A=d5bp~1 B=d5ap~3 C=d2p~2
+prim nand3 f4   90  7 25   Y=f4  C=d5bp~1 B=d5ap~3 A=d2p~2
 text 4\         0   7 25   2.6 1.2 1.0 0.0
-prim nand3 f5   90  7 31   Y=f5  A=d5bp~2 B=d5ap~4 C=d2n~4
+prim nand3 f5   90  7 31   Y=f5  C=d5bp~2 B=d5ap~4 A=d2n~4
 text 5\         0   7 31   2.6 1.2 1.0 0.0
-prim nand3 f6   90  7 37   Y=f6  A=d5bp~3 B=d5an~3 C=d2p~3
+prim nand3 f6   90  7 37   Y=f6  C=d5bp~3 B=d5an~3 A=d2p~3
 text 6\         0   7 37   2.6 1.2 1.0 0.0
-prim nand3 f7   90  7 43   Y=f7  A=d5bp~4 B=d5an~4 C=d2n~5
+prim nand3 f7   90  7 43   Y=f7  C=d5bp~4 B=d5an~4 A=d2n~5
 text 7\         0   7 43   2.6 1.2 1.0 0.0
 
 prim nand3 Gn   90 12  1   Y=Gn A=f7 B=f1 C=f0

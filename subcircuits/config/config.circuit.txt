@@ -1,5 +1,5 @@
 columns 4x1.5C 1x6.5C 4x1.5C 1x6.5C 2x1.5C 0
-rows 1x7.0T 1x0.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 2x1.5C 1x6.5C 2x1.5C 5
+rows 1x7.0T 1x0.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 2x1.5C 1x6.5C 2x1.5C 1x12.75B 4.9473684210526315
 
 in      ClkIn_n GTL     0   1
 out     ClkOut  GTL     11  1

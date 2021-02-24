@@ -1,5 +1,5 @@
 columns 1x1.0R 1x1.5R 1x1R 1x1.5R 1x1R 1x1.5R 1x1R 1x5.5R 1x5.5R 3x1.5R 1x5.5R 1x5.5R 9
-rows 1x2.5T 43x1.715T 19
+rows 1x2.5T 43x2.0T 18.5
 
 fwd_in d3bp~1
 fwd_in d3bp~2
@@ -22,19 +22,19 @@ fwd_in d2n~3
 fwd_in d2n~4
 fwd_in d2n~5
 
-prim nand3 f0   90  7  1   Y=f0  A=d3bn~1 B=d3an~1 C=d2n~1
+prim nand3 f0   90  7  1   Y=f0  C=d3bn~1 B=d3an~1 A=d2n~1
 text 0\         0   7  1   2.6 1.2 1.0 0.0
-prim nand3 f1   90  7  7   Y=f1  A=d3bn~2 B=d3an~2 C=d2n~2
+prim nand3 f1   90  7  7   Y=f1  C=d3bn~2 B=d3an~2 A=d2n~2
 text 1\         0   7  7   2.6 1.2 1.0 0.0
-prim nand2 f2   90  7 13   Y=f2  A=d3ap~1 B=d2n~3
+prim nand2 f2   90  7 13   Y=f2  B=d3ap~1 A=d2n~3
 text 2\         0   7 13   2.6 1.2 1.0 0.0
-prim nand2 f3   90  7 19   Y=f3  A=d3ap~2 B=d2p~1
+prim nand2 f3   90  7 19   Y=f3  B=d3ap~2 A=d2p~1
 text 3\         0   7 19   2.6 1.2 1.0 0.0
 prim feed d2n*1 90  7 24.5 A=d2n~4 B=d2n~4*1
 text 135\       0   7 24.5 2.3 0.4 1.0 0.0
-prim nand2 f4   90  7 30   Y=f4  A=d3bp~1 B=d2n~5
+prim nand2 f4   90  7 30   Y=f4  B=d3bp~1 A=d2n~5
 text 4\         0   7 30   2.6 1.2 1.0 0.0
-prim nand2 f5   90  7 36   Y=f5  A=d3bp~2 B=d2p~2
+prim nand2 f5   90  7 36   Y=f5  B=d3bp~2 A=d2p~2
 text 5\         0   7 36   2.6 1.2 1.0 0.0
 
 prim nand2 Gn   90 12  1   Y=Gn  A=f1 B=f0

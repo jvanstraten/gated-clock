@@ -1,0 +1,80 @@
+columns 1x1R 1x1.5R 1x1R 1x1.5R 1x1R 1x1.5R 1x1R 1x5.5R 1x5.5R 3x1.5R 1x5.5R 1x5.5R 9
+rows 1x2.5T 43x1.64T 22
+
+fwd_in d5cn~1
+fwd_in d5cn~2
+
+fwd_in d5bp~1
+fwd_in d5bp~2
+fwd_in d5bp~3
+fwd_in d5bp~4
+
+fwd_in d5bn~1
+fwd_in d5bn~2
+
+fwd_in d5ap~1
+fwd_in d5ap~2
+fwd_in d5ap~3
+fwd_in d5ap~4
+
+fwd_in d5an~1
+fwd_in d5an~2
+fwd_in d5an~3
+fwd_in d5an~4
+
+fwd_in d2p~1
+fwd_in d2p~2
+fwd_in d2p~3
+
+fwd_in d2n~1
+fwd_in d2n~2
+fwd_in d2n~3
+fwd_in d2n~4
+fwd_in d2n~5
+
+prim nand3 f0   90  7  1   Y=f0 C=d5cn~1 B=d5an~1 A=d2n~1
+text 0\         0   7  1   2.6 1.2 1.0 0.0
+prim nand3 f1   90  7  7   Y=f1  C=d5cn~2 B=d5an~2 A=d2p~1
+text 1\         0   7  7   2.6 1.2 1.0 0.0
+prim nand3 f2   90  7 13   Y=f2  C=d5bn~1 B=d5ap~1 A=d2n~2
+text 2\         0   7 13   2.6 1.2 1.0 0.0
+prim nand2 f23  90  7 19   Y=f23 B=d5bn~2 A=d5ap~2
+text 23\        0   7 19   2.6 1.2 1.0 0.0
+prim feed d2n*1 90  7 22   A=d2n~3 B=d2n~1*1
+text odd\       0   7 22   2.1 0.4 1.0 0.0
+prim nand3 f4   90  7 25   Y=f4  C=d5bp~1 B=d5ap~3 A=d2p~2
+text 4\         0   7 25   2.6 1.2 1.0 0.0
+prim nand3 f5   90  7 31   Y=f5  C=d5bp~2 B=d5ap~4 A=d2n~4
+text 5\         0   7 31   2.6 1.2 1.0 0.0
+prim nand3 f6   90  7 37   Y=f6  C=d5bp~3 B=d5an~3 A=d2p~3
+text 6\         0   7 37   2.6 1.2 1.0 0.0
+prim nand3 f7   90  7 43   Y=f7  C=d5bp~4 B=d5an~4 A=d2n~5
+text 7\         0   7 43   2.6 1.2 1.0 0.0
+
+prim nand3 Gn   90 12  1   Y=Gn A=f7 B=f1 C=f0
+text G\         0  12  1   2.6 1.2 1.0 0.0
+prim nand1 Cn   90 12  8   Y=Cn A=f2
+text C\         0  12  8   2.6 1.2 1.0 0.0
+prim nand3 Fn   90 12 15   Y=Fn A=f23 B=f7 C=f1
+text F\         0  12 15   2.6 1.2 1.0 0.0
+prim nand2 En   90 12 22   Y=En A=f4 B=d2n~1*1
+text E\         0  12 22   2.6 1.2 1.0 0.0
+prim nand2 An   90 12 29   Y=An A=f4 B=f1
+text A\         0  12 29   2.6 1.2 1.0 0.0
+prim nand2 Bn   90 12 36   Y=Bn A=f6 B=f5
+text B\         0  12 36   2.6 1.2 1.0 0.0
+prim nand3 Dn   90 12 43   Y=Dn A=f1 B=f7 C=f4
+text D\         0  12 43   2.6 1.2 1.0 0.0
+
+fwd_out Gn
+fwd_out Cn
+fwd_out Fn
+fwd_out En
+fwd_out An
+fwd_out Bn
+fwd_out Dn
+
+route               8    d2n~1*1 f0 f2 f5 f6
+route               9    f1
+route              10    f7
+route              11    f23 f4
