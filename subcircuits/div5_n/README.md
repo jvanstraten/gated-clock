@@ -2,7 +2,10 @@ Divide by 5, no output
 ======================
 
 This circuit performs a frequency division by 5. This variant only divides, no
-output pins are provided.
+output pins are provided. Specifically, this circuit is used for the division
+of the incoming 50/60Hz clock from the grid. To make everything line up at the
+top, the outline extends an extra 9.25mm to the left; this bit is manually
+routed in the mainboard primitive.
 
 Circuit:
 

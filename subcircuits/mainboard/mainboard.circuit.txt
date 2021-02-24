@@ -1,0 +1,186 @@
+columns 121x1C 120 # 1mm steps, positive outward
+rows 1001x1C 500 # 1000 steps/360deg, positive clockwise
+
+fwd_in Arn
+fwd_in f50hz
+
+
+# Flipflop chain
+
+subc border ff 0 120 500 Arn=Arn f50hz=f50hz s0p=s0p s0n=s0n s1p=s1p s1n=s1n s2p=s2p s2n=s2n s3n=s3n s4p=s4p s4n=s4n s5p=s5p s5n=s5n s6p=s6p s6n=s6n m0p=m0p m0n=m0n m1p=m1p m1n=m1n m2p=m2p m2n=m2n m3n=m3n m4p=m4p m4n=m4n m5p=m5p m5n=m5n m6p=m6p m6n=m6n h0p=h0p h0n=h0n h1p=h1p h1n=h1n h2p=h2p h2n=h2n h3n=h3n h4p=h4p h4n=h4n h5p=h5p h5n=h5n div2=h5p div5a=h5n div5b=h5n
+
+
+# Seconds, unit digit
+
+subc decode_d2d5 su 180 50 110 d5cn=s3n*1 d5bp=s2p*1 d5bn=s2n*1 d5ap=s1p*1 d5an=s1n*1 d2p=s0p*1 d2n=s0n*1 An=su_An Bn=su_Bn Cn=su_Cn Dn=su_Dn En=su_En Fn=su_Fn Gn=su_Gn
+
+fwd_out su_An
+fwd_out su_Bn
+fwd_out su_Cn
+fwd_out su_Dn
+fwd_out su_En
+fwd_out su_Fn
+fwd_out su_Gn
+
+route  92.5  s0p
+route  91.5  s0n
+route  90.0  s1p
+route  89.0  s1n
+route  87.5  s2p
+route  86.5  s2n
+route  85.0  s3n
+
+shunt  92.5 210.00 s0p 70.5 155.00 s0p*1 GTL
+shunt  91.5 210.50 s0n 69.5 155.50 s0n*1 GTL
+shunt  90.0 211.25 s1p 68.0 156.25 s1p*1 GTL
+shunt  89.0 211.75 s1n 67.0 156.75 s1n*1 GTL
+shunt  87.5 212.50 s2p 65.5 157.50 s2p*1 GTL
+shunt  86.5 213.00 s2n 64.5 158.00 s2n*1 GTL
+shunt  85.0 213.75 s3n 63.0 158.75 s3n*1 GTL
+
+route  70.5  s0p*1
+route  69.5  s0n*1
+route  68.0  s1p*1
+route  67.0  s1n*1
+route  65.5  s2p*1
+route  64.5  s2n*1
+route  63.0  s3n*1
+
+
+# Seconds, tens digit
+
+subc decode_d2d3 st 180 57 350 d3bp=s6p*1 d3bn=s6n*1 d3ap=s5p*1 d3an=s5n*1 d2p=s4p*1 d2n=s4n*1 ADn=st_ADn Bn=st_Bn Cn=st_Cn En=st_En Fn=st_Fn Gn=st_Gn
+
+fwd_out st_ADn
+fwd_out st_Bn
+fwd_out st_Cn
+fwd_out st_En
+fwd_out st_Fn
+fwd_out st_Gn
+
+route  92.5  s4p
+route  91.5  s4n
+route  90.0  s5p
+route  89.0  s5n
+route  87.5  s6p
+route  86.5  s6n
+
+shunt  92.5 406.00 s4p 76.0 385.00 s4p*1 GTL
+shunt  91.5 406.50 s4n 75.0 385.50 s4n*1 GTL
+shunt  90.0 407.25 s5p 73.5 386.25 s5p*1 GTL
+shunt  89.0 407.75 s5n 72.5 386.75 s5n*1 GTL
+shunt  87.5 408.50 s6p 71.0 387.50 s6p*1 GTL
+shunt  86.5 409.00 s6n 70.0 388.00 s6n*1 GTL
+
+route  76.0  s4p*1
+route  75.0  s4n*1
+route  73.5  s5p*1
+route  72.5  s5n*1
+route  71.0  s6p*1
+route  70.0  s6n*1
+
+
+# Minutes, unit digit
+
+subc decode_d2d5 mu 180 57 500 d5cn=m3n*1 d5bp=m2p*1 d5bn=m2n*1 d5ap=m1p*1 d5an=m1n*1 d2p=m0p*1 d2n=m0n*1 An=mu_An Bn=mu_Bn Cn=mu_Cn Dn=mu_Dn En=mu_En Fn=mu_Fn Gn=mu_Gn
+
+fwd_out mu_An
+fwd_out mu_Bn
+fwd_out mu_Cn
+fwd_out mu_Dn
+fwd_out mu_En
+fwd_out mu_Fn
+fwd_out mu_Gn
+
+route  92.5  m0p
+route  91.5  m0n
+route  90.0  m1p
+route  89.0  m1n
+route  87.5  m2p
+route  86.5  m2n
+route  85.0  m3n
+
+shunt  92.5 545.00 m0p 77.5 524.00 m0p*1 GTL
+shunt  91.5 545.50 m0n 76.5 524.50 m0n*1 GTL
+shunt  90.0 546.25 m1p 75.0 525.25 m1p*1 GTL
+shunt  89.0 546.75 m1n 74.0 525.75 m1n*1 GTL
+shunt  87.5 547.50 m2p 72.5 526.50 m2p*1 GTL
+shunt  86.5 548.00 m2n 71.5 527.00 m2n*1 GTL
+shunt  85.0 548.75 m3n 70.0 527.75 m3n*1 GTL
+
+route  77.5  m0p*1
+route  76.5  m0n*1
+route  75.0  m1p*1
+route  74.0  m1n*1
+route  72.5  m2p*1
+route  71.5  m2n*1
+route  70.0  m3n*1
+
+
+# Minutes, tens digit
+
+subc decode_d2d3 mt 180 57 650 d3bp=m6p*1 d3bn=m6n*1 d3ap=m5p*1 d3an=m5n*1 d2p=m4p*1 d2n=m4n*1 ADn=mt_ADn Bn=mt_Bn Cn=mt_Cn En=mt_En Fn=mt_Fn Gn=mt_Gn
+
+fwd_out mt_ADn
+fwd_out mt_Bn
+fwd_out mt_Cn
+fwd_out mt_En
+fwd_out mt_Fn
+fwd_out mt_Gn
+
+route  92.5  m4p
+route  91.5  m4n
+route  90.0  m5p
+route  89.0  m5n
+route  87.5  m6p
+route  86.5  m6n
+
+shunt  92.5 686.00 m4p 76.0 665.00 m4p*1 GTL
+shunt  91.5 686.50 m4n 75.0 665.50 m4n*1 GTL
+shunt  90.0 687.25 m5p 73.5 666.25 m5p*1 GTL
+shunt  89.0 687.75 m5n 72.5 666.75 m5n*1 GTL
+shunt  87.5 688.50 m6p 71.0 667.50 m6p*1 GTL
+shunt  86.5 689.00 m6n 70.0 668.00 m6n*1 GTL
+
+route  76.0  m4p*1
+route  75.0  m4n*1
+route  73.5  m5p*1
+route  72.5  m5n*1
+route  71.0  m6p*1
+route  70.0  m6n*1
+
+
+# Hours, unit digit
+
+subc decode_d2d5 hu 180 50 930 d5cn=h3n d5bp=h2p d5bn=h2n d5ap=h1p d5an=h1n d2p=h0p d2n=h0n An=hu_An Bn=hu_Bn Cn=hu_Cn Dn=hu_Dn En=hu_En Fn=hu_Fn Gn=hu_Gn
+
+fwd_out hu_An
+fwd_out hu_Bn
+fwd_out hu_Cn
+fwd_out hu_Dn
+fwd_out hu_En
+fwd_out hu_Fn
+fwd_out hu_Gn
+
+route  70.5  h0p
+route  69.5  h0n
+route  68.0  h1p
+route  67.0  h1n
+route  65.5  h2p
+route  64.5  h2n
+route  63.0  h3n
+
+
+# Hours, tens digit
+
+subc decode_d3 ht 180 50 830 d3bp=h5p d3bn=h5n d3ap=h4p d3an=h4n ADEGn=ht_ADEGn Bn=ht_Bn Cn=ht_Cn
+
+fwd_out ht_ADEGn
+fwd_out ht_Bn
+fwd_out ht_Cn
+
+route  83.0  h4p
+route  82.0  h4n
+route  80.5  h5p
+route  79.5  h5n
+

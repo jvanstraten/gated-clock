@@ -1,5 +1,6 @@
 columns 3x1.5C 1x9.5C 2x1.5C 1x9.5C 0
-rows 1x0.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 4
+rows 1x0.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 3.9473684210526315
+#                                                               ^-- =4.5/4.75. Fixes off-by-0.25mm. Don't question it.
 
 in      Clk    GBL  1   0
 in      ArnA   GTL  2   0

@@ -5,6 +5,7 @@ from pin_map import Pins, PinMap
 from netlist import Netlist
 from primitive import get_primitive
 from text import Label
+import config
 
 class GridDimension:
     """Represents one of the two dimensions of the table grid."""
@@ -169,6 +170,26 @@ class RoutingColumn:
 
     def generate(self, pcb, transformer, translate, rotate):
         if len(self._targets) < 2:
+            return
+
+        if config.LAYOUT_ONLY:
+            min_y = self._targets[0][0][1]
+            max_y = min_y
+            for coord, _ in self._targets:
+                path = [
+                    (coord[0], coord[1]),
+                    (self._x, coord[1])
+                ]
+                path = transformer.path_to_global(path, translate, rotate, True)
+                pcb.add_trace('GTO', from_mm(0.2), *path)
+                min_y = min(min_y, coord[1])
+                max_y = max(max_y, coord[1])
+            path = [
+                (self._x, min_y),
+                (self._x, max_y)
+            ]
+            path = transformer.path_to_global(path, translate, rotate, True)
+            pcb.add_trace('GTO', from_mm(0.2), *path)
             return
 
         def glob(coord):
@@ -627,6 +648,7 @@ class Subcircuit:
         self._net_ties = []
         self._instances = []
         self._routers = []
+        self._shunters = []
         self._outlines = []
         self._labels = []
         forwarded_pins = []
@@ -686,6 +708,17 @@ class Subcircuit:
 
                 if args[0] == 'route':
                     self._routers.append((cols.convert(args[1]), ['.{}'.format(x) for x in args[2:]]))
+                    continue
+
+                if args[0] == 'shunt':
+                    coord1 = (cols.convert(args[1]), rows.convert(args[2]))
+                    net1 = '.{}'.format(args[3])
+                    coord2 = (cols.convert(args[4]), rows.convert(args[5]))
+                    net2 = '.{}'.format(args[6])
+                    layer = args[7]
+                    self._shunters.append((coord1, coord2, layer))
+                    self._net_insns.append((net1, layer, (0, 0), coord1, 0, 'user'))
+                    self._net_insns.append((net2, layer, (0, 0), coord2, 0, 'user'))
                     continue
 
                 if args[0] in 'outline':
@@ -891,6 +924,19 @@ class Subcircuit:
                     router.register(name, router_x, coord, layer)
         for router in routers:
             router.generate(pcb, transformer, translate, rotate)
+        for (x1, y1), (x2, y2), layer in self._shunters:
+            path = []
+            for i in range(41):
+                fw = i / 40
+                fy = 0.5 - math.cos(fw * math.pi) / 2
+                fx = 0.5 - math.cos(fy * math.pi) / 2
+                path.append((
+                    int(round(x1 + fx * (x2 - x1))),
+                    int(round(y1 + fy * (y2 - y1)))
+                ))
+            path = transformer.path_to_global(path, translate, rotate, True)
+            pcb.add_trace('GTO', from_mm(0.2), *path)
+            pcb.add_trace(layer, from_mm(0.2), *path)
 
         # Add labels.
         for label in self._labels:

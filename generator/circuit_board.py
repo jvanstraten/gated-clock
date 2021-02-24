@@ -5,6 +5,7 @@ from paths import Paths
 from acrylic import LaseredAcrylic
 import gerbertools
 import sys
+import config
 
 class Region:
     """Represents a filled region."""
@@ -355,6 +356,10 @@ class CircuitBoard:
                 'Mill'
             ]
         }
+        if config.LAYOUT_ONLY:
+            self._ignore = {'GTS', 'GTL', 'G1', 'G2', 'GBL', 'GBS', 'GBO'}
+        else:
+            self._ignore = set()
         self._drill = DrillLayer()
         self._netlist = Netlist()
         self._parts = []
@@ -371,6 +376,8 @@ class CircuitBoard:
 
     def add_trace(self, layer, thickness, *path):
         """Adds a trace. Dimensions are integer nanometers."""
+        if layer in self._ignore:
+            return
         self._layers[layer].add_path(thickness, *path)
 
     def add_flash(self, layer, aperture, coord):
@@ -378,12 +385,16 @@ class CircuitBoard:
         tuple of coords that form a path relative to the flash coordinate, or
         a single integer for a circular flash, in which case it is the
         diameter."""
+        if layer in self._ignore:
+            return
         self._layers[layer].add_path(aperture, coord)
 
     def add_flashed_region(self, layer, *path):
         """Adds a pad. Dimensions are integer nanometers. Path specifies the
         absolute referenced path to is to be flashed. The actual flash will
         be at the mean position."""
+        if layer in self._ignore:
+            return
         mx = 0
         my = 0
         for coord in path:
@@ -400,18 +411,24 @@ class CircuitBoard:
         dark, False means clear. Regions are written to the Gerber file before
         traces and flashes, so a clear region won't remove those, but clear
         regions will make holes in previously added dark regions."""
+        if layer in self._ignore:
+            return
         assert path[0] == path[-1]
         self._layers[layer].add_region(polarity, *path)
 
     def prefix_region(self, layer, polarity, *path):
         """Same as add_region(), but places the region at the beginning of the
         region list."""
+        if layer in self._ignore:
+            return
         assert path[0] == path[-1]
         self._layers[layer].prefix_region(polarity, *path)
 
     def add_region_no_cutout(self, layer, polarity, *path):
         """Same as add_region(), but adds a region that the polygon pour logic
         ignores, allowing connections to be made to the polygon pour."""
+        if layer in self._ignore:
+            return
         assert path[0] == path[-1]
         self._layers[layer].add_region_no_cutout(polarity, *path)
 

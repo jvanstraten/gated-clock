@@ -1,5 +1,5 @@
 columns 3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C 0
-rows 1x7.0T 1x0.0C 1x35C 2x1.5C 2
+rows 1x6.5T 1x0.0C 1x35C 1x1.0B 1x1.5B 2
 
 fwd_in  ClkIn
 fwd_in  Arn~1
@@ -16,4 +16,4 @@ route               2    d2p*1
 route               7    d2p
 route               8    d2n
 
-outline 0 0 -1 -1 2 3 Highlight
+outline 0 0 -1 -2 2 3 Highlight

@@ -1,5 +1,5 @@
 columns   3x1.5C 1x9.5C 1x1.5C 1x9.5C 3x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C   0
-rows 1x7.0T 1x0.0C 1x35C 3x1.5C 2
+rows 1x6.5T 1x0.0C 1x35C 1x1.0B 2x1.5B 2
 
 fwd_in  ClkIn~1
 fwd_in  ClkIn~2
@@ -15,7 +15,6 @@ out     d5ap    GBL  7   5
 out     d5an    GBL  8   5
 out     d5bp    GBL 17   5
 out     d5bn    GBL 18   5
-out     d5cp    GBL 27   5
 out     d5cn    GBL 28   5
 
 subc dffn  A    0    0   2 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 Dn=fb Q=d5ap Qn=d5an
@@ -34,4 +33,4 @@ route               18    d5bn
 route               27    d5cp
 route               28    d5cn
 
-outline 0 0 -1 -1 2 3 Highlight
+outline 0 0 -1 -1.33333 2 3 Highlight

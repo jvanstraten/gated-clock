@@ -1,5 +1,5 @@
-columns   3x1.5C 1x9.5C 1x1.5C 1x9.5C 3x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C   0
-rows 1x7.0T 1x0.0C 1x35C 3x1.5C 2
+columns   1x8.5L  9x0.0C  3x1.5C 1x9.5C 1x1.5C 1x9.5C 3x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 2x1.5C   10
+rows 1x6.5T 1x0.0C 1x35C 1x1.0B 2x1.5B 2
 
 fwd_in  ClkIn~1
 fwd_in  ClkIn~2
@@ -12,19 +12,19 @@ fwd_in  Arn~5
 fwd_in  Arn~6
 fwd_out ClkOut
 
-subc dffn  A    0    0   2 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 Dn=fb Q=d5ap Qn=d5an
-subc dffn  B    0   10   2 Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=d5an Q=d5bp Qn=d5bn
-subc dffn  C    0   20   2 Clk=ClkIn~3 ArnA=Arn~5 ArnB=Arn~6 Dn=d5bn Q=d5cp Qn=d5cn
-prim tie   f1   0   28   1 A=d5cn Y=ClkOut
-prim feed  f2   0   11   3 A=d5bn B=d5bn*1
-prim nand2 fb  -90   5   3 Y=fb A=d5bn*1 B=d5cn
+subc dffn  A    0   10   2 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 Dn=fb Q=d5ap Qn=d5an
+subc dffn  B    0   20   2 Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=d5an Q=d5bp Qn=d5bn
+subc dffn  C    0   30   2 Clk=ClkIn~3 ArnA=Arn~5 ArnB=Arn~6 Dn=d5bn Q=d5cp Qn=d5cn
+prim tie   f1   0   38   1 A=d5cn Y=ClkOut
+prim feed  f2   0   21   3 A=d5bn B=d5bn*1
+prim nand2 fb  -90  15   3 Y=fb A=d5bn*1 B=d5cn
 
-route                2    fb
-route                7    d5ap d5bn*1
-route                8    d5an
-route               17    d5bp
-route               18    d5bn
-route               27    d5cp
-route               28    d5cn
+route               12    fb
+route               17    d5ap d5bn*1
+route               18    d5an
+route               27    d5bp
+route               28    d5bn
+route               37    d5cp
+route               38    d5cn
 
-outline 0 0 -1 -1 2 3 Highlight
+outline 0 0 -1 -1.33333 2 3 Highlight

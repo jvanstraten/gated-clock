@@ -10,7 +10,7 @@ mainboard = CircuitBoard(mask_expansion=0.05)
 t = LinearTransformer()
 get_primitive('mainboard').instantiate(mainboard, t, (0, 0), 0, 'mainboard', {})
 t = CircularTransformer((0, 0), from_mm(159.15), 0)
-get_subcircuit('border').instantiate(mainboard, t, (from_mm(500), from_mm(0.85)), math.pi/2, 'border', {})
+get_subcircuit('mainboard').instantiate(mainboard, t, (from_mm(500), from_mm(0.85)), math.pi/2, '', {})
 
 print('*** pouring inner layer polygons...')
 mainboard.add_poly_pours()
@@ -34,11 +34,10 @@ front_gbr.add_substrate_layer(3)
 front_gbr.add_mask_layer('', '.GM2')
 
 highlight_gbr = gerbertools.CircuitBoard('output/mainboard.Highlight', '.GM1', '')
-highlight_gbr.add_substrate_layer(3)
+highlight_gbr.add_substrate_layer(5)
 highlight_gbr.add_mask_layer('', '.GM2')
 
 print('*** rendering to SVG...')
-
 with open('output/mainboard.normal.svg', 'w') as f:
     f.write('<svg viewBox="0 0 410 410" width="5125" height="5125" xmlns="http://www.w3.org/2000/svg">\n')
     f.write('<g transform="translate(205 205) scale(1 -1) " filter="drop-shadow(0 0 1 rgba(0, 0, 0, 0.2))">\n')
@@ -74,6 +73,12 @@ with open('output/mainboard.normal.svg', 'w') as f:
 
 #mainboard_gbr.write_svg('output/mainboard.normal.svg', False, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
 #mainboard_gbr.write_svg('output/mainboard.flipped.svg', True, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
+
+print('*** rendering to OBJ...')
+mainboard_gbr.write_obj('output/mainboard.PCB.obj')
+display_gbr.write_obj('output/mainboard.Display.obj')
+front_gbr.write_obj('output/mainboard.Front.obj')
+highlight_gbr.write_obj('output/mainboard.Highlight.obj')
 
 print('*** running physical DRC...')
 nets = []

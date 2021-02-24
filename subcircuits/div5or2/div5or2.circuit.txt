@@ -1,6 +1,6 @@
 columns   3x1.5C 1x6.5C 5x1.5C 1x3.5C 5x1.5C  5x0C  3x1.5C 1x9.5C 1x9.5C 4x1.5C  1x0C  3x1.5C 1x9.5C 2x1.5C 1x9.5C 3x1.5C   0
-rows 1x7.0T 1x0.0C 1x35C 1x1.0B 1x1.5B 1x1.5B 1x1.0B 1x1.5B 1x2.5B 1x1.5B 1x2.5B 1x1.5B 1x1.5B 2
-#    0         1      2       3      4      5      6      7      8      9     10     11     12
+rows 1x6.5T 1x0.0C 1x35C 1x1.0B 1x1.5B 1x1.5B 1x1.0B 1x1.5B 1x2.5B 1x1.5B 1x1.5B 2
+#    0         1      2       3      4      5      6      7      8      9     10
 
 fwd_in  ClkIn~1
 fwd_in  ClkIn~2
@@ -11,15 +11,16 @@ fwd_in  Arn~3
 fwd_in  Arn~4
 fwd_in  Arn~5
 fwd_in  Arn~6
-out     d5ap        GBL 13  12
-out     d5an        GBL 14  12
-out     d5bp        GBL 27  12
-out     d5bn        GBL 28  12
-out     d5cp        GBL 37  12
-out     d5cn        GBL 38  12
+
+in      Div5A       GTL 5.4 10
+in      Div2        GTL 12  10
+out     d5ap        GBL 13  10
+out     d5an        GBL 14  10
+in      Div5B       GTL 26  10
+out     d5bp        GBL 27  10
+out     d5bn        GBL 28  10
+out     d5cn        GBL 38  10
 out     ClkOut      GTL 39  1
-in      Div5        GTL 39  10
-in      Div2        GTL 39  11
 
 subc dffn2 A        0    0   2 Clk=ClkIn~1 ArnA=Arn~1 ArnB=Arn~2 DnA=daan DnB=dabn Q=d5ap Qn=d5an
 subc dffn  B        0   20   2 Clk=ClkIn~2 ArnA=Arn~3 ArnB=Arn~4 Dn=dbn Q=d5bp Qn=d5bn
@@ -30,17 +31,16 @@ prim feed  f5       0   23   7 A=d5an B=d5an*1
 prim feed  f4       0   23   8 A=d5bn B=d5bn*1
 prim feed  f3       0   23   9 A=d5cn*1 B=d5cn*2
 prim feed  f6       0   34   9 A=d5cn B=d5cn*1
-prim feed  f2       0   23  10 A=Div5 B=Div5*1
 
-prim nand3 daan     -90  3   6 Y=daan A=d5bn*1 B=d5cn*2 C=Div5*1
+prim nand3 daan     -90  3   6 Y=daan A=d5bn*1 B=d5cn*2 C=Div5A
 prim nand2 dabn     -90  9   3 Y=dabn A=d5an B=Div2
-prim nand2 dbn      -90 24   3 Y=dbn A=Div5 B=d5ap*1
+prim nand2 dbn      -90 24   3 Y=dbn A=Div5B B=d5ap*1
 prim nand3 con      90  33   6 Y=con A=d5cn*1 B=d5an*1 C=d5bn
 prim nand1 co       90  36   6 Y=ClkOut A=con
 
 route                    1    daan
 route                    2    dabn
-route                    5.4  Div5*1
+route                    5.4  Div5A
 route                    6.5  d5cn*2
 route                    7.6  d5bn*1
 route                   12    Div2
@@ -48,7 +48,7 @@ route                   13    d5ap
 route                   14    d5an
 route                   22    dbn
 route                   25    d5ap*1
-route                   26    Div5
+route                   26    Div5B
 route                   27    d5bp
 route                   28    d5bn
 route                   31    d5an*1
@@ -58,4 +58,4 @@ route                   37    d5cp
 route                   38    d5cn
 route                   39    ClkOut
 
-outline 0 0 -1 -1 2 3 Highlight
+outline 0 0 -1 -2 2 3 Highlight
