@@ -1,2 +1,2 @@
 
-LAYOUT_ONLY = True
+LAYOUT_ONLY = False
