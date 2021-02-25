@@ -43,30 +43,31 @@ with open('output/mainboard.normal.svg', 'w') as f:
     f.write('<g transform="translate(205 205) scale(1 -1) " filter="drop-shadow(0 0 1 rgba(0, 0, 0, 0.2))">\n')
     f.write(mainboard_gbr.get_svg(False, gerbertools.color.mask_white(), gerbertools.color.silk_black(), id_prefix='mainboard'))
 
-    f.write('<g id="top-parts">\n')
-    for part in mainboard.get_parts():
-        if part.get_layer() == 'Ctop':
-            f.write('<text transform="translate({} {}) scale(1 -1) rotate({})" dominant-baseline="middle" text-anchor="middle" font-size="0.5" fill="blue">{}</text>\n'.format(
-                to_mm(part.get_coord()[0]),
-                to_mm(part.get_coord()[1]),
-                -part.get_rotation() * 180 / math.pi,
-                part.get_name()))
-    f.write('</g>\n')
-    f.write('<g id="top-nets">\n')
-    for net in mainboard.get_netlist().iter_physical():
-        for layer, coord, mode in net.iter_points():
-            if layer == 'GTL':
-                f.write('<text transform="translate({} {}) scale(1 -1)" dominant-baseline="middle" text-anchor="middle" font-size="0.3" fill="red">{}</text>\n'.format(
-                    to_mm(coord[0]),
-                    to_mm(coord[1]),
-                    net.get_name()))
-    f.write('</g>\n')
+    #f.write('<g id="top-parts">\n')
+    #for part in mainboard.get_parts():
+        #if part.get_layer() == 'Ctop':
+            #f.write('<text transform="translate({} {}) scale(1 -1) rotate({})" dominant-baseline="middle" text-anchor="middle" font-size="0.5" fill="blue">{}</text>\n'.format(
+                #to_mm(part.get_coord()[0]),
+                #to_mm(part.get_coord()[1]),
+                #-part.get_rotation() * 180 / math.pi,
+                #part.get_name()))
+    #f.write('</g>\n')
+    #f.write('<g id="top-nets">\n')
+    #for net in mainboard.get_netlist().iter_physical():
+        #for layer, coord, mode in net.iter_points():
+            #if layer == 'GTL':
+                #f.write('<text transform="translate({} {}) scale(1 -1)" dominant-baseline="middle" text-anchor="middle" font-size="0.3" fill="red">{}</text>\n'.format(
+                    #to_mm(coord[0]),
+                    #to_mm(coord[1]),
+                    #net.get_name()))
+    #f.write('</g>\n')
+
     f.write('</g>\n')
     f.write('<g transform="translate(205 205) scale(1 -1) " filter="drop-shadow(0 0 3 rgba(0, 0, 0, 0.5))">\n')
     f.write(display_gbr.get_svg(False, soldermask=(0, 0, 0, 0), silkscreen=(0.7, 0.7, 0.7, 0.8), substrate=(0.1, 0.1, 0.1, 0.95), id_prefix='display'))
     f.write(highlight_gbr.get_svg(False, soldermask=(0, 0, 0, 0), silkscreen=(0.7, 0.7, 0.7, 0.8), substrate=(0.95, 0.95, 0.95, 0.95), id_prefix='highlight'))
     f.write('</g>\n')
-    f.write('<g transform="translate(205 205) scale(1 -1) " filter="drop-shadow(0 0 3 rgba(0, 0, 0, 0.5))">\n')
+    f.write('<g transform="translate(205 205) scale(1 -1) " filter="drop-shadow(0 0 3 rgba(0, 0, 0, 0.5))" style="stroke: white; stroke-width: 0.2">\n')
     f.write(front_gbr.get_svg(False, soldermask=(0, 0, 0, 0), silkscreen=(0.7, 0.7, 0.7, 0.8), substrate=(0.6, 0.6, 0.6, 0.05), id_prefix='front'))
     f.write('</g>\n')
     f.write('</svg>\n')
