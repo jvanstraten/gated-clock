@@ -1,4 +1,4 @@
-mouser TODO
+mouser 80-C0603C222K4RECAUT
 model 0603C
 value 2200pF
-voltage TODO
+voltage 16V

@@ -1,4 +1,4 @@
-mouser TODO
+mouser 810-CGA3E1X7R1C105AC
 model 0603C
 value 1uF
-voltage TODO
+voltage 16V

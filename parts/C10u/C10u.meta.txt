@@ -1,0 +1,4 @@
+mouser 187-CL31B106MOHNNNE
+model 1206C
+value 10uF
+voltage 16V

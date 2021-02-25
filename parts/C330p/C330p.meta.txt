@@ -1,4 +1,4 @@
-mouser TODO
+mouser 77-VJ0603Y331KXJPBC
 model 0603C
 value 330pF
-voltage TODO
+voltage 16V
