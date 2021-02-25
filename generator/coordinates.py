@@ -151,6 +151,18 @@ class Transformer:
             raise ValueError('a part is being warped!')
         return self._to_global_int(comp_coord, translate, rotate, warpable)
 
+    def get_scale(self, coord, rotate=0.0):
+        """Returns the scale factor in the X and Y direction in actual length
+        in the global coordinate system per unit length in the local coordinate
+        system."""
+        delta = from_mm(1)
+        origin = self._to_global_int((0, 0), coord, rotate, True)[0]
+        delta_x = self._to_global_int((delta, 0), coord, rotate, True)[0]
+        delta_y = self._to_global_int((0, delta), coord, rotate, True)[0]
+        scale_x = math.hypot(origin[0] - delta_x[0], origin[1] - delta_x[1]) / delta
+        scale_y = math.hypot(origin[0] - delta_y[0], origin[1] - delta_y[1]) / delta
+        return scale_x, scale_y
+
     def to_local(self, global_coord, near=(0, 0)):
         """Converts a global coordinate to its corresponding local coordinate.
         If multiple points are possible, choose the one nearest to near."""

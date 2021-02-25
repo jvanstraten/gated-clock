@@ -949,35 +949,54 @@ class Subcircuit:
                 continue
             plate = plates.get(plate)
 
-            x1 -= expand - corner
-            y1 -= expand - corner
-            x2 += expand - corner
-            y2 += expand - corner
+            x1 -= expand
+            y1 -= expand
+            x2 += expand
+            y2 += expand
+
+            def compute_corner_radius(x, y):
+                scale_x, scale_y = transformer.get_scale((x, y))
+                return int(round(corner / scale_x)), int(round(corner / scale_y))
 
             path = []
-            def add(theta, x, y):
+            def add(theta, x, y, corner_x, corner_y):
                 path.append((
-                    int(round(math.cos(theta) * corner)) + x,
-                    int(round(math.sin(theta) * corner)) + y
+                    int(round(math.cos(theta) * corner_x)) + x,
+                    int(round(math.sin(theta) * corner_y)) + y
                 ))
+
             x = x2
             y = y2
+            corner_x, corner_y = compute_corner_radius(x, y)
+            center_x = x - corner_x
+            center_y = y - corner_y
             for i in range(101):
-                add(i / 50 * math.pi, x, y)
+                add(i / 50 * math.pi, center_x, center_y, corner_x, corner_y)
                 if i == 25:
                     x = x1
-                    add(i / 50 * math.pi, x, y)
+                    corner_x, corner_y = compute_corner_radius(x, y)
+                    center_x = x + corner_x
+                    center_y = y - corner_y
+                    add(i / 50 * math.pi, center_x, center_y, corner_x, corner_y)
                 elif i == 50:
                     y = y1
-                    add(i / 50 * math.pi, x, y)
+                    corner_x, corner_y = compute_corner_radius(x, y)
+                    center_x = x + corner_x
+                    center_y = y + corner_y
+                    add(i / 50 * math.pi, center_x, center_y, corner_x, corner_y)
                 elif i == 75:
                     x = x2
-                    add(i / 50 * math.pi, x, y)
+                    corner_x, corner_y = compute_corner_radius(x, y)
+                    center_x = x - corner_x
+                    center_y = y + corner_y
+                    add(i / 50 * math.pi, center_x, center_y, corner_x, corner_y)
                 elif i == 100:
                     y = y2
-                    add(i / 50 * math.pi, x, y)
+                    corner_x, corner_y = compute_corner_radius(x, y)
+                    center_x = x - corner_x
+                    center_y = y - corner_y
+                    add(i / 50 * math.pi, center_x, center_y, corner_x, corner_y)
             assert path[0] == path[-1]
-
             plate.add_cut(*transformer.path_to_global(path, translate, rotate, True))
 
 
