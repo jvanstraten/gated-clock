@@ -8,7 +8,7 @@ import math
 
 mainboard = CircuitBoard(mask_expansion=0.05)
 t = LinearTransformer()
-get_primitive('mainboard').instantiate(mainboard, t, (0, 0), 0, 'mainboard', {})
+get_primitive('mainboard').instantiate(mainboard, t, (0, 0), 0, '', {})
 t = CircularTransformer((0, 0), from_mm(159.15), 0)
 get_subcircuit('mainboard').instantiate(mainboard, t, (from_mm(500), from_mm(0.85)), math.pi/2, '', {})
 
@@ -52,15 +52,15 @@ with open('output/mainboard.normal.svg', 'w') as f:
                 #-part.get_rotation() * 180 / math.pi,
                 #part.get_name()))
     #f.write('</g>\n')
-    #f.write('<g id="top-nets">\n')
-    #for net in mainboard.get_netlist().iter_physical():
-        #for layer, coord, mode in net.iter_points():
-            #if layer == 'GTL':
-                #f.write('<text transform="translate({} {}) scale(1 -1)" dominant-baseline="middle" text-anchor="middle" font-size="0.3" fill="red">{}</text>\n'.format(
-                    #to_mm(coord[0]),
-                    #to_mm(coord[1]),
-                    #net.get_name()))
-    #f.write('</g>\n')
+    f.write('<g id="top-nets">\n')
+    for net in mainboard.get_netlist().iter_physical():
+        for layer, coord, mode in net.iter_points():
+            if layer == 'GTL':
+                f.write('<text transform="translate({} {}) scale(1 -1)" dominant-baseline="middle" text-anchor="middle" font-size="0.7" fill="red">{}</text>\n'.format(
+                    to_mm(coord[0]),
+                    to_mm(coord[1]),
+                    net.get_name()))
+    f.write('</g>\n')
 
     f.write('</g>\n')
     f.write('<g transform="translate(205 205) scale(1 -1) " filter="drop-shadow(0 0 3 rgba(0, 0, 0, 0.5))">\n')
