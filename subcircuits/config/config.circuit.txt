@@ -1,5 +1,5 @@
 columns 4x1.5C 1x6.5C 4x1.5C 1x6.5C 2x1.5C 0
-rows 1x7.0T 1x0.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 2x1.5C 1x6.5C 2x1.5C 1x12.75B 4.9473684210526315
+rows 1x7.0T 1x0.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x6.5C 1x3.0C 1x9.5C 1x3.0C 1x9.75B 4.9473684210526315
 
 in      ClkIn_n GTL     0   1
 out     ClkOut  GTL     11  1
@@ -7,20 +7,26 @@ out     ClkOut  GTL     11  1
 prim config_sw S    0   5.5 2   Run=Run     Inc=Isw*1
 
 prim nand3 X        90  4   4   Y=X         A=Ren*1     B=ClkIn_n   C=Run
-text X              0   4   4   2.6 1.2 1.0 0.0
+text X              0   4   4   3.2 1.2 1.0 0.5 0.0
 prim feed f1        0   1.5 5   A=Isw       B=Isw*1
 prim nand2 Y        90  4   6   Y=Y         A=Ien       B=Isw
-text Y              0   4   6   2.6 1.2 1.0 0.0
+text Y              0   4   6   3.4 1.2 1.0 0.5 0.0
 
 prim nand1 C        90  9   4   Y=ClkOut    A=COut_n*1
-text C              0   9   4   2.6 1.2 1.0 0.0
+text C              0   9   4   3.2 1.2 1.0 0.5 0.0
 prim feed f2        0   9   5   A=COut_n    B=COut_n*1
 prim nand3 Cn       90  9   6   Y=COut_n    A=Inc*1     B=Y         C=X
-text C\             0   9   6   2.6 1.2 1.0 0.0
+text C\             0   9   6   3.4 1.2 1.0 0.5 0.0
 prim feed f3        0   9   7   A=Inc       B=Inc*1
 
-prim config_uc uc   0   6.5 9   Ien=Ien     Isw=Isw     Inc=Inc     Ren=Ren
-prim feed f4        0   6.5 11  A=Ren       B=Ren*1
+prim config_uc uc   0   6.5 8   Ien=Ien     Isw=Isw     Inc=Inc     Ren=Ren
+text Auto~inc.\     0   6.5 8   -6.0  2.0 1.0 0.0 0.0
+text Man.~inc.      0   6.5 8   -6.0 -3.0 1.0 0.0 0.0
+text μC~interface   0   6.5 8    0.0  0.0 1.0 0.5 0.5
+text Set~A\         0   6.5 8    6.0  2.0 1.0 1.0 0.0
+text Set~B\         0   6.5 8    6.0 -3.0 1.0 1.0 0.0
+
+prim feed f4        0   6.5 9   A=Ren       B=Ren*1
 
 route               0    ClkIn_n Ren*1
 route               1    Run Isw

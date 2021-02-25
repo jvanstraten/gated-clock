@@ -15,24 +15,24 @@ fwd_in  Qn~2
 prim jumper s1  -90 0   2   A=ClkA B=ClkB Y=Clk
 
 prim nand3  P3  90  4   1   Y=P3*1   A=P1*1   B=P4*1   C=ArnA
-text P3         0   4   1   2.6 1.2 1.0 0.0
+text P3         0   4   1   3.0 1.2 1.0 0.5 0.0
 prim cross f1   0   4   2   A=P1*1   B=P1*2   X=P3*2   Y=P3*1
 prim nand2s P1  90  4   3   Y=P1*2   A=Clk    B=P3*2
-text P1         0   4   3   2.6 1.2 1.0 0.0
+text P1         0   4   3   3.2 1.2 1.0 0.5 0.0
 prim feed  f2   0   4   4   A=P1*3   B=P1*2
 prim feeda f3   90  3.5 5   A=P4*1   B=P4*2
 prim nand3s P2  90  4   5   Y=P2*1   A=P4*2   B=Clk    C=P1*3
-text P2         0   4   5   2.6 1.2 1.0 0.0
+text P2         0   4   5   3.4 1.2 1.0 0.5 0.0
 prim cross f4   0   4   6   A=P4*2   B=P4*3   X=P2*2   Y=P2*1
 prim nand2  P4  90  4   7   Y=P4*3   A=Dn     B=P2*2
-text P4         0   4   7   2.6 1.2 1.0 0.0
+text P4         0   4   7   3.6 1.2 1.0 0.5 0.0
 
 prim ffled LED  0   7   1   A=Q~1
 prim nand3qn Qn 90  7   3   Y=Qn~1   A=Q~2*1  B=P1*2   C=ArnB
-text Q\         0   7   3   2.6 1.2 1.0 0.0
+text Q\         0   7   3   3.2 1.2 1.0 0.5 0.0
 prim cross f5   0   7   4   A=Q~2*1  B=Q~2    X=Qn~2*1 Y=Qn~2
 prim nand2q Q   90  7   5   Y=Q~3    A=P2*1   B=Qn~2*1
-text Q          0   7   5   2.6 1.2 1.0 0.0
+text Q          0   7   5   3.4 1.2 1.0 0.5 0.0
 
 route               1       P4*1
 route               2       Clk
