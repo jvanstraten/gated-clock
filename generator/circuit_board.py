@@ -495,10 +495,10 @@ class CircuitBoard:
             holes = holes + x
 
         outline = outline - holes
-        outline = outline.offset(-clearance)
+        outline = outline.offset(-clearance, True)
 
         for layer_name in ('G1', 'G2'):
-            shape = outline - self._layers[layer_name].get_poly_cutout().offset(clearance)
+            shape = outline - self._layers[layer_name].get_poly_cutout().offset(clearance, True)
             for i in reversed(range(len(shape))):
                 path = shape.get_int(i)
                 path = list(path) + [path[0]]
