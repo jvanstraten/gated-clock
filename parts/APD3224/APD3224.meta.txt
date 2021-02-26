@@ -1,0 +1,5 @@
+mouser 604-APD3224SECKF01
+model APD3224
+color Orange
+wavelength 601nm
+angle 20deg

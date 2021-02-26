@@ -1,0 +1,5 @@
+mouser 625-SMBJ3V3-E3
+model SMB
+value 3V3
+power 600W
+datasheet https://nl.mouser.com/datasheet/2/427/smbj3v3-1768110.pdf
