@@ -1,7 +1,8 @@
 import os
-from coordinates import from_mm
+from coordinates import from_mm, LinearTransformer
 from circuit_board import CircuitBoard
 from pin_map import Pins
+from text import Label
 
 class Primitive:
     """Represents a manually-drawn primitive for PCB composition."""
@@ -17,6 +18,7 @@ class Primitive:
         self._board = CircuitBoard()
         plates = self._board.get_plates()
         self._pins = Pins()
+        self._labels = []
         with open(os.path.join('primitives', name, '{}.blend.txt'.format(name)), 'r') as f:
             layer = None
             aperture = None
@@ -110,6 +112,7 @@ class Primitive:
                     name = args[1]
                     coord = (from_mm(args[2]), from_mm(args[3]))
                     rotation = float(args[4])
+                    scale = float(args[5]) / 1.2
                     if layer in ('Ctop', 'Cbottom'):
                         self._board.add_part(args[1], layer, coord, rotation)
                         continue
@@ -132,6 +135,19 @@ class Primitive:
                             mode = 'passive'
                         self._board.add_net(name, layer, coord, mode)
                         continue
+                    if layer == 'GTO':
+                        Label(
+                            name.replace('~', ' '),
+                            coord,
+                            rotation,
+                            scale,
+                            0.5, 0.5
+                        ).instantiate(
+                            self._board,
+                            LinearTransformer(),
+                            (0, 0),
+                        0)
+                        continue
 
                 if args[0] == 'hole':
                     if plate is not None:
@@ -140,8 +156,6 @@ class Primitive:
                     continue
 
                 if args[0] == 'via':
-                    if plate is not None:
-                        raise ValueError('via not supported for plates')
                     if from_mm(args[3]) > from_mm(0.5):
                         self._board.add_pth_pad((from_mm(args[1]), from_mm(args[2])), from_mm(args[3]), from_mm(args[4]))
                     else:

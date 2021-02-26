@@ -43,7 +43,7 @@ def read_regions(layer, ob, f):
 
 def read_label(layer, ob, f):
     assert ob.location[2] == 0
-    f.write('layer {}\nlabel {} {} {} {}\n'.format(layer, ob.data.body, ob.location[0], ob.location[1], ob.rotation_euler[2]))
+    f.write('layer {}\nlabel {} {} {} {} {}\n'.format(layer, ob.data.body.replace(' ', '~'), ob.location[0], ob.location[1], ob.rotation_euler[2], ob.scale[0]))
     print(' {}'.format(ob.data.body))
 
 def read_via(ob, f):
