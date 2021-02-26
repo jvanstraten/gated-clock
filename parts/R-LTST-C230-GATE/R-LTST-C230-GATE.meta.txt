@@ -2,4 +2,4 @@ mouser 71-CRCW06031K00FKEAC
 model 0603R
 value 1k
 power 0.1W
-current 3.27
+current 3.27ma

@@ -1,0 +1,6 @@
+mouser 71-CRCW06031K00FKEAC
+model 0603R
+value 1k
+power 0.1W
+current ?
+note Could probably use a higher-valued resistor. These LEDs are like 30x as bright as the gate LEDs according to the datasheet (due to the narrow angle, I imagine)

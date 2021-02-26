@@ -1,0 +1,3 @@
+mouser 579-MCP23S17T-E/SS
+model SSOP28
+datasheet https://nl.mouser.com/datasheet/2/268/20001952C-1129816.pdf
