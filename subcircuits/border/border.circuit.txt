@@ -7,7 +7,7 @@ in      f50hz   GBL  1   0
 # Line frequency division
 
 subc div5_n     fd1    -90      0   0       Arn=Arn     ClkIn=f50hz     ClkOut=f10hz
-text 10/12½Hz~divider  -90      3   0.5     -0.2 0.0 1.8 0.5 0.5
+text 10/12½Hz~divider  -90      3   0.5     -0.2 -4.25 1.8 0.5 0.5
 subc div5or6_n  fd2    -90      0   2       Arn=Arn     ClkIn=f10hz     ClkOut=f2hz
 text 2Hz~divider       -90      3   2.5     -0.2 0.0 1.8 0.5 0.5
 subc div2_n     fd3    -90      0   4       Arn=Arn     ClkIn=f2hz      ClkOut=f1s

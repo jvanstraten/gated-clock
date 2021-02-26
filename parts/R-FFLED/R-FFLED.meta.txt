@@ -1,4 +1,5 @@
-mouser 603-RT0603FRE07680RL
+mouser TODO
 model 0603R
-value 680R
-power 0.1W
+value 470R
+power TODO
+current 6.88mA
