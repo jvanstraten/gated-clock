@@ -1,0 +1,4 @@
+mouser 611-PTS526SK15SMR2L
+model PTS526
+note Pushbutton
+datasheet https://nl.mouser.com/datasheet/2/60/pts526-1651200.pdf

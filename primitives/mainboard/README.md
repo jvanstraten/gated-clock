@@ -88,6 +88,114 @@ properly despite the large sheet thickness tolerances, which in turn is
 necessary for aforementioned structural integrity and to minimize any gap
 between the engraved surface on the front sheet and the display sheet.
 
+Support board interface
+-----------------------
+
+The mainboard connects to the support board through five extra tall but
+otherwise standard 2.54mm 16-pin headers; TSW-108-12-T-S-RA headers on the
+mainboard, mating with SSQ-108-01-T-D sockets on the support board, leading
+to a board-to-board distance of about 27.5mm when the headers are soldered
+flush to the board. The headers surround the display area, so they are just
+barely covered by the display sheet, but can still be through-hole.
+
+The headers carry the following signals:
+
+ - 5V power and ground;
+ - the 50/60Hz grid-based clock signal;
+ - display data (as the LEDs for the time display are on the support board);
+ - SPI/I2C+IRQ interface to a 16-bit I/O expander on the mainboard;
+ - microcontroller interface for the hours and minutes configuration; and
+ - LED control voltages for the flipflop LEDs, NAND gate LEDs, synchroscope,
+   and microcontroller status RGB LED.
+
+I/O expander
+------------
+
+To limit the amount of signals that need to pass through the headers, an I/O
+expander is added to the mainboard. This can be either an MCP23017T (I2C) or an
+MCP23S17T (SPI). The SPI/I2C pins are pulled high by 10k resistors to allow the
+mainboard to work without support board while testing, without noise causing
+all kinds of stuff to happen. The address and reset pins are pulled up via a 1k
+resistor. Only the INTA pin is forwarded to the support board. The GPIO pinout
+is as follows:
+
+ - GPA0: mode button, active low with no hardware debouncing.
+ - GPA1: down button, active low with no hardware debouncing.
+ - GPA2: up button, active low with no hardware debouncing.
+ - GPA3: synchroscope H6.
+ - GPA4: synchroscope H4.
+ - GPA5: synchroscope H2.
+ - GPA6: synchroscope H5.
+ - GPA7: synchroscope H3.
+ - GPB0: synchroscope L6.
+ - GPB1: synchroscope L5.
+ - GPB2: synchroscope L4.
+ - GPB3: synchroscope L3.
+ - GPB4: synchroscope L2.
+ - GPB5: synchroscope L1.
+ - GPB6: synchroscope H1.
+ - GPB7: reset readout/override.
+
+Reset circuit
+-------------
+
+The mainboard includes the following reset conditioning circuit.
+
+```
+                    Vcc          Vcc                                           Vcc
+                   -----        -----        100nF                  100nF     -----
+                     |            |           . .                    . .        |
+                    .-.           o-----------| |-----------o--------| |--------o
+               100k | |           |           ' '           |        ' '        |
+                    | |     .-._  | 5  SN74LVS1G17DCKR      |             .-._  | 5  SN74LVS1G17DCKR
+                    '-'     |   `-._                        |             |   `-._
+          ____       |    2 |     __`-._  4  B   ____       |      O    2 |     __`-._  4  B   ____
+  .------|____|------o------|   _||    _:-------|____|------)------o------|   _||    _:-------|____|------o------ Arn
+  |        1k        |      |      _.-'          10k        |      |      |      _.-'          100        |
+  o                  |      |  _.-'                         |      |      |  _.-'                         |
+   \  Manual   1uF -----    '-'   | 3                       |      |      '-'   | 3                     ----- 330pF
+  o \ reset        -----          |                         |      |            |                       -----
+  |                  |            |                         |      |            |                         |
+  |                  |            |                         |      |            |                         |
+-----              -----        -----                     -----    |          -----                     -----
+ Gnd                Gnd          Gnd                       Gnd     |           Gnd                       Gnd
+                                                                   |
+                                                           From GPIO expander
+```
+
+The circuit provides a reset pulse at least 35ms in length at powerup, assuming
+Vcc rises fast enough. The circuit can be reset manually by pushing the manual
+reset button. Furthermore, the microcontroller can read the state of the reset
+circuit and override it in either direction using the GPIO expander. The RC
+circuit at the end is a copy of the one used for "fast" NAND gates; it limits
+the slew rate to prevent ringing.
+
+The reset signal is not synchronized with the incoming clock in any way.
+Therefore, weird stuff might happen when the reset is released at the wrong
+time. However, all flipflop circuitry should automatically recover from
+invalid states, and the odds of the reset being timed this way are extremely
+low during normal operation, as the incoming clock frequency is only 50/60 Hz.
+
+The reset circuit is depicted on the silkscreen as well, although the
+decoupling capacitors, switch current limit resistor, and RC filer are omitted.
+
+Clock circuit
+-------------
+
+While a clock generation circuit is depicted on the silkscreen, this circuit
+is not implemented on the mainboard for the following reasons:
+
+ - the required anti-creepage slots would be ugly;
+ - the high-voltage components are large and through-hole, which would again be
+   ugly;
+ - strong electric fields and the relatively high temperatures of some of the
+   parts might cause the circuit board to blacken; and
+ - when the cover is off, you don't want surprise electric shocks.
+
+Instead, the clock signal comes straight from the support board. It does
+however have a 10k pullup resistor to properly define the signal when the
+support board is not connected.
+
 Microcontroller user interface
 ------------------------------
 

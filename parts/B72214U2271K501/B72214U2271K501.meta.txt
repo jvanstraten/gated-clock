@@ -1,0 +1,3 @@
+mouser 871-B72214U2271K501
+model VAR14MM
+value 430V

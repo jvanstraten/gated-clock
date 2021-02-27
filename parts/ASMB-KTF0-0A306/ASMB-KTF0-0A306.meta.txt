@@ -1,0 +1,4 @@
+mouser 630-ASMB-KTF0-0A306
+model PLCC4
+color RGB
+datasheet https://nl.mouser.com/datasheet/2/678/SMB-KTF0-0A306-DS100_2017-09-15-1279410.pdf

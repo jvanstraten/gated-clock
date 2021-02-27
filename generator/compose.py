@@ -5,6 +5,7 @@ from primitive import get_primitive
 from coordinates import from_mm, to_mm
 import gerbertools
 import math
+import sys
 
 mainboard = CircuitBoard(mask_expansion=0.05)
 t = LinearTransformer()
@@ -19,7 +20,9 @@ print('*** writing gerber output...')
 mainboard.to_file('output/mainboard')
 
 print('*** running circuit DRC...')
-mainboard.get_netlist().check_composite()
+any_violations = False
+if not mainboard.get_netlist().check_composite():
+    any_violations = True
 
 print('*** building PCB...')
 mainboard_gbr = gerbertools.read('output/mainboard.PCB')
@@ -97,9 +100,16 @@ for net in nl.iter_physical():
         }[layer]
         nets.append(((to_mm(x), to_mm(y)), layer, name))
 violations = mainboard_gbr.build_netlist(nets, clearance=0.13, annular_ring=0.13).drc()
-if violations:
-    for violation in violations:
-        print(violation)
+for violation in violations:
+    if violation.startswith('logical net NO_NET is divided up into'):
+        continue
+    print(violation)
+    any_violations = True
+
+print()
+if any_violations:
+    print('There were DRC errors :(')
+    sys.exit(1)
 else:
-    print('physical DRC passed!')
+    print('Everything checks out! :D')
 

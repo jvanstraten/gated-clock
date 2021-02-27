@@ -3,6 +3,8 @@ from coordinates import from_mm, LinearTransformer
 from circuit_board import CircuitBoard
 from pin_map import Pins
 from text import Label
+import datetime
+import subprocess
 
 class Primitive:
     """Represents a manually-drawn primitive for PCB composition."""
@@ -136,8 +138,21 @@ class Primitive:
                         self._board.add_net(name, layer, coord, mode)
                         continue
                     if layer == 'GTO':
+                        if '#DATE' in name:
+                            name = name.replace('#DATE', str(datetime.date.today()))
+                        if '#REVISION' in name:
+                            name = name.replace('#REVISION', subprocess.run(
+                                ['git', 'rev-parse', '--short', 'HEAD'],
+                                stdout=subprocess.PIPE,
+                                check=True
+                            ).stdout.decode('utf-8').strip())
+                        if '#VERSION' in name:
+                            name = name.replace('#VERSION', subprocess.run(
+                                ['git', 'describe', '--tags'],
+                                stdout=subprocess.PIPE
+                            ).stdout.decode('utf-8').strip())
                         Label(
-                            name.replace('~', ' '),
+                            name.replace('~', ' ').strip(),
                             coord,
                             rotation,
                             scale,
