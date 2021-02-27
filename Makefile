@@ -4,3 +4,4 @@ all:
 	rm -rf output
 	mkdir -p output
 	python3 generator/compose.py
+	python3 generator/post.py
