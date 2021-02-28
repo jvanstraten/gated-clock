@@ -5,7 +5,10 @@ BLENDER = blender-2.91
 endif
 
 .PHONY: all
-all:
+all: generate blend
+
+.PHONY: generate
+generate:
 	cd primitives && $(MAKE)
 	rm -rf output
 	mkdir -p output
@@ -14,6 +17,7 @@ all:
 
 .PHONY: blend
 blend:
+	cd render && $(BLENDER) -b --python blend-import-mainboard-parts.py --python-exit-code 1
 	cd render && $(BLENDER) -b --python blend-import-front.py --python-exit-code 1
 	cd render && $(BLENDER) -b --python blend-import-display.py --python-exit-code 1
 	cd render && $(BLENDER) -b --python blend-import-highlight.py --python-exit-code 1

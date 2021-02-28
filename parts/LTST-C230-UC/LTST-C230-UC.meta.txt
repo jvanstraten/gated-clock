@@ -1,5 +1,5 @@
 mouser 859-LTST-C230TGKT
-model LTST-C230TGKT
+model LTST-C230
 color green
 wavelength 525nm
 datasheet https://nl.mouser.com/datasheet/2/239/Lite-On-LTST-C230TGKT-1175362.pdf

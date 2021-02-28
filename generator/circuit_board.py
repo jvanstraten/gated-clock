@@ -6,6 +6,7 @@ from acrylic import LaseredAcrylic
 import gerbertools
 import sys
 import config
+import os
 
 class Region:
     """Represents a filled region."""
@@ -520,12 +521,17 @@ class CircuitBoard:
         self._netlist.to_file(fname)
         with open('{}.parts.txt'.format(fname), 'w') as f:
             for inst in self._parts:
-                f.write('{} {} {} {} {}\n'.format(
+                x = to_mm(inst.get_coord()[0])
+                y = to_mm(inst.get_coord()[1])
+                rot = inst.get_rotation() * 180 / math.pi
+                model = inst.get_part().model
+                if not os.path.isfile('models/{0}/{0}.blend'.format(model)):
+                    model = '*'
+                f.write('{} {} {} {} {} {}\n'.format(
                     inst.get_name(),
+                    model,
                     inst.get_layer(),
-                    to_mm(inst.get_coord()[0]),
-                    to_mm(inst.get_coord()[1]),
-                    inst.get_rotation() * 180 / math.pi
+                    x, y, rot
                 ))
         self._plates.to_file(fname, *sys.argv[1:])
 
@@ -558,13 +564,15 @@ class CircuitBoard:
 
         # Assembly data.
         for part_inst in self._parts:
+            coord, rot = transformer.part_to_global(
+                part_inst.get_coord(), 0,
+                translate, rotate, warpable
+            )
+            rot += part_inst.get_rotation()
             pcb.add_part(
                 part_inst.get_name(),
                 part_inst.get_layer(),
-                *transformer.part_to_global(
-                    part_inst.get_coord(), part_inst.get_rotation(),
-                    translate, rotate, warpable
-                )
+                coord, rot
             )
 
         # Lasered acrylic plates (if any).
