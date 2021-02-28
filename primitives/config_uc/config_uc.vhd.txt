@@ -1,0 +1,4 @@
+in std_logic ien
+out std_logic isw
+in std_logic inc
+in std_logic ren

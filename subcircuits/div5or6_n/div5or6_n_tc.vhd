@@ -11,6 +11,7 @@ architecture test_case of div5or6_n_tc is
   signal ClkIn_n: std_logic;
   signal ClkIn  : std_logic;
   signal ClkOut : std_logic;
+  signal mode     : natural := 0;
 
   signal counter  : natural := 0;
 
@@ -26,7 +27,10 @@ begin
     port map (
       Arn    => Arn,
       ClkIn  => ClkIn,
-      ClkOut => ClkOut
+      ClkOut => ClkOut,
+      if_c_s1_state => mode,
+      if_s1_state => mode,
+      if_s2_state => mode
     );
 
   count_proc: process (ClkOut, Arn) is
@@ -57,6 +61,7 @@ begin
     end procedure;
 
   begin
+    mode <= 0; -- 50Hz
     Arn <= '0';
     ClkIn_n <= '1';
     wait for 2 us;
@@ -67,13 +72,33 @@ begin
     clock(0);
     clock(0);
     clock(0);
-    clock(0); -- 60Hz only
     clock(1);
     clock(1);
     clock(1);
     clock(1);
     clock(1);
-    clock(1); -- 60Hz only
+    clock(2);
+
+    wait for 2 us;
+
+    mode <= 1; -- 60Hz
+    Arn <= '0';
+    ClkIn_n <= '1';
+    wait for 2 us;
+    Arn <= '1';
+    wait for 2 us;
+    assert ClkOut = '1' report "clock out is not high after reset" severity failure;
+    clock(0);
+    clock(0);
+    clock(0);
+    clock(0);
+    clock(0);
+    clock(1);
+    clock(1);
+    clock(1);
+    clock(1);
+    clock(1);
+    clock(1);
     clock(2);
     wait;
   end process;

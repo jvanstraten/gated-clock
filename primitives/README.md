@@ -75,18 +75,25 @@ to be adhered to for the scripts to make sense of them.
    collections roughly correspond to the Gerber layers of a PCB. These layers
    are:
 
-    - `Ctop`: top-side components.
-    - `GTO`: top overlay.
-    - `GTS`: top soldermask opening.
-    - `GTL`: top copper.
-    - `G1`: inner copper, just below top.
-    - `G2`: inner copper, just above bottom.
-    - `GBL`: bottom copper.
-    - `GBS`: bottom soldermask openings.
-    - `GBO`: bottom overlay.
-    - `Cbottom`: bottom-side components.
-    - `Mill`: mill data & board outline.
-    - `Drill`: drill data.
+    - `Ctop`: top-side components;
+    - `GTO`: top overlay;
+    - `GTS`: top soldermask opening;
+    - `GTL`: top copper;
+    - `G1`: inner copper, just below top;
+    - `G2`: inner copper, just above bottom;
+    - `GBL`: bottom copper;
+    - `GBS`: bottom soldermask openings;
+    - `GBO`: bottom overlay;
+    - `Cbottom`: bottom-side components;
+    - `Mill`: mill data & board outline;
+    - `Drill`: drill data;
+    - `Acrylic.Display.Cut`: laser cutting data for the display sheet;
+    - `Acrylic.Highlight.Cut`: laser cutting data for the highlight sheet;
+    - `Acrylic.Front.Cut`: laser cutting data for the front sheet;
+    - `Acrylic.Front.Engrave`: engraving data for the front sheet.
+
+   Refer to the README file in mainboard for more information on the acrylic
+   sheets.
 
    An object may be linked in multiple collections at once to easily get the
    same shape on multiple Gerber layers.
@@ -121,15 +128,32 @@ to be adhered to for the scripts to make sense of them.
       to form a via. Vias are tented unless a soldermask opening is manually
       added for them. If there is only one polygon, a non-plated hole is made.
 
-    - Text objects. These may be placed in copper, mask, and component layers.
-      Text should be centered; the object origin and orientation around Z are
-      used for the location data. Rotation around the other axes should be 0.
-      Text objects on the copper layers represent ports for the primitives,
-      to be connected via routing traces (note that the three plane-based
-      global signals do not receive such ports). Text objects on mask layers
-      represent net labels for component pins, intended for electrical DRC.
-      Text objects on the component layers represent references to components,
-      to be placed in the 3D model and used for BOM generation.
+    - Text objects. These may be placed in copper, mask, component, and GTO
+      layers. Text should be centered; the object origin and orientation around
+      Z are used for the location data. Rotation around the other axes should
+      be 0. Text objects represent different things for the different layer
+      types.
+
+       - Copper layers: text objects represent ports for the primitives, to be
+         connected via routing traces (note that Vcc and Gnd do not receive
+         such ports, because they are connected via polygon pours on G2 and G1
+         respectively).
+
+       - Mask layers: text objects represent net labels for component pins,
+         intended for electrical DRC.
+
+       - Component layers: text objects represent references to components, to
+         be placed in the 3D model and used for BOM generation. The components
+         will be flipped horizontally in their local coordinate system when
+         placed on the bottom side.
+
+       - GTO layer: text object are converted to labels. X scale is used for
+         the size; Y scale should be the same, as it is ignored. Be aware that,
+         due to font differences, the size in Blender does not properly
+         correspond to the actual size. Some replacements are made in the text:
+          - `#REVISION` is replaced with the short git hash;
+          - `#VERSION` is replaced with the latest tag; and
+          - `#DATE` is replaced with an ISO 8601 datestamp.
 
  - Objects not within the classes above are ignored, and may thus be used for
    notes.

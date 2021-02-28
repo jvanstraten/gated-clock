@@ -74,7 +74,6 @@ fwd_out h1n
 fwd_out h2p
 fwd_out h2n
 fwd_out h3n
-fwd_out h4p
 fwd_out h4n
 fwd_out h5p
 fwd_out h5n
@@ -89,7 +88,7 @@ subc div2       hd1    -90      0   26      Arn=Arn     ClkIn=f1h       ClkOut=f
 text 2-hour~divider    -90      3   26.5    -0.2 0.0 1.8 0.5 0.5
 subc div5or2    hd2    -90      0   28      Arn=Arn     ClkIn=f2h       ClkOut=f10h     d5ap=h1p d5an=h1n d5bp=h2p d5bn=h2n d5cn=h3n Div2=div2 Div5A=div5a Div5B=div5b
 text 10-hour~divider   -90      3   28.5    -0.2 0.0 1.8 0.5 0.5
-subc div3_end   hd3    -90      0   30      Arn=Arn     ClkIn=f10h                      d3ap=h4p d3an=h4n d3bp=h5p d3bn=h5n
+subc div3_end   hd3    -90      0   30      Arn=Arn     ClkIn=f10h                               d3an=h4n d3bp=h5p d3bn=h5n
 text 24-hour~divider   -90      3   30.5    -0.2 0.0 1.8 0.5 0.5
 
 

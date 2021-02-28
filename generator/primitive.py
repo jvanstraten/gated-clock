@@ -1,10 +1,11 @@
 import os
-from coordinates import from_mm, LinearTransformer
+from coordinates import from_mm, transrot, LinearTransformer
 from circuit_board import CircuitBoard
 from pin_map import Pins
 from text import Label
 import datetime
 import subprocess
+import qrcode
 
 class Primitive:
     """Represents a manually-drawn primitive for PCB composition."""
@@ -138,6 +139,7 @@ class Primitive:
                         self._board.add_net(name, layer, coord, mode)
                         continue
                     if layer == 'GTO':
+                        name = name.replace('~', ' ').strip()
                         if '#DATE' in name:
                             name = name.replace('#DATE', str(datetime.date.today()))
                         if '#REVISION' in name:
@@ -148,20 +150,40 @@ class Primitive:
                             ).stdout.decode('utf-8').strip())
                         if '#VERSION' in name:
                             name = name.replace('#VERSION', subprocess.run(
-                                ['git', 'describe', '--tags'],
+                                ['git', 'describe', '--tags', '--abbrev=0'],
                                 stdout=subprocess.PIPE
                             ).stdout.decode('utf-8').strip())
-                        Label(
-                            name.replace('~', ' ').strip(),
-                            coord,
-                            rotation,
-                            scale,
-                            0.5, 0.5
-                        ).instantiate(
-                            self._board,
-                            LinearTransformer(),
-                            (0, 0),
-                        0)
+                        if name.startswith('#QR'):
+                            qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
+                            qr.add_data(name[3:].strip())
+                            qr.make(fit=True)
+                            qr = qr.get_matrix()
+                            box_size = from_mm(scale * 0.5)
+                            for y, line in enumerate(qr):
+                                y = ((len(qr) - 1) / 2 - y) * box_size
+                                for x, filled in enumerate(line):
+                                    if not filled:
+                                        continue
+                                    x = (x - (len(line) - 1) / 2) * box_size
+                                    self._board.add_flashed_region(
+                                        'GTO',
+                                        transrot((x - box_size / 2, y - box_size / 2), coord, rotation),
+                                        transrot((x + box_size / 2, y - box_size / 2), coord, rotation),
+                                        transrot((x + box_size / 2, y + box_size / 2), coord, rotation),
+                                        transrot((x - box_size / 2, y + box_size / 2), coord, rotation),
+                                    )
+                        else:
+                            Label(
+                                name,
+                                coord,
+                                rotation,
+                                scale,
+                                0.5, 0.5
+                            ).instantiate(
+                                self._board,
+                                LinearTransformer(),
+                                (0, 0),
+                            0)
                         continue
 
                 if args[0] == 'hole':
@@ -179,11 +201,25 @@ class Primitive:
 
                 print('warning: unknown construct for layer {}: {}'.format(layer, line))
 
+        iface_file = os.path.join('primitives', self._name, '{}.vhd.txt'.format(self._name))
+        self._interfaces = []
+        if os.path.isfile(iface_file):
+            with open(iface_file, 'r') as f:
+                for line in f.read().split('\n'):
+                    line = line.split('#')[0].strip()
+                    if not line:
+                        continue
+                    direction, vhd_type, name = line.split()
+                    self._interfaces.append((direction, vhd_type, name))
+
     def get_name(self):
         return self._name
 
     def get_pins(self):
         return self._pins
+
+    def get_interfaces(self):
+        return self._interfaces
 
     def instantiate(self, pcb, transformer, coord, rotation, net_prefix, net_override):
         """Instantiates this primitive on the given PCB with the given

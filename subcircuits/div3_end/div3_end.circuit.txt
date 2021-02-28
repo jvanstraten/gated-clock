@@ -7,7 +7,6 @@ fwd_in  Arn~1
 fwd_in  Arn~2
 fwd_in  Arn~3
 fwd_in  Arn~4
-out     d3ap    GBL  7   5
 out     d3an    GBL  8   5
 out     d3bp    GBL 17   5
 out     d3bn    GBL 18   5

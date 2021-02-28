@@ -15,13 +15,13 @@ F   B  .   .  ·   |  ·   |
 E   C  .   .  ·   |  |   ·
   D      .      · '  '===
 
-An       x      x           = d3bp
+An       x      x           = d3bn
 Bn       x                  = not (d3an nand d3bn)
-Cn       x             x    = d3ap
-Dn       x      x           = d3bp
-En       x      x           = d3bp
+Cn       x             x    = d3an
+Dn       x      x           = d3bn
+En       x      x           = d3bn
 Fn       x      x      x    = 1
-Gn       x      x           = d3bp
+Gn       x      x           = d3bn
 ```
 
 This results in the following possible routing.

@@ -4,8 +4,8 @@ Last divide by 3
 This circuit performs a frequency division by 3. Specifically, it is used for
 the most significant digit of the hours, so there is no further divider that
 this circuit must generate a clock for. Therefore, the clock output is omitted
-entirely. Furthermore, the layout is 0.75mm wider, to make everything line up
-at the top of the clock.
+entirely. Furthermore, the layout is 0.75mm wider to make everything line up
+at the top of the clock, and d3ap is omitted because it is never used.
 
 Order:
 
@@ -39,20 +39,20 @@ ClkIn~1 Arn~1         Arn~2           ClkIn~2 Arn~3         Arn~4
     | | |               .-----'`------o | | | |               .-----'`------o |
     | | | .----..       | .----..     | | | | | .----..       | .----..     | |
     | | '-|1     \      '-|Qn    \    | | | | '-|1     \      '-|Qn    \    | |
-    | '---|C   P2 |()-.   |     Q |()-o | | '---|C   P2 |()-.   |     Q |()-o |
-    '---o-|4     /    o---|2     /    | | '---o-|4     /    o---|2     /    | |
-        | '----''     |   '----''     | |     | '----''     |   '----''     | |
-        '-----.,------'               | |     '-----.,------'               | |
-        .-----'`------.               | |     .-----'`------.               | |
-        | .----..     |               | |     | .----..     |               | |
-        '-|2     \    |               | |     '-|2     \    |               | |
-          |    P4 |()-'               | |       |    P4 |()-'               | |
-        .-|Dn    /          ..----.   | o-------|Dn    /                    | |
-        | '----''          /  d3an|---)-o       '----''                     | |
-        '---------------()| fb    |   | |                                   | |
-                           \  d3bn|---)-)-----------------------------------)-o
-                            ''----'   | |                                   | |
-                                   d3ap d3an                             d3bp d3bn
+    | '---|C   P2 |()-.   |     Q |()-' | | '---|C   P2 |()-.   |     Q |()-o |
+    '---o-|4     /    o---|2     /      | '---o-|4     /    o---|2     /    | |
+        | '----''     |   '----''       |     | '----''     |   '----''     | |
+        '-----.,------'                 |     '-----.,------'               | |
+        .-----'`------.                 |     .-----'`------.               | |
+        | .----..     |                 |     | .----..     |               | |
+        '-|2     \    |                 |     '-|2     \    |               | |
+          |    P4 |()-'                 |       |    P4 |()-'               | |
+        .-|Dn    /          ..----.     o-------|Dn    /                    | |
+        | '----''          /  d3an|-----o       '----''                     | |
+        '---------------()| fb    |     |                                   | |
+                           \  d3bn|-----)-----------------------------------)-o
+                            ''----'     |                                   | |
+                                        d3an                             d3bp d3bn
 ```
 
 Total width, not including borders, is:

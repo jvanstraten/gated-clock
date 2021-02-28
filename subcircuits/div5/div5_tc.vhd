@@ -14,7 +14,6 @@ architecture test_case of div5_tc is
   signal d5an   : std_logic;
   signal d5bp   : std_logic;
   signal d5bn   : std_logic;
-  signal d5cp   : std_logic;
   signal d5cn   : std_logic;
 
 begin
@@ -28,7 +27,6 @@ begin
       d5an   => d5an,
       d5bp   => d5bp,
       d5bn   => d5bn,
-      d5cp   => d5cp,
       d5cn   => d5cn
     );
 
@@ -41,10 +39,9 @@ begin
       expected := std_logic_vector(to_unsigned(val, 3));
       assert d5ap = not d5an report "inverted output incorrect" severity failure;
       assert d5bp = not d5bn report "inverted output incorrect" severity failure;
-      assert d5cp = not d5cn report "inverted output incorrect" severity failure;
       actual(0) := d5ap;
       actual(1) := d5bp;
-      actual(2) := d5cp;
+      actual(2) := not d5cn;
       assert not is_x(actual) report "output is undefined" severity failure;
       assert actual = expected
         report "expected " & integer'image(to_integer(unsigned(expected)))

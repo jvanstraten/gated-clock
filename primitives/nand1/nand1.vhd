@@ -3,8 +3,9 @@ use ieee.std_logic_1164.all;
 
 entity nand1 is
   port (
-    a : in  std_logic;
-    y : out std_logic
+    a         : in  std_logic;
+    y         : out std_logic;
+    if_state  : out std_logic
   );
 end entity;
 
@@ -17,4 +18,5 @@ begin
       c => '1',
       y => y
     );
+  if_state <= y;
 end architecture;

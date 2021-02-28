@@ -3,10 +3,11 @@ use ieee.std_logic_1164.all;
 
 entity nand3qn is
   port (
-    a : in  std_logic;
-    b : in  std_logic;
-    c : in  std_logic;
-    y : out std_logic
+    a         : in  std_logic;
+    b         : in  std_logic;
+    c         : in  std_logic;
+    y         : out std_logic;
+    if_state  : out std_logic
   );
 end entity;
 
@@ -61,4 +62,6 @@ begin
 --   y_max <= not (a and b and c) after 52 ns;
 
   y <= 'U' when y_min /= y_max else y_min;
+  if_state <= y;
+
 end architecture;

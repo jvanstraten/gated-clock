@@ -7,7 +7,7 @@ fwd_in f50hz
 
 # Flipflop chain
 
-subc border ff 0 120 500 Arn=Arn f50hz=f50hz s0p=s0p s0n=s0n s1p=s1p s1n=s1n s2p=s2p s2n=s2n s3n=s3n s4p=s4p s4n=s4n s5p=s5p s5n=s5n s6p=s6p s6n=s6n m0p=m0p m0n=m0n m1p=m1p m1n=m1n m2p=m2p m2n=m2n m3n=m3n m4p=m4p m4n=m4n m5p=m5p m5n=m5n m6p=m6p m6n=m6n h0p=h0p h0n=h0n h1p=h1p h1n=h1n h2p=h2p h2n=h2n h3n=h3n h4p=h4p h4n=h4n h5p=h5p h5n=h5n div2=h5p div5a=h5n div5b=h5n
+subc border ff 0 120 500 Arn=Arn f50hz=f50hz s0p=s0p s0n=s0n s1p=s1p s1n=s1n s2p=s2p s2n=s2n s3n=s3n s4p=s4p s4n=s4n s5p=s5p s5n=s5n s6p=s6p s6n=s6n m0p=m0p m0n=m0n m1p=m1p m1n=m1n m2p=m2p m2n=m2n m3n=m3n m4p=m4p m4n=m4n m5p=m5p m5n=m5n m6p=m6p m6n=m6n h0p=h0p h0n=h0n h1p=h1p h1n=h1n h2p=h2p h2n=h2n h3n=h3n h4n=h4n h5p=h5p h5n=h5n div2=h5p div5a=h5n div5b=h5n
 
 
 # Seconds, unit digit
@@ -160,7 +160,7 @@ route  70.0  m6n*1
 
 # Hours, unit digit
 
-subc decode_d2d5 hu 180 51.5 876.5 d5cn=h3n d5bp=h2p d5bn=h2n d5ap=h1p d5an=h1n d2p=h0p d2n=h0n An=hu_An Bn=hu_Bn Cn=hu_Cn Dn=hu_Dn En=hu_En Fn=hu_Fn Gn=hu_Gn
+subc decode_d2d5 hu 180 52.5 876.5 d5cn=h3n d5bp=h2p d5bn=h2n d5ap=h1p d5an=h1n d2p=h0p d2n=h0n An=hu_An Bn=hu_Bn Cn=hu_Cn Dn=hu_Dn En=hu_En Fn=hu_Fn Gn=hu_Gn
 
 fwd_out hu_An
 fwd_out hu_Bn
@@ -170,25 +170,24 @@ fwd_out hu_En
 fwd_out hu_Fn
 fwd_out hu_Gn
 
-route  64.5  h0p
-route  65.5  h0n
-route  67.0  h1p
-route  68.0  h1n
-route  69.5  h2p
-route  70.5  h2n
-route  70.5  h3n
+route  65.5  h0p
+route  66.5  h0n
+route  68.0  h1p
+route  69.0  h1n
+route  70.5  h2p
+route  71.5  h2n
+route  71.5  h3n
 
 
 # Hours, tens digit
 
-subc decode_d3 ht 180 66.5 812 d3bp=h5p d3bn=h5n d3ap=h4p d3an=h4n ADEGn=ht_ADEGn Bn=ht_Bn Cn=ht_Cn
+subc decode_d3 ht 180 67.5 812 d3bn=h5n d3an=h4n ADEGn=ht_ADEGn Bn=ht_Bn Cn=ht_Cn
 
 fwd_out ht_ADEGn
 fwd_out ht_Bn
 fwd_out ht_Cn
 
-route  83.0  h4p
-route  82.0  h4n
-route  80.5  h5p
-route  79.5  h5n
+route  83.0  h4n
+route  81.5  h5p
+route  80.5  h5n
 

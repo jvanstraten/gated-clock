@@ -15,16 +15,16 @@ fwd_in d3an~2
 
 fwd_in d2p~1
 fwd_in d2p~2
+fwd_in d2p~3
 
 fwd_in d2n~1
-fwd_in d2n~2
 fwd_in d2n~3
 fwd_in d2n~4
 fwd_in d2n~5
 
 prim nand3 f0   90  7  1   Y=f0  C=d3bn~1 B=d3an~1 A=d2n~1
 text 0\         0   7  1   3.3 1.6 1.0 0.5 0.0
-prim nand3 f1   90  7  7   Y=f1  C=d3bn~2 B=d3an~2 A=d2n~2
+prim nand3 f1   90  7  7   Y=f1  C=d3bn~2 B=d3an~2 A=d2p~3
 text 1\         0   7  7   3.3 1.6 1.0 0.5 0.0
 prim nand2 f2   90  7 13   Y=f2  B=d3ap~1 A=d2n~3
 text 2\         0   7 13   3.3 1.6 1.0 0.5 0.0

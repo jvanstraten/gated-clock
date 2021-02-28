@@ -42,13 +42,13 @@ prim nand2 f23  90  7 19   Y=f23 B=d5bn~2 A=d5ap~2
 text 23\        0   7 19   3.3 1.6 1.0 0.5 0.0
 prim feed d2n*1 90  7 22   A=d2n~3 B=d2n~1*1
 text odd\       0   7 22   3.3 0.5 1.0 0.5 0.0
-prim nand3 f4   90  7 25   Y=f4  C=d5bp~1 B=d5ap~3 A=d2p~2
+prim nand3 f4   90  7 25   Y=f4  C=d5bp~1 B=d5ap~3 A=d2n~4
 text 4\         0   7 25   3.3 1.6 1.0 0.5 0.0
-prim nand3 f5   90  7 31   Y=f5  C=d5bp~2 B=d5ap~4 A=d2n~4
+prim nand3 f5   90  7 31   Y=f5  C=d5bp~2 B=d5ap~4 A=d2p~2
 text 5\         0   7 31   3.3 1.6 1.0 0.5 0.0
-prim nand3 f6   90  7 37   Y=f6  C=d5bp~3 B=d5an~3 A=d2p~3
+prim nand3 f6   90  7 37   Y=f6  C=d5bp~3 B=d5an~3 A=d2n~5
 text 6\         0   7 37   3.3 1.6 1.0 0.5 0.0
-prim nand3 f7   90  7 43   Y=f7  C=d5bp~4 B=d5an~4 A=d2n~5
+prim nand3 f7   90  7 43   Y=f7  C=d5bp~4 B=d5an~4 A=d2p~3
 text 7\         0   7 43   3.3 1.6 1.0 0.5 0.0
 
 prim nand3 Gn   90 12  1   Y=Gn A=f7 B=f1 C=f0

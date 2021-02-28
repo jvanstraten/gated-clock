@@ -644,6 +644,7 @@ class Subcircuit:
         rows = GridDimension(True)
         self._name = name
         self._pins = Pins()
+        self._interfaces = []
         self._net_insns = []
         self._net_ties = []
         self._instances = []
@@ -651,6 +652,7 @@ class Subcircuit:
         self._shunters = []
         self._outlines = []
         self._labels = []
+        instance_names = set()
         forwarded_pins = []
         with open(os.path.join('subcircuits', name, '{}.circuit.txt'.format(name)), 'r') as f:
             for line in f.read().split('\n'):
@@ -681,13 +683,18 @@ class Subcircuit:
                 if args[0] in ('prim', 'subc'):
                     coord = (cols.convert(args[4]), rows.convert(args[5]))
                     rotation = float(args[3]) / 180 * math.pi
-                    if args[0] == 'prim' and args[1] == 'tie':
+                    instance_type = args[1]
+                    instance_name = args[2]
+                    if instance_name in instance_names:
+                        raise ValueError('duplicate instance name {}'.format(instance_name))
+                    instance_names.add(instance_name)
+                    if args[0] == 'prim' and instance_type == 'tie':
                         master = args[-1].split('=', maxsplit=1)[1]
                         for arg in args[6:-1]:
                             slave = arg.split('=', maxsplit=1)[1]
                             self._net_ties.append(('.' + master, '.' + slave))
                     instance = Instance(
-                        args[0] == 'prim', args[1], args[2],
+                        args[0] == 'prim', instance_type, instance_name,
                         coord, rotation, *args[6:]
                     )
                     for pin, net in instance.get_pinmap():
@@ -704,6 +711,8 @@ class Subcircuit:
                             mode
                         ))
                     self._instances.append(instance)
+                    for direction, vhd_type, iface in instance.get_data().get_interfaces():
+                        self._interfaces.append((direction, vhd_type, '{}_{}'.format(instance_name, iface)))
                     continue
 
                 if args[0] == 'route':
@@ -840,6 +849,12 @@ class Subcircuit:
                 else:
                     f.write(';\n')
                 f.write('    {} : {} std_logic'.format(pin, direction))
+            for direction, vhd_type, iface_name in self._interfaces:
+                if first:
+                    first = False
+                else:
+                    f.write(';\n')
+                f.write('    if_{} : {} {}'.format(iface_name, direction, vhd_type))
             f.write('\n  );\nend entity;\n\narchitecture model of {} is\n'.format(self._name))
             for net, *_ in self._net_insns:
                 if not net.startswith('.'):
@@ -866,6 +881,12 @@ class Subcircuit:
                     else:
                         f.write(',\n')
                     f.write('      {} => {}'.format(pin, net))
+                for _, _, iface_name in instance.get_data().get_interfaces():
+                    if first:
+                        first = False
+                    else:
+                        f.write(',\n')
+                    f.write('      if_{} => if_{}_{}'.format(iface_name, name, iface_name))
                 f.write('\n    );\n\n')
             f.write('end architecture;\n')
 
@@ -874,6 +895,9 @@ class Subcircuit:
 
     def get_pins(self):
         return self._pins
+
+    def get_interfaces(self):
+        return self._interfaces
 
     def instantiate(self, pcb, transformer, translate, rotate, net_prefix, net_override):
         """Instantiates this subcircuit on the given PCB with the given
