@@ -101,6 +101,7 @@ class Instance:
 
         # Figure out net prefix for the child instance.
         child_net_prefix = '{}.{}'.format(net_prefix, self.get_name())
+        print('instantiating {}...'.format(child_net_prefix))
 
         # Figure out net override for the child instance.
         child_net_override = dict(net_override)

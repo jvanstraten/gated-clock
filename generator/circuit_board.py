@@ -479,6 +479,7 @@ class CircuitBoard:
 
     def add_poly_pours(self, clearance=0.2):
         """Adds the polygon pours for the inner layers."""
+        print('rendering outline...')
         outline = gerbertools.Shape(1e6)
         for aperture, paths in self._layers['Mill']._paths.items():
             assert isinstance(aperture, int)
@@ -486,6 +487,7 @@ class CircuitBoard:
                 assert path[0] == path[-1]
                 outline.append_int(path)
 
+        print('rendering holes...')
         holes = gerbertools.Shape(1e6)
         for (dia, _), points in self._drill._holes.items():
             x = gerbertools.Shape(1e6)
@@ -494,11 +496,14 @@ class CircuitBoard:
             x = x.render(to_mm(dia), False)
             holes = holes + x
 
+        print('combining holes and outline for poly keepout...')
         outline = outline - holes
         outline = outline.offset(-clearance, True)
 
         for layer_name in ('G1', 'G2'):
+            print('adding poly keepout for {}...'.format(layer_name))
             shape = outline - self._layers[layer_name].get_poly_cutout().offset(clearance, True)
+            print('appending poly regions for {}...'.format(layer_name))
             for i in reversed(range(len(shape))):
                 path = shape.get_int(i)
                 path = list(path) + [path[0]]

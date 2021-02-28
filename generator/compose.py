@@ -25,20 +25,37 @@ if not mainboard.get_netlist().check_composite():
     any_violations = True
 
 print('*** building PCB...')
-mainboard_gbr = gerbertools.read('output/mainboard.PCB')
+#mainboard_gbr = gerbertools.read('output/mainboard.PCB')
+print('outline and hole data...')
+mainboard_gbr = gerbertools.CircuitBoard('output/mainboard.PCB', '.GM1', '.TXT');
+print('bottom mask...')
+mainboard_gbr.add_mask_layer('.GBS', '.GBO');
+print('bottom layer...')
+mainboard_gbr.add_copper_layer('.GBL', 0.035)
+mainboard_gbr.add_substrate_layer(0.1)
+print('vcc layer...')
+mainboard_gbr.add_copper_layer('.G2', 0.0175)
+mainboard_gbr.add_substrate_layer(1.265)
+print('gnd layer...')
+mainboard_gbr.add_copper_layer('.G1', 0.0175)
+mainboard_gbr.add_substrate_layer(0.1)
+print('top layer...')
+mainboard_gbr.add_copper_layer('.GTL', 0.035)
+print('top mask...')
+mainboard_gbr.add_mask_layer('.GTS', '.GTO');
+print('surface finish...')
+mainboard_gbr.add_surface_finish()
 
 print('*** building acrylic plates...')
 display_gbr = gerbertools.CircuitBoard('output/mainboard.Display', '.GM1', '')
 display_gbr.add_substrate_layer(3)
-display_gbr.add_mask_layer('', '.GM2')
 
 front_gbr = gerbertools.CircuitBoard('output/mainboard.Front', '.GM1', '')
-front_gbr.add_substrate_layer(3)
 front_gbr.add_mask_layer('', '.GM2')
+front_gbr.add_substrate_layer(3)
 
 highlight_gbr = gerbertools.CircuitBoard('output/mainboard.Highlight', '.GM1', '')
 highlight_gbr.add_substrate_layer(5)
-highlight_gbr.add_mask_layer('', '.GM2')
 
 print('*** rendering to SVG...')
 with open('output/mainboard.normal.svg', 'w') as f:
