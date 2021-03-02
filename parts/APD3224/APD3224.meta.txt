@@ -3,3 +3,4 @@ model APD3224
 color Orange
 wavelength 601nm
 angle 20deg
+datasheet https://nl.mouser.com/datasheet/2/216/APD3224SECK-F01-64915.pdf
