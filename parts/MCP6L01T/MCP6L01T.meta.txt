@@ -1,0 +1,3 @@
+mouser 579-MCP6L01T-E/LT
+model DCK5
+datasheet https://nl.mouser.com/datasheet/2/268/22140a-71218.pdf

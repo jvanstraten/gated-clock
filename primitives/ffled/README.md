@@ -11,7 +11,7 @@ capacitance on the border of the PCB.
        |             |             |
        |             |             |
        |             |             |
-       |             |       .-._  | 5  SN74LVS1G17DCKR
+       |             |       .-._  | 5  SN74LVC1G17DCKR
        |             |       |   `-._
        |             |     2 |     __`-._  4     X
 A)-----+-------------+-------|   _||    _:-------.

@@ -7,7 +7,7 @@
        |            |
        |            |
        |            |
-       |            | 5   SN74LVS1G10DCKR
+       |            | 5   SN74LVC1G10DCKR
        |    1 .---------..
 A)-----+------|A   Vcc    `.
        |    3 |             \  _  4   X      ____
@@ -44,7 +44,7 @@ B)-----+------|C   Gnd    ,'         .-.               |
 
 Vcc to Gnd design voltage is 5V.
 
-All gates use the 74LVS1G10 triple-input NAND gate for simplicity; the unused
+All gates use the 74LVC1G10 triple-input NAND gate for simplicity; the unused
 inputs are simply tied to Vcc.
 
 The 100R/2.2nF RC circuit should effectively reduce ringing due to long traces
@@ -76,7 +76,7 @@ resistor can just be changed to a different value.
 The 100nF capacitor effectively decouples both the gate and the LED PWM
 circuit.
 
-The 74LVS1G10 and MMBT4403 both use SC-70 footprint (a.k.a. DCK for Texas
+The 74LVC1G10 and MMBT4403 both use SC-70 footprint (a.k.a. DCK for Texas
 Instruments). The capacitor and resistors are 0603. The LED is a through-PCB
 mounted 1206.
 

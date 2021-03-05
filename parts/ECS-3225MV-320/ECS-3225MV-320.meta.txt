@@ -1,0 +1,4 @@
+mouser 520-3225MV-320-BNT
+model ECS-3225
+frequency 32MHz
+datasheet https://nl.mouser.com/datasheet/2/122/ECS-3225MV-1479682.pdf
