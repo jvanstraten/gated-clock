@@ -196,12 +196,12 @@ The control voltage for the gate and flipflop LEDs is generated as follows.
         |     |  4 .-._  | 5    100nF -----               2 |
         |     '----| - `-._           -----             .  .'
         |          |       `-._  1  O   |     ____    1 |<'
-        |          | MCP6001  _:--------o----|____|-----|   MMBT4403WT1G
+        |          | MCP6#01  _:--------o----|____|-----|   MMBT4403WT1G
         |   A    3 |      _.-'                 1k    C  |-.
         o----------| +_.-'                              '  '.
         |          '-'   | 2                              3 |R
         |                |                                  |
- ---------------         |                                 .-.
+ ---------------         |       # = 0 or L                .-.
  1 color channel         |                                 | | 100R
    (TLC6C5748)           |                                 | |
                          |                                 '-'
