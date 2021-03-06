@@ -17,6 +17,27 @@ comprises the entire board. Its tasks are:
 Power supply and grid frequency
 -------------------------------
 
+### Power entry
+
+TODO: terminal block, fuse
+
+### Power supply
+
+The main component of the power supply is an off-the-shelf module, the Recom
+[RAC20-05SK](https://recom-power.com/pdf/Powerline_AC-DC/RAC20-K.pdf). This
+module takes 85-264VAC at its input to provide an isolated 5V at 4A.
+
+To be safe, however, the module isn't directly connected to the power rail: it
+first goes through a [TPS26631PWPR](https://www.ti.com/lit/ds/symlink/tps2663.pdf)
+hot-swap controller that provides undervoltage, overvoltage, and overcurrent
+protection, soft-starts the power supply to prevent excessive capacitor inrush
+current, and has a current monitor output that's tied to an ADC of the
+microcontroller.
+
+TODO circuit
+
+### Grid frequency monitor
+
 TODO
 
 LED controllers
@@ -191,7 +212,7 @@ The control voltage for the gate and flipflop LEDs is generated as follows.
        .-.               |             Gnd                 '-'
   470R | |               |                                  |
        | |               |          F         ____          |
-       '-'    .----------)--------------o----|____|---------o---( Vled
+       '-'    .----------)--------------o----|____|---------o-----( Vled
         |     |          |              |     10k           |
         |     |  4 .-._  | 5    100nF -----               2 |
         |     '----| - `-._           -----             .  .'
@@ -233,23 +254,23 @@ Because only one (color) channel remains, while we need two synchroscope
 control voltages, some shenanigans are needed here.
 
 ```
-                                        Vcc           Vcc
-                                       -----         -----
-                                         |             |
-                                         |             |
-                                        .-.           .-.
-                                        | | 10k       | | 10k
-                                        | |           | |
-                                        '-'           '-'
-                                         |             |
-                                         |             o---------( V1   Output
-                                         o-------------)---------( V2  voltages
-                                         |             |
-                5V PWM A from          2 |             | 2          5V PWM B from
-               microcontroller       .  .'             '.  .       microcontroller
+                     Vcc                Vcc           Vcc                Vcc
+                    -----              -----         -----              -----
+                      |                  |             |                  |
+                      |                  |             |                  |
+                     .-.                .-.           .-.                .-.
+                     | | 10k            | | 10k       | | 10k            | | 10k
+                     | |                | |           | |                | |
+                     '-'                '-'           '-'                '-'
+                      |                  |             |                  |          _
+                      |                  |             o------------------)-----( V1  \_ Output
+     PWM A @ 5V ------o A                o-------------)------------------)-----( V2 _/  voltages
+ (microcontroller)    |                  |             |                  |
+                      |                2 |             | 2                |
+                      |              .  .'             '.  .              |
       Vcc             |    ____    1 |<'                 '>| 1    ____    |
-     -----            '---|____|-----|   2x MMBT4403WT1G   |-----|____|---'
-       |                   100k   AR |-.                 .-| BR   100k
+     -----            '---|____|-----|   2x MMBT4403WT1G   |-----|____|---o------ PWM B @ 5V
+       |                   100k   AR |-.                 .-| BR   100k         (microcontroller)
        |                             '  '.             .'  '
       .-.                              3 |             | 3
  470R | |                                '------o------'
@@ -336,5 +357,62 @@ oscillator to be used.
 
 ### Connection table
 
-TODO
+First TLC6C5748 in daisy chain:
 
+ - OUTx0: hours, tens, segment F
+ - OUTx1: hours, tens, segment A
+ - OUTx2: hours, units, segment A
+ - OUTx3: hours, units, segment B
+ - OUTx4: hours, tens, segment G
+ - OUTx5: hours, tens, segment B
+ - OUTx6: hours, units, segment F
+ - OUTx7: hours, units, segment G
+ - OUTx8: hours, tens, segment E
+ - OUTx9: hours, tens, segment D
+ - OUTx10: hours, units, segment D
+ - OUTx11: hours, units, segment C
+ - OUTx12: hours, tens, segment C
+ - OUTx13: colon between minutes and hours, upper segment
+ - OUTx14: colon between minutes and hours, lower segment
+ - OUTx15: hours, units, segment E
+
+Second TLC6C5748 in daisy chain:
+
+ - OUTx0: minutes, tens, segment F
+ - OUTx1: minutes, tens, segment A
+ - OUTx2: minutes, units, segment A
+ - OUTx3: minutes, units, segment B
+ - OUTx4: minutes, tens, segment G
+ - OUTx5: minutes, tens, segment B
+ - OUTx6: minutes, units, segment F
+ - OUTx7: minutes, units, segment G
+ - OUTx8: minutes, tens, segment E
+ - OUTx9: minutes, tens, segment D
+ - OUTx10: minutes, units, segment D
+ - OUTx11: minutes, units, segment C
+ - OUTx12: minutes, tens, segment C
+ - OUTR13: brightness control for flipflop status LEDs
+ - OUTB13: brightness control for gate status LEDs
+ - OUTG13: brightness control for synchroscope LEDs (analog only, PWM done by
+   microcontroller)
+ - OUTx14: microcontroller status LED
+ - OUTx15: minutes, units, segment E
+
+Third TLC6C5748 in daisy chain:
+
+ - OUTx0: seconds, tens, segment F
+ - OUTx1: seconds, tens, segment A
+ - OUTx2: seconds, units, segment A
+ - OUTx3: seconds, units, segment B
+ - OUTx4: seconds, tens, segment G
+ - OUTx5: seconds, tens, segment B
+ - OUTx6: seconds, units, segment F
+ - OUTx7: seconds, units, segment G
+ - OUTx8: seconds, tens, segment E
+ - OUTx9: seconds, tens, segment D
+ - OUTx10: seconds, units, segment D
+ - OUTx11: seconds, units, segment C
+ - OUTx12: seconds, tens, segment C
+ - OUTx13: colon between seconds and minutes, upper segment
+ - OUTx14: colon between seconds and minutes, lower segment
+ - OUTx15: seconds, units, segment E
