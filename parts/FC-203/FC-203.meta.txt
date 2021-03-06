@@ -1,0 +1,3 @@
+mouser 530-FC-203BRIGHTTIN
+model FC-203
+datasheet https://nl.mouser.com/datasheet/2/643/ds-CP-0672-fuse-clips-series-1307817.pdf

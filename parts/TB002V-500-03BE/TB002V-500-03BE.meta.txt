@@ -1,0 +1,3 @@
+mouser 490-TB002V-500-03BE
+model TB002V-500-03BE
+datasheet https://nl.mouser.com/datasheet/2/670/tb002v_500-1550588.pdf

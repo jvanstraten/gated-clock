@@ -1,0 +1,3 @@
+mouser 595-TPS26631PWPR
+model PWP20
+datasheet https://www.ti.com/lit/ds/symlink/tps2663.pdf

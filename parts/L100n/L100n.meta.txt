@@ -1,0 +1,5 @@
+mouser 871-B78108E1101M009
+model B78108E
+value 100nH
+rser 0.015
+datasheet https://product.tdk.com/info/en/documents/data_sheet/30/ds/b78108_148e.pdf

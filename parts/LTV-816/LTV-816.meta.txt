@@ -1,0 +1,3 @@
+mouser 859-LTV-816
+model DIP4
+datasheet https://nl.mouser.com/datasheet/2/239/LTV-8x6-1175385.pdf

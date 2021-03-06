@@ -1,0 +1,4 @@
+mouser TODO
+model 0603R
+value 16k9
+power 0.1W

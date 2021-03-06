@@ -1,0 +1,5 @@
+mouser 919-RAC20-05SK
+model RAC20-05SK
+value 5V
+current 4A
+datasheet https://nl.mouser.com/datasheet/2/468/RAC20_K-1661844.pdf
