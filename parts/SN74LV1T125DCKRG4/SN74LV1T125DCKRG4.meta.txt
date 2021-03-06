@@ -1,0 +1,3 @@
+mouser SN74LV1T125DCKRG4
+model DCK5
+datasheet https://www.ti.com/lit/ds/symlink/sn74lv1t125.pdf
