@@ -1,0 +1,5 @@
+mouser 594-2222-339-20104
+model X2CAP
+value 100nF
+voltage 630V
+class X2

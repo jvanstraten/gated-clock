@@ -1,0 +1,5 @@
+mouser 232-16YXJ100M5X11
+model C5X11
+value 100uF
+voltage 16V
+esr 1.2

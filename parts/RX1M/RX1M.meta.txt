@@ -1,0 +1,5 @@
+mouser 594-VR37000001004FR5
+model RX1M
+value 1M
+power 0.5W
+voltage 3.5kV

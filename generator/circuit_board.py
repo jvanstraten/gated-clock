@@ -354,11 +354,11 @@ class CircuitBoard:
                 'GTO', 'GTS',
                 'GTL', 'G1', 'G2', 'GBL',
                 'GBS', 'GBO',
-                'Mill'
+                'Mill', 'G12KO'
             ]
         }
         if config.LAYOUT_ONLY:
-            self._ignore = {'GTS', 'GTL', 'G1', 'G2', 'GBL', 'GBS', 'GBO'}
+            self._ignore = {'GTS', 'GTL', 'G1', 'G2', 'GBL', 'GBS', 'GBO', 'G12KO'}
         else:
             self._ignore = set()
         self._drill = DrillLayer()
@@ -497,6 +497,9 @@ class CircuitBoard:
             x = x.render(to_mm(dia), False)
             holes = holes + x
 
+        print('rendering keepout...')
+        outline = outline - self._layers['G12KO'].get_poly_cutout().offset(clearance, True)
+
         print('combining holes and outline for poly keepout...')
         outline = outline - holes
         outline = outline.offset(-clearance, True)
@@ -516,6 +519,8 @@ class CircuitBoard:
     def to_file(self, fname):
         pcb_fname = '{}.PCB'.format(fname)
         for layer in self._layers.values():
+            if layer == 'G12KO':
+                continue
             layer.to_file(pcb_fname)
         self._drill.to_file(pcb_fname)
         self._netlist.to_file(fname)

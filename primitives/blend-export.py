@@ -68,7 +68,7 @@ def read_via(ob, f):
     else:
         assert False
 
-known_layers = {'Ctop', 'GTO', 'GTS', 'GTL', 'G1', 'G2', 'GBL', 'GBS', 'GBO', 'Cbottom', 'Mill', 'Drill'}
+known_layers = {'Ctop', 'GTO', 'GTS', 'GTL', 'G1', 'G2', 'G12KO', 'GBL', 'GBS', 'GBO', 'Cbottom', 'Mill', 'Drill'}
 
 with open(bpy.data.filepath + '.txt', 'w') as f:
     for ob in bpy.data.objects:
