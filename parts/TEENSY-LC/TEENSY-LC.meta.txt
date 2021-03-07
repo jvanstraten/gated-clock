@@ -1,0 +1,2 @@
+tinytronics TEENSYLC-PINS
+model TEENSY-LC

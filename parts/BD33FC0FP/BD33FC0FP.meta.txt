@@ -1,0 +1,3 @@
+mouser 755-BD33FC0FP-E2
+model TO252-3
+datasheet https://nl.mouser.com/datasheet/2/348/bdxxfc0wefj-e-1874088.pdf

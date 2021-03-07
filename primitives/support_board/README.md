@@ -113,8 +113,27 @@ we'll add an LC filter.
          Gnd      Gnd        Gnd                Gnd               Gnd        Gnd        Gnd        Gnd                                       Gnd                       Gnd
 ```
 
-Note that the 3V3 rail used occasionally is taken from the Teensy
-daughterboard. Its onboard LDO is plenty for what we're doing with it.
+The LED controllers draw quite a bit of quiescent current. While the total
+current drawn is still less than the maximum that the Teensy board can provide,
+it's cutting it close. Therefore, a dedicated 3.3V LDO was added.
+
+```
+      Vcc                   3V3
+     -----                 -----
+       |    .-----------.    |
+       o----| In    Out |----o
+       |    | BD33FC0FP |    |
+       |    |    Gnd    |    |
+10uF -----  '-----------'  ----- 10uF
+     -----       |         -----
+       |         |           |
+       |         |           |
+     -----     -----       -----
+      Gnd       Gnd         Gnd
+```
+
+This regulator is overkill; it should supply about 90mA, and can do 1A. The
+footprint should be large enough that it shouldn't get too warm.
 
 #### Noise filter
 
@@ -605,39 +624,31 @@ shifters are included here.
 
 The Teensy's pinout is as follows.
 
- - Arduino 0, used as MOSI1: `disp.SIN`
- - Arduino 1, used as MISO1: `disp.SOUT`
- - Arduino 2: GPIO, TODO
- - Arduino 3, usable as PWM or input capture for FTM2: `f50hz.override`
- - Arduino 4, usable as input capture for FTM2: `gps.PPS`
- - Arduino 5: GPIO, TODO
- - Arduino 6, possibly used as CS1: `disp.LAT`
- - Arduino 7, RX3: `gps.TX`
- - Arduino 8, TX3: `gps.RX`
- - Arduino 9: GPIO, TODO
- - Arduino 10, possibly used as CS0: `uc.CS` (mainboard I/O expander)
- - Arduino 11, used as MOSI0: `uc.MOSI` (mainboard I/O expander)
- - Arduino 12: used as MISO0: `uc.MISO` (mainboard I/O expander)
- - Arduino 13 (LED): display override (non-inverted)
- - Arduino 14, used as SCK0: `uc.SCK` (mainboard I/O expander)
- - Arduino 15: GPIO, TODO
- - Arduino 16, used as FTM1 PWM: `sync.A` (synchroscope PWM channel A)
- - Arduino 17, used as FTM1 PWM: `sync.B` (synchroscope PWM channel B)
- - Arduino 18, GPIO, TODO
- - Arduino 19, GPIO, TODO
- - Arduino 20, used as SCK1: `disp.SCLK`
- - Arduino 21: GPIO, TODO
- - Arduino 22, used as analog 8: current monitor ADC
- - Arduino 23: power good input
- - Arduino 26: GPIO, TODO
-
-To be assigned:
-
- - `hcfg.Ien`
- - `hcfg.Isw`
- - `hcfg.Inc`
- - `cfg.Ren`
- - `mcfg.Inc`
- - `mcfg.Isw`
- - `mcfg.Iem`
- - `uc.IRQ`
+ - Arduino 0, used as MOSI1: display data input (`disp.SIN`)
+ - Arduino 1, used as MISO1: display fault data output (`disp.SOUT`)
+ - Arduino 2: minutes configuration increment switch readout (`mcfg.Isw.L`)
+ - Arduino 3, usable as PWM or input capture for FTM2: 50/60Hz readback &
+   override (`f50hz.O`)
+ - Arduino 4, usable as input capture for FTM2: PPS signal from the GPS
+   (`gps.PPS`)
+ - Arduino 5: minutes configuration increment switch enable (`mcfg.Ien.L`)
+ - Arduino 6, possibly used as CS1: display data latch control (`disp.LAT`)
+ - Arduino 7, RX3: GPS data input (`gps.G2U`)
+ - Arduino 8, TX3: GPS configuration output (`gps.U2G`)
+ - Arduino 9: automatic configuration, increment minutes (`mcfg.Inc.L`)
+ - Arduino 10, possibly used as CS0: mainboard I/O expander chip select
+   (`uc.CS.L`)
+ - Arduino 11, used as MOSI0: mainboard I/O expander write data (`uc.MOSI.L`)
+ - Arduino 12: used as MISO0: mainboard I/O expander read data (`uc.MISO.L`)
+ - Arduino 13 (LED): display override (non-inverted, `override.L`)
+ - Arduino 14, used as SCK0: mainboard I/O expander clock (`uc.SCK.L`)
+ - Arduino 15: mainboard I/O expander interrupt request (`uc.IRQ.L`)
+ - Arduino 16, used as FTM1 PWM: synchroscope PWM channel B (`sync.BL`)
+ - Arduino 17, used as FTM1 PWM: synchroscope PWM channel A (`sync.AL`)
+ - Arduino 18, automatic configuration, increment hours (`hcfg.Inc.L`)
+ - Arduino 19, hours configuration increment switch readout (`hcfg.Isw.L`)
+ - Arduino 20, used as SCK1: display clock (`disp.SIN`)
+ - Arduino 21: hours configuration increment switch enable (`mcfg.Ien.L`)
+ - Arduino 22, used as analog 8: current monitor ADC (`pwr.Imon`)
+ - Arduino 23: power good input, GPIO pullup needed (`pwr.Pgood`)
+ - Arduino 26: automatic configuration, enable (`cfg.Ren.L`)

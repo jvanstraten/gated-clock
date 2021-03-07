@@ -21,6 +21,10 @@ class Part:
                 if len(line) != 2:
                     raise ValueError('line is not key/value: {}'.format(line))
                 self._meta[line[0]] = line[1]
+        if 'model' in self._meta:
+            model = self._meta['model']
+            if not os.path.isfile(os.path.join('models', model, '{}.blend'.format(model))):
+                raise ValueError('missing model data for {}'.format(name))
 
     def get_name():
         """Returns the name of the part."""
