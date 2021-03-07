@@ -47,12 +47,12 @@ print('*** rendering to SVG...')
 with open('output/support_board.normal.svg', 'w') as f:
     f.write('<svg viewBox="0 0 410 410" width="5125" height="5125" xmlns="http://www.w3.org/2000/svg">\n')
     f.write('<g transform="translate(205 205) scale(1 -1) " filter="drop-shadow(0 0 1 rgba(0, 0, 0, 0.2))">\n')
-    f.write(support_board_gbr.get_svg(False, gerbertools.color.mask_white(), gerbertools.color.silk_black(), id_prefix='support_board'))
+    f.write(support_board_gbr.get_svg(False, gerbertools.color.mask_green(), gerbertools.color.silk_white(), id_prefix='support_board'))
     f.write('</g>\n')
     f.write('</svg>\n')
 
-#support_board_gbr.write_svg('output/support_board.normal.svg', False, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
-#support_board_gbr.write_svg('output/support_board.flipped.svg', True, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
+support_board_gbr.write_svg('output/support_board.front.svg', False, 50.0, gerbertools.color.mask_green(), gerbertools.color.silk_white())
+support_board_gbr.write_svg('output/support_board.back.svg', True, 50.0, gerbertools.color.mask_green(), gerbertools.color.silk_white())
 
 print('*** rendering to OBJ...')
 support_board_gbr.write_obj('output/support_board.PCB.obj')

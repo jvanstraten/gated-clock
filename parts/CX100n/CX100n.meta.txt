@@ -3,3 +3,4 @@ model X2CAP
 value 100nF
 voltage 630V
 class X2
+datasheet https://nl.mouser.com/datasheet/2/427/mkp339x2-1762667.pdf

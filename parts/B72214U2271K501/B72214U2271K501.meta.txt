@@ -1,3 +1,4 @@
 mouser 871-B72214U2271K501
 model VAR14MM
 value 430V
+datasheet https://product.tdk.com/info/en/catalog/datasheets/70/db/var/SIOV_SNF_AdvanceD.pdf

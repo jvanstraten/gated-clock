@@ -92,8 +92,8 @@ with open('output/mainboard.normal.svg', 'w') as f:
     f.write('</g>\n')
     f.write('</svg>\n')
 
-#mainboard_gbr.write_svg('output/mainboard.normal.svg', False, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
-#mainboard_gbr.write_svg('output/mainboard.flipped.svg', True, 12.5, gerbertools.color.mask_white(), gerbertools.color.silk_black())
+mainboard_gbr.write_svg('output/mainboard.front.svg', False, 50.0, gerbertools.color.mask_white(), gerbertools.color.silk_black())
+mainboard_gbr.write_svg('output/mainboard.back.svg', True, 50.0, gerbertools.color.mask_white(), gerbertools.color.silk_black())
 
 print('*** rendering to OBJ...')
 mainboard_gbr.write_obj('output/mainboard.PCB.obj')

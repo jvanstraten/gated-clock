@@ -3,3 +3,4 @@ model C5X11
 value 100uF
 voltage 16V
 esr 1.2
+datasheet https://nl.mouser.com/datasheet/2/977/e_YXJ-1601195.pdf
