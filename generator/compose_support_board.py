@@ -82,7 +82,7 @@ for violation in violations:
 print()
 if any_violations:
     print('There were DRC errors :(')
-    #sys.exit(1)
+    sys.exit(1)
 else:
     print('Everything checks out! :D')
 
