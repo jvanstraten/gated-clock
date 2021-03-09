@@ -520,25 +520,37 @@ SCLK -------------o--------)--------)----------------------o--------)--------)--
  LAT ----------------------o--------)-------------------------------o--------)-------------------------------'        |         |
 SOUT -------------------------------)----------------------------------------)----------------------------------------)---------'
                                     |                                        |                                        |
-             3V3         Hours      |                            Minutes     |                            Seconds     |
-            -----                   |                                        |                                        |
-              |                     |                                        |                                        |
-              o-----------.         |                                        |                                        |
-              |           |         |                                        |                                        |
-        100nF |       .-------.     |                                        |                                        |
-            -----     | 32MHz |-----o----------------------------------------o----------------------------------------'
-            -----     '-------' ECS-3225MV-320-BN-TR
-              |           |
-              o-----------'
-              |
-            -----
-             Gnd
+                         Hours      |                            Minutes     |                            Seconds     |
+                                    |                                        |                                        |
+                                    '----------------------------------------o----------------------------------------'
+                                                                             |
+                                                                             |
+                                                     3V3                     |
+                                                    -----                    |
+                                               100nF  |                      |
+                                                . .   |                      |
+                  3V3                       .---| |---o                      |
+                 -----                      |   ' '   |                      |
+                   |                      -----       |                      |
+                   o-----------.           Gnd  .-._  | 5  SN74LVC1G17DCKR   |
+                   |           |                |   `-._                     |
+             100nF |       .-------.          2 |     __`-._  4    ____      |
+                 -----     | 32MHz |------------|   _||    _:-----|____|-----'
+                 -----     '-------'            |      _.-'        47R
+                   |           | ECS-3225MV-    |  _.-'
+                   o-----------' 320-BN-TR      '-'   | 3
+                   |                                  |
+                 -----                              -----
+                  Gnd                                Gnd
 ```
 
 Note that they run on 3V3 rather than the standard Vcc (5V). The current sinks
-can handle voltages up to 10V regardless of supply voltage, so this is fine. It
-saves a few level shifters for the microcontroller and allows a standard
-oscillator to be used.
+can handle voltages up to 10V regardless of supply voltage, so this is fine,
+and saves a few level shifters for the microcontroller.
+
+The oscillator connects to the GSCLK inputs via a buffer, because the trace and
+input capacitance would otherwise be greater than what it can drive (max is
+15pF, and the trace alone is about that much already).
 
 ### Connection table
 
