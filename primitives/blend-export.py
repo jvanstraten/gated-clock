@@ -68,43 +68,46 @@ def read_via(ob, f):
     else:
         assert False
 
-known_layers = {'Ctop', 'GTO', 'GTS', 'GTL', 'G1', 'G2', 'G12KO', 'GBL', 'GBS', 'GBO', 'Cbottom', 'Mill', 'Drill'}
+known_layers = {'Ctop', 'GTO', 'GTS', 'GTL', 'G1', 'G2', 'G12KO', 'GBL', 'GBS', 'GBO', 'Cbottom', 'Mill', 'Drill', 'LB'}
 
 with open(bpy.data.filepath + '.txt', 'w') as f:
     for ob in bpy.data.objects:
         for c in ob.users_collection:
             print('parsing object {} on layer {}: '.format(ob.name, c.name), end='')
-            if c.name in known_layers:
-                if ob.type == 'MESH' and c.name not in ('Ctop', 'Cbottom'):
-                    if c.name == 'Drill':
+            layer = c.name
+            if layer == 'LightBarrier':
+                layer = 'LB'
+            if layer in known_layers:
+                if ob.type == 'MESH' and layer not in ('Ctop', 'Cbottom'):
+                    if layer == 'Drill':
                         print('hole/via object', end='')
                         read_via(ob, f)
                         continue
                     elif 'Solidify' in ob.modifiers:
                         thickness = round(ob.modifiers['Solidify'].thickness, 2)
                         print('line object with thickness = {}'.format(thickness), end='')
-                        read_lines(c.name, ob, f, thickness)
+                        read_lines(layer, ob, f, thickness)
                         continue
-                    elif c.name != 'Mill':
+                    elif layer != 'Mill':
                         print('region object', end='')
-                        read_regions(c.name, ob, f)
+                        read_regions(layer, ob, f)
                         continue
                 elif ob.type == 'FONT':
                     print('label', end='')
-                    read_label(c.name, ob, f)
+                    read_label(layer, ob, f)
                     continue
-            elif c.name.startswith('Acrylic.'):
-                _, name, mode = c.name.split('.')
+            elif layer.startswith('Acrylic.'):
+                _, name, mode = layer.split('.')
                 assert mode in ('Cut', 'Engrave')
                 if ob.type == 'MESH':
                     if 'Solidify' in ob.modifiers:
                         thickness = round(ob.modifiers['Solidify'].thickness, 2)
                         print('line object with thickness = {}'.format(thickness), end='')
-                        read_lines(c.name, ob, f, thickness)
+                        read_lines(layer, ob, f, thickness)
                         continue
                     elif mode != 'Cut':
                         print('region object', end='')
-                        read_regions(c.name, ob, f)
+                        read_regions(layer, ob, f)
                         continue
             print('UNKNOWN, treating as comment')
 

@@ -1,4 +1,4 @@
-mouser TODO
+mouser 652-CR0603JW-471ELF
 model 0603R
 value 470R
 power 0.1W

@@ -17,6 +17,7 @@ all:
 	python3 generator/compose_mainboard.py
 	python3 generator/compose_support_board.py
 	python3 generator/post.py
+	python3 generator/orderlist.py
 	convert output/mainboard.normal.svg output/mainboard.normal.png
 	convert output/mainboard.front.traces.svg output/mainboard.front.traces.png
 	convert output/mainboard.back.traces.svg output/mainboard.back.traces.png

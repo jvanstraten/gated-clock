@@ -355,11 +355,11 @@ class CircuitBoard:
                 'GTO', 'GTS',
                 'GTL', 'G1', 'G2', 'GBL',
                 'GBS', 'GBO',
-                'Mill', 'G12KO'
+                'Mill', 'G12KO', 'LB'
             ]
         }
         if config.LAYOUT_ONLY:
-            self._ignore = {'GTS', 'GTL', 'G1', 'G2', 'GBL', 'GBS', 'GBO', 'G12KO'}
+            self._ignore = {'GTS', 'GTL', 'G1', 'G2', 'GBL', 'GBS', 'GBO', 'G12KO', 'LB'}
         else:
             self._ignore = set()
         self._drill = DrillLayer()

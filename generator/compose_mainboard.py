@@ -24,6 +24,11 @@ any_violations = False
 if not mainboard.get_netlist().check_composite():
     any_violations = True
 
+print('*** building light barrier guide...')
+barrier_gbr = gerbertools.CircuitBoard('output/mainboard.PCB', '.GM1', '');
+barrier_gbr.add_copper_layer('.LB', 2.5)
+barrier_gbr.write_obj('output/mainboard.Barrier.obj')
+
 print('*** building PCB...')
 #mainboard_gbr = gerbertools.read('output/mainboard.PCB')
 print('outline and hole data...')

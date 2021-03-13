@@ -1,4 +1,4 @@
-mouser TODO
+mouser 603-RC0603FR-0710KL
 model 0603R
 value 10k
 power 0.1W

@@ -36,6 +36,9 @@ class Part:
             raise KeyError('no attribute named {} in part {}'.format(attr, self._name))
         return val
 
+    def get_data(self):
+        return self._meta
+
 _parts = {}
 
 def get_part(name):
