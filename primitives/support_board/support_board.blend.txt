@@ -25648,7 +25648,7 @@ label Gnd -101.69999694824219 -20.000001907348633 0.0 0.19999998807907104
 layer GTO
 label Designed~by~Jeroen~van~Straten 0.0 34.99999237060547 0.0 1.2000000476837158
 layer GTO
-label #QR~https://github.com/jvanstraten/gated-clock/tree/#REVISION 81.99999237060547 -48.29999542236328 0.0 1.0
+label #QR~https://github.com/jvanstraten/gated-clock/tree/#VERSION 81.99999237060547 -48.29999542236328 0.0 1.0
 layer GBS
 label uc.IRQ -55.799991607666016 -45.99999237060547 0.0 0.25
 layer GBS

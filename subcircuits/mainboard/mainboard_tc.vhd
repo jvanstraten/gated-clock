@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
--- pragma simulation time 100000 ms
+--pragma simulation timeout 100000 ms
 
 entity mainboard_tc is
 end entity;
@@ -246,6 +246,7 @@ begin
 
     for h in 0 to 23 loop
       for m in 0 to 59 loop
+        report "the time is now " & integer'image(h) & ":" & integer'image(m) severity note;
         for s in 0 to 59 loop
           for f in 0 to 49 loop
             check(h, m, s);

@@ -120,7 +120,16 @@ class LaseredAcrylic:
                 plate = plates.add(name, data.get_material(), data.get_thickness(), data.is_flipped())
             data.instantiate(plate, transformer, translate, rotate)
 
-    def to_file(self, fname, name='...', email='...', telephone='...'):
+    def to_file(self, fname):
+        name = os.environ.get('ACRYLIC_NAME', '...')
+        email = os.environ.get('ACRYLIC_EMAIL', '...')
+        telephone = os.environ.get('ACRYLIC_PHONE', '...')
+        skip = os.environ.get('ACRYLIC_SKIP', '')
+        if skip:
+            skip = set(skip.split(':'))
+        else:
+            skip = set()
+
         cutting_layer = []
         engrave_line_layer = []
         engrave_region_layer = []
@@ -139,8 +148,13 @@ class LaseredAcrylic:
             ident_counter[0] += 1
             return '{}{}'.format(prefix, ident_counter[0])
 
-        for index, (plate_name, plate) in enumerate(self._plates.items()):
+        index = 1
+        for (plate_name, plate) in self._plates.items():
             plate.to_file('{}.{}'.format(fname, plate_name))
+
+            if plate_name in skip:
+                print('SKIPPING plate {} due to environment variables'.format(plate_name))
+                continue
 
             sizes = list(map(from_mm, [200, 300, 450, 600, 900]))
             x_min, x_max, y_min, y_max = plate.get_bounds()
@@ -161,6 +175,12 @@ class LaseredAcrylic:
                     break
             else:
                 assert False
+
+            print('{} design is {:.1f}x{:.1f} mm, need {:.0f}x{:.0f} plate'.format(
+                plate_name, to_mm(w), to_mm(h), to_mm(w_total), to_mm(h_total)))
+
+            cx -= max((w_total - w) / 2 - from_mm(20), 0)
+            cy -= max((h_total - h) / 2 - from_mm(20), 0)
 
             def coord_to_svg(coord):
                 x, y = coord
@@ -277,7 +297,7 @@ class LaseredAcrylic:
                 id="flowPara{}"
                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:88.5827px;line-height:1.25;font-family:roboto;-inkscape-font-specification:roboto;">DIKTE: {}</flowPara></flowRoot>""".format(
                     to_svg(from_mm(125) + drawing_w), to_svg(from_mm(500)),
-                    ident(), ident(), ident(), ident(), index+1,
+                    ident(), ident(), ident(), ident(), index,
                     ident(), int(round(to_mm(w_total))), int(round(to_mm(h_total))),
                     ident(), ident(), plate.get_material(), ident(), plate.get_thickness()
                 )
@@ -285,6 +305,7 @@ class LaseredAcrylic:
 
             drawing_w += w_total + from_mm(300)
             drawing_h = max(drawing_h, h_total + from_mm(450))
+            index += 1
 
         if drawing_w == 0:
             if os.path.isfile('{}.laserbeest.svg'.format(fname)):

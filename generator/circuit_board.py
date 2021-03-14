@@ -4,7 +4,6 @@ from netlist import Netlist
 from paths import Paths
 from acrylic import LaseredAcrylic
 import gerbertools
-import sys
 import config
 import os
 
@@ -539,7 +538,7 @@ class CircuitBoard:
                     inst.get_layer(),
                     x, y, rot
                 ))
-        self._plates.to_file(fname, *sys.argv[1:])
+        self._plates.to_file(fname)
 
     def instantiate(self, pcb, transformer, translate, rotate, warpable, net_prefix, net_override):
         """Instantiates the contents of this PCB onto the given PCB with the
