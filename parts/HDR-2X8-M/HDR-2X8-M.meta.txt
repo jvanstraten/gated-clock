@@ -1,3 +1,3 @@
-mouser TSW-108-12-T-S-RA
-model TSW-108-12-T-S-RA
+mouser 200-TSW10812TD
+model TSW-108-12-T-D
 datasheet https://eu.mouser.com/datasheet/2/527/tsw_th-1348913.pdf
