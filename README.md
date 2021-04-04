@@ -603,8 +603,7 @@ the fourteen screws that mate with the acylic.
 
 ### 5) Electronic assembly
 
-Ultimately, the order in which you solder the parts is up to you. Here's some
-tips and recommendations, however.
+Some preprocessing is required:
 
  - The 3D-printed parts include a small lead bending tool for the 3mm LEDs. It
    consists of two square printed parts, and is completed using four M3 nuts
@@ -614,6 +613,17 @@ tips and recommendations, however.
    the cutouts for them. Once tightened, cut the exposed part of the leads off
    with pliers. Finally, disassemble everything again to retrieve the LED. I've
    found that two screws on opposite sides is enough.
+
+ - The trace connecting the USB bus voltage to the 5V rail on the Teensy LC
+   must be cut, to prevent the power supply on the support board from trying to
+   power your PC.
+
+ - The mainboard to support board connectors are slightly too short right out
+   of the box: the male side should be soldered flush to the opposite side of
+   the PCB rather than having it stick through slightly as usual.
+
+Ultimately, the order in which you solder the parts is up to you. Here's some
+tips and recommendations, however.
 
  - I couldn't be bothered to add part designators to the board generation
    scripts and design entry file formats, so you'll have to use the
