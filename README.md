@@ -262,11 +262,18 @@ You're going to need the following things.
    pitch TSSOPs with a thermal pad. The boards are designed to be hand-soldered
    though, so the pads are relatively long, and I took care to only connect
    traces to the end that you stuff the soldering iron into, so heating them up
-   should be relatively easy.
+   should be relatively easy. Unless you like to live dangerously, you should
+   also have anti-ESD gear and actually use it during assembly.
+
+ - A current-limited lab power supply, multimeter, waveform generator, and
+   oscilloscope are very much nice-to-have. I don't think it's humanly possible
+   to solder everything correctly the first time, so you will be doing some
+   debugging.
 
  - A 3D-printer with at least 21x25cm build area. I'm using a Prusa MK3s with
    a stock 0.4mm nozzle and print in PETG. I'm not sure how much filament is
-   used exactly.
+   used exactly. You'll want some 3D-print post-processing stuff as well, which
+   I'm assuming you'll have if you have a printer.
 
  - An M3 tap for inner thread.
 
@@ -287,10 +294,37 @@ You're going to need the following things.
    but I'm pretty sure they ship internationally, or at least within Europe.
    Either way, the Teensy in particular shouldn't be hard to get your hands on,
    and you can probably jury-rig any GPS module you want in there (or leave it
-   out entirely if you don't care enough about GPS sync).
+   out entirely if you don't care enough about GPS sync). The headers you'd
+   probably want to mount the Teensy to the support board are not included in
+   any ordering list; you can do anything between proper male/female headers
+   and just sticking wires through the holes and soldering them.
+
+ - Some miscellaneous parts not in any ordering list because I had them laying
+   around:
+
+    - 41 M3x12mm screws with a domed head of at most 6.2mm diameter and about
+      2mm thickness, though if you don't have a bunch of screws in stock you
+      might want to get longer ones and cut them to size with a thread cutting
+      tool;
+    - 25 standard M3 hex nuts, 2.5mm thick;
+    - a long M3 screw is nice to have to help pull the nuts into the printed
+      parts;
+    - a screwdriver for the above, obviously;
+    - calipers are very useful to have lying around, if only to measure the
+      thickness of the acrylic you got;
+    - a mains power cord to mount to screw terminals on the support board
+      (preferably with grounding lead, though this is technically not necessary
+      due to the lack of exposed metal);
+    - stuff to clean the acrylic with when you're done (I used "wasbenzine,"
+      but that stuff doesn't seem to have a proper English translation for some
+      reason. The best translation I suppose would be pure gasoline. Contrary
+      to what Google et al will tell you it is *not* white spirit, which would
+      be "terpentine" in Dutch, and would be likely to mess up your acrylic).
 
  - An appropriately filled wallet, because this is not a cheap project. But we
    went over that already.
+
+### 1) File generation
 
 If you're ordering via laserbeest and want to use the existing pipeline, you
 will want to set the following environment variables:
@@ -328,8 +362,39 @@ Nevertheless, the most important ones are:
  - `mouser.txt`: Mouser ordering list; and
  - `tinytronics.txt`: TinyTronics ordering list (the Teensy, GPS, and antenna).
 
-You should start by ordering the parts, obviously: the PCBs, Mouser/TinyTronics
-electronics parts, and the acrylic sheets.
+### 2) Ordering
+
+You should start by ordering the parts, obviously: the Mouser/TinyTronics
+electronics parts, the PCBs, the acrylic sheets, and the consumables if you
+don't have them laying around like I do.
+
+For the parts, you should probably start by figuring out which color LEDs you
+want; the 7-segment displays have RGB LEDs, but everything else is
+single-color. There are four groups of LEDs:
+
+ - the gate state LEDs (`LTST-C230-GATE`, default orange);
+ - the flipflop state LEDs (`FFLED`, standard 3mm T1 LED, default orange);
+ - the synchroscope LEDs (`APD3224`, default orange); and
+ - the LEDs that light when the microcontroller is influencing the circuit
+   (`LTST-C230-UC`, default green).
+
+The LEDs I chose are all highly efficient; the LTSTs only receive about 2.5mA
+at max brightness, and the flipflop LEDs receive about 5mA. However, the
+efficiency of an LED depends a lot on its color (due to different material
+characteristics, I suppose). So, if you want to change the color, you'll
+probably want to change the resistance value as well. The values are easy to
+change in the `parts` folder; simply modify the text files for the LED parts
+and their resistors (`R-` prefix).
+
+When ordering at Mouser, make sure to round up the part count, especially for
+uncommonly used resistor values and such: Mouser levies what I can only
+describe as an "asshole tax" for people who order small amounts of these, as
+ordering more will often cost *less*. I've seen an extreme case where the
+price break for 10+ was so much cheaper than the price break for 1+ that buying
+ten was cheaper than buying one! The ordering system does not notify you of
+this. In general, by the way, it's good practice to over-order the tiny parts a
+little bit, so you don't have to place a new order if you misplace or break a
+few of them.
 
 For the PCBs, everything assumes standard 1.6mm 4-layer PCBs with 1oz copper on
 the outer layers and something around .5oz on the inner layers. The mainboard
@@ -342,7 +407,14 @@ nothing is explicitly impedance-matched. The only thing is that the trace
 capacitance calculations I did assume .1mm separation, but that would be the
 worse case anyway.
 
-For the acrylic sheets, three sheets are needed:
+The footprints are designed for conventional soldering by hand. If you want to
+use solder paste with an oven or hot air, you might want to rework some
+footprints here and there. In particular, the support board has four components
+with a thermal pad (the LED drivers and the hot-swap controller), which have a
+large hole under the pad to provide access to a conventional soldering iron;
+you'll probably want to remove those holes when using solder paste.
+
+As for the acrylic, three sheets are needed:
 
  - `Front`: clear, 3mm, at least 40x40cm. Includes engraving instructions in
    addition to cuts.
@@ -352,24 +424,270 @@ For the acrylic sheets, three sheets are needed:
 The thickness tolerance of Laserbeest's acrylic source is abysmal, apparently
 due to how the sheets are made. So everything is designed with about +/-1mm
 thickness tolerance in mind. However, you may need to adjust some 3D-printed
-parts here and there.
+parts here and there, or you may need slightly shorter or longer M3 screws.
+Of particular importance is that the button and slide switch caps have the
+right height,
 
 You may also need to adjust the hole sizes in the `Front` sheet based on laser
 width and how gutsy you're feeling. They need to be threaded, so the finished
 hole size should be 2.5mm. They are 2.35mm in the design files for Laserbeest,
-based on experimentation.
+which worked well based on experimentation.
 
-The thing is assembled with 41 M3x12mm screws with at most 6.2mm diameter, 2mm
-thick heads, and 25 M3 hex nuts of standard 2.5mm thickness. **These are not**
-**in any ordering list, because I had them all in stock!** If you can't be
-bothered to adjust the 3D-printed parts too much based on acrylic plate
-thickness, you may want to get M3x15mm instead and cut the screws to size with
-a thread cutter where applicable.
+When you receive the acrylic, don't throw the bubble wrap it undoubtedly comes
+wrapped in away! It'll be useful during assembly.
 
-**Also not in any ordering list is a mains cable with plug.** The 3D-printed
-files assume an outer diameter of at most 7-8mm or so, allowing for an earthed
-cable to be used. This shouldn't be strictly necessary because it should be
-properly isolated, but better safe than sorry, right?
+### 3) 3D-printing
 
-Assembly notes TODO. I'm not that far into the process yet. It should be pretty
-obvious if everything works out, though.
+I would recommend to wait with this until you have the acrylic, because some of
+the parts depend on its thickness to various degrees. I was far too impatient
+for this, myself; just be aware that you may need to reprint parts later if you
+don't wait. The following parts depend on the thickness of the acrylic:
+
+ - the four quarter panels of the back shell have the clamping surface for the
+   screw heads at just the right size for the bottom of the M3x12 screws that
+   mate with the clear acrylic sheet to be flush with the front, so this
+   recess depends on the thickness of the white and clear acrylic sheets;
+ - likewise for the "display extender" part, of which both the total height and
+   mounting flange thickness depends on the thickness of the black and clear
+   acrylic parts;
+ - the button and slide switch caps depend on the thickness of the white
+   acrylic sheet.
+
+The Blender sources for the parts are in the `printed/design` folder. Once
+changed, you can export them to STL and import them into your slicer of choice.
+If you don't need to change anything, or want to use some other tool to modify
+the parts, the STL files are in the `printed/printer` folder.
+
+I use PETG for everything. PLA might be fine as well, but be careful that in
+particular the mounting bracket is strong enough -- wouldn't want the clock to
+break off your wall in the middle of the night or something! I don't exactly
+consider myself to be a very experienced 3D-printer, so your mileage may vary.
+
+Some of the parts need build plate supports, so some post-processing is
+involved. The slide switch caps in particular needed some TLC for me before
+they would slide properly, and I had to drill out the holes in the spacers for
+the extra-long headers. If you don't have a 1mm drill and a drill press to do
+this with, you can probably mess with the part and print settings until that
+one works straight out of the printer though, or you could probably also just
+eyeball the correct insertion depth for the headers when soldering.
+
+### 4) Mechanical assembly (dry run)
+
+Once you have the 3D-printed parts, acrylic, and bare PCBs, I would suggest a
+dry run of assembling the thing, so you know what goes where and you can be
+sure everything fits before all the delicate parts are populated.
+
+ - Carefully clean the clear acrylic sheet. There will be debris from the
+   engraving; make sure it doesn't cause scratches! I personally messed up here
+   because I assumed there would be protective foil on both sides; there was
+   not.
+
+ - Carefully tap the holes in the clear acrylic sheet. Be patient; acrylic
+   cracks if you're too rough. Don't use power tools!
+
+ - Place the clear acrylic sheet on bubblewrap, to avoid causing scratches and
+   allow the button and slide switch caps to stick out slightly. The rough,
+   engraved side should be facing up.
+
+ - Place the black acrylic sheet on top. It is *not* symmetrical in any
+   direction: make sure that the colons are off-center *away* from the side
+   with the synchroscope and pushbutton cutouts, and of course that the
+   screw holes align.
+
+ - Place the printed display extender part on top of the display, again
+   ensuring that it is oriented correctly.
+
+ - Mount the black acrylic sheet and display extender using two M3x12 screws.
+   Be careful not to exert too much torque; threaded holes in acrylic are
+   quite fragile!
+
+ - Place the white acrylic sheet on top. The cutout for the display should
+   constrain it in roughly the right place aside from 180deg rotation symmetry;
+   align based on the synchroscope engraving and/or button cutouts to avoid
+   mounting the plate upside down.
+
+ - Place the three button caps (2x round, 1x oblong) and the two slide switch
+   caps in the appropriate cutouts.
+
+ - Carefully place the mainboard on top. First align the slide switch caps with
+   the slots in the PCB (and the slide switches themselves if you already
+   soldered then), then align the pins on the bottom of the button caps with
+   the holes in the PCB, and finally align the holes.
+
+ - If you haven't already, insert nuts in the hex recesses of the four quarter
+   panels. There are eleven of these. Pull them in with a screw if necessary,
+   and make sure they're all the way in (they should be flush or slightly
+   recessed into the bosses. If your print is undersized and they fall out, you
+   might want to glue them in.
+
+ - Slot the quarter panels together. They are all different, so there's only
+   one way to do this. Secure them by placing screws in the four shared screw
+   holes; the assembly shouldn't fall apart anymore after you do this, although
+   it will still be quite floppy.
+
+ - Carefully place the panels over the rest of the assembly. The triangular
+   screw hole pattern should be at the top of the clock, i.e. the side with the
+   synchroscope and buttons.
+
+ - Start by tightening the four screws that hold the quarters together. Again,
+   be careful not to exert too much force. Be especially careful if you're
+   impatient and are doing this before you have the PCBs: you can easily break
+   the 3D-printed parts by tightening the screws without the 1.6mm spacing
+   provided by the PCB. Once these four screws are in, screw the remaining ten
+   in in any order.
+
+ - Flip the clock over and make sure that the slide switches and buttons move
+   freely. If not, disassemble in reverse order and file them down a bit.
+   Repeat ad nauseum until they work right. Once done, place the clock down
+   on its front again on the bubble wrap.
+
+ - Mount the wall mount bracket to the assembly with three screws. The screws
+   mate with the triangular-pattern nuts in the top quarter panel. Be careful
+   when tightening these the first time; the screws should be too short to
+   reach the PCB, but if they do, you can easily damage the PCB.
+
+ - If you haven't already, insert nuts in the hex recesses of the support board
+   interface part. There are four of these. Pull them in with a screw if
+   necessary. If your print is undersized and they fall out, you might want to
+   glue them in.
+
+ - Mount the panel-mount SMA antenna connector end of the SMA to uFL adapter
+   cable that comes with the GPS antenna to the small square SMA insert part,
+   making sure to align the flat side of the panel-mount connector with the
+   flat side of the hole.
+
+ - Slide the above assembly into the corresponding retaining structure of the
+   support board interface part. Note that this might require some "gentle
+   persuasion" the first time; it should be more-or-less press-fit.
+
+ - Mount the support board interface assembly onto the main assembly with eight
+   screws. They mate in the same way as the wall mount bracket, so be careful
+   if the screws may be too long.
+
+ - If you haven't already, insert nuts in the hex recesses of the display light
+   guide. There are six of these. Pull them in with a screw if necessary. If
+   your print is undersized and they fall out, you might want to glue them in.
+
+ - Mount the display light guide to the support board using six screws. Be
+   careful not to place it upside down; follow the silkscreen on the PCB.
+
+ - If you haven't already, insert nuts in the hex recesses of the high-voltage
+   top cover and strain relief. There are two of these in either part. You
+   know the drill by now.
+
+ - Mount the top and bottom high-voltage covers to the support board using two
+   screws. There should only be one way to do this.
+
+ - Mount the strain relief to the bottom high-voltage cover.
+
+ - Place the support board onto the main assembly, making sure to align the
+   screw holes. The upright flanges inside the support board interface part
+   should constrain it.
+
+ - Place the support board cover on top. Again, some "gentle persuasion" may be
+   needed for the SMA connector insert the first time. Finally, clamp it down
+   with four screws, that should mate with the four nuts in the support board
+   interface part.
+
+ - Carefully lift the clock up by the wall mount. Make sure it's strong enough
+   to hold the weight with ease.
+
+ - Find a nice place to mount it to a wall! You can just use a nail or screw to
+   do it, or you could print a part that mates with the wall mount bracket if
+   you're worried about the strength of the part.
+
+Disassemble in the reverse order as usual. The wall mount can stay mounted to
+its quarter panel, but note that you can't remove the quarter panels from the
+acrylic without removing the support board assembly, because it hides one of
+the fourteen screws that mate with the acylic.
+
+### 5) Electronic assembly
+
+Ultimately, the order in which you solder the parts is up to you. Here's some
+tips and recommendations, however.
+
+ - The 3D-printed parts include a small lead bending tool for the 3mm LEDs. It
+   consists of two square printed parts, and is completed using four M3 nuts
+   and four M3x12 screws. To use it, push the LED into the hole, bend the leads
+   outward far enough for the screws to reach the recesses for the nuts on the
+   other side, then carefully tighten the screws while guiding the leads into
+   the cutouts for them. Once tightened, cut the exposed part of the leads off
+   with pliers. Finally, disassemble everything again to retrieve the LED. I've
+   found that two screws on opposite sides is enough.
+
+ - I couldn't be bothered to add part designators to the board generation
+   scripts and design entry file formats, so you'll have to use the
+   `*.*.traces.png` output files to figure out what to solder where. However,
+   the circuitry is so repetitive that you won't need it most of the time.
+
+ - The mainboard circuitry is highly linear, which means you can solder one or
+   a few subcircuits at a time and then test whether everything works. Start
+   with the reset circuit and the clock pulldown resistor (the 10k resistor
+   near the TSSOP I/O expander), then work your way around clockwise for the
+   dividers, and finally solder the decoders. You can test using the staggered
+   receptable for a standard 2.54mm 5-pin header (push it in upside-down; the
+   spring force of the pins will friction-lock it in place). The `f50Hz` signal
+   should receive a 0V..5V clock signal, `Vled` and `Vffled` should be pulled
+   *down* to somewhere between 2.5V (max brightness) and 4.5V (least
+   brightness) to turn the LEDs on, and `0V`/`5V` should be self-explanatory.
+   A two-channel waveform generator is ideal for the `f50Hz` and
+   `Vled`/`Vffled` signals, the latter because a waveform generator can pull
+   down as well (unless you have a super-fancy power supply, it won't be able
+   to). If you don't have a waveform generator or only have a single-channel
+   generator however, you can probably get the LEDs to light up with a 1:1
+   voltage divider using 100R resistors as well, and you can strobe the clock
+   by just pushing a 5V wire into the `f50Hz` signal (it will bounce though,
+   so this won't be very controlled). Use a properly current-limited power
+   supply (somewhere around 400mA should be enough for the whole clock with
+   the default LEDs), such that you don't fry something if you accidentally
+   short-circuited something. Being able to see the current is also very
+   useful, because then you'll see the current rise when a gate output is
+   shorted. Other than that, ensure that all LEDs blink when you apply enough
+   clock pulses. Some common symptoms:
+
+    - Current shoots up by about 40mA for some flipflop states: there's
+      probably a short-circuit to 0V or 5V *after* a 100R filter resistor.
+
+    - Current shoorts up by about 150-200mA for some flipflop states: there's
+      probably a short-circuit to 0V or 5V between a gate output and the
+      100R filter resistor.
+
+    - Current limit kicks in at around 1.0V to 1.5V: you probably mounted a
+      gate rotated 180-degrees.
+
+    - Current limit kicks in immediately: you have a dead short somewhere. You
+      can trace this by measuring the voltage across the decoupling capacitors
+      while the power supply is on. I got about 2.7mV over the decoupling
+      capacitors serving good circuits and less than 2mV for the one that had
+      the short, for only 200mA supply current.
+
+    - No unexpected current (the current should be <1mA when the `f50Hz` input
+      is idle and the LEDs are off), but one or more flipflops/decoder outputs
+      don't work right: usually this is due to a bad soldering joint for one
+      of the gates. You'll have to debug this by finding the gate that doesn't
+      perform its logic function properly.
+
+    - The circuit works, but a LED doesn't light up: check for bad soldering
+      joints in the LED circuitry.
+
+    - Everything is fine in steady-state, but a flipflop doesn't work: I didn't
+      personally encounter this, but this is what I'd expect to see if you
+      misplaced a capacitor or resistor somewhere in the RC filter circuits.
+      The filters are there to solve worst-case hold timing, so the flipflops
+      might misbehave with improper filters. I've found that leaving the 330pF
+      and 2.2nF capacitors out entirely also works, however (with a sample size
+      of only 1 flipflop, though).
+
+ - While soldering the mainboard, put short screws in the screw holes that
+   prevent you from accidentally exerting force on the 3mm LEDs or 1.27mm
+   jumpers when the board is upside-down. Otherwise, you can easily bend the
+   headers, or push the SMD pads for the LEDs right off the board.
+
+ - For the support board, first solder the hot-swap controller circuit and test
+   it. There's a lot of critical resistor values there, and if they're wrong,
+   the board won't do anything or won't be as protected against
+   over/undervoltage and overcurrent as it can be. I would furthermore suggest
+   leaving the mains stuff for last, because it's large, and because you'll
+   then lose the ability to power the board with a better-protected lab power
+   supply.
+
