@@ -113,11 +113,12 @@ I/O expander
 
 To limit the amount of signals that need to pass through the headers, an I/O
 expander is added to the mainboard. This can be either an MCP23017T (I2C) or an
-MCP23S17T (SPI). The SPI/I2C pins are pulled high by 10k resistors to allow the
-mainboard to work without support board while testing, without noise causing
-all kinds of stuff to happen. The address and reset pins are pulled up via a 1k
-resistor. Only the INTA pin is forwarded to the support board. The GPIO pinout
-is as follows:
+MCP23S17T (SPI), though SPI must be used with the current control board (or the
+I2C protocol would need to be bit-banged). The SPI/I2C pins are pulled high by
+10k resistors to allow the mainboard to work without support board while
+testing, without noise causing all kinds of stuff to happen. The address and
+reset pins are pulled up via a 1k resistor. Only the INTA pin is forwarded to
+the support board. The GPIO pinout is as follows:
 
  - GPA0: mode button, active low with no hardware debouncing.
  - GPA1: down button, active low with no hardware debouncing.

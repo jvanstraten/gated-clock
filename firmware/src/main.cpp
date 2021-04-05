@@ -1,3 +1,4 @@
+#include <Arduino.h>
 
 class TLC6C5748x3 {
 public:
@@ -34,17 +35,17 @@ public:
 
   Data data[3];
 
-  bool shift_bit(bool d = false) {
+  inline bool shift_bit(bool d = false) {
     digitalWrite(0, d);
-    delayMicroseconds(1);
+    //delayMicroseconds(1);
     digitalWrite(20, HIGH);
-    delayMicroseconds(1);
+    //delayMicroseconds(1);
     digitalWrite(20, LOW);
-    delayMicroseconds(1);
+    //delayMicroseconds(1);
     return digitalRead(1);
   }
   
-  void shift_word(uint16_t d, uint8_t nb) {
+  inline void shift_word(uint16_t d, uint8_t nb) {
     for (int8_t i = nb - 1; i >= 0; i--) {
       shift_bit(d & (1 << i));
     }
@@ -53,11 +54,11 @@ public:
   void update() {
     // MSB of third device first!
 
-    delayMicroseconds(10);
+    //delayMicroseconds(10);
     
-    /*// Send control data while reading fault data from previous cycle.
+    // Send control data while reading fault data from previous cycle.
     digitalWrite(6, LOW);
-    delayMicroseconds(50);
+    //delayMicroseconds(50);
     for (int8_t device = 2; device >= 0; device--) {
       Data &d = data[device];
       d.ch[15].open_b = shift_bit(true);  // write 768 (select control latch), read 767
@@ -110,10 +111,10 @@ public:
       }
       // full shift complete
     }
-    delayMicroseconds(50);
-    digitalWrite(6, HIGH);*/
+    //delayMicroseconds(10);
+    digitalWrite(6, HIGH);
 
-    // Read fault data from previous cycle.
+    /*// Read fault data from previous cycle.
     digitalWrite(6, LOW);
     delayMicroseconds(10);
     for (int8_t device = 2; device >= 0; device--) {
@@ -179,13 +180,13 @@ public:
       // full shift complete
     }
     delayMicroseconds(10);
-    digitalWrite(6, HIGH);
+    digitalWrite(6, HIGH);*/
 
-    delayMicroseconds(10);
+    //delayMicroseconds(10);
 
     // Send grayscale data.
     digitalWrite(6, LOW);
-    delayMicroseconds(2);
+    //delayMicroseconds(2);
     for (int8_t device = 2; device >= 0; device--) {
       Data &d = data[device];
       shift_bit(false);
@@ -196,7 +197,7 @@ public:
         shift_word(c.pwm_r, 16);
       }
     }
-    delayMicroseconds(10);
+    //delayMicroseconds(10);
     digitalWrite(6, HIGH);
     
   }
@@ -207,6 +208,7 @@ public:
 TLC6C5748x3 led_ctrl;
 
 void setup() {
+  Serial.begin(115200);
   pinMode(0, OUTPUT);   // LED driver SIN
   pinMode(1, INPUT);    // LED driver SOUT
   pinMode(2, INPUT);    // minutes Isw
@@ -258,26 +260,29 @@ void setup() {
     led_ctrl.data[dev].lsdvlt = false;
     for (uint8_t ch = 0; ch < 16; ch++) {
       led_ctrl.data[dev].ch[ch].pwm_r = 0x4000;
-      led_ctrl.data[dev].ch[ch].pwm_g = 0x2000;
+      led_ctrl.data[dev].ch[ch].pwm_g = 0x0800;
       led_ctrl.data[dev].ch[ch].pwm_b = 0x0000;
       led_ctrl.data[dev].ch[ch].dc_r = 0x0F;
       led_ctrl.data[dev].ch[ch].dc_g = 0x0F;
       led_ctrl.data[dev].ch[ch].dc_b = 0x0F;
     }
   }
-  led_ctrl.data[1].ch[13].pwm_r = 0x8000;
-  led_ctrl.data[1].ch[13].pwm_g = 0x8000;
+  led_ctrl.data[1].ch[13].pwm_r = 0xFFFF;
+  led_ctrl.data[1].ch[13].pwm_g = 0xFFFF;
   led_ctrl.data[1].ch[13].pwm_b = 0x8000;
-  led_ctrl.data[1].ch[13].dc_r = 0x3F;
-  led_ctrl.data[1].ch[13].dc_g = 0x3F;
-  led_ctrl.data[1].ch[13].dc_b = 0x3F;
-  led_ctrl.data[1].ch[14].pwm_r = 0x0400;
-  led_ctrl.data[1].ch[14].pwm_g = 0x0200;
+  led_ctrl.data[1].ch[13].dc_r = 0x1F;
+  led_ctrl.data[1].ch[13].dc_g = 0x1F;
+  led_ctrl.data[1].ch[13].dc_b = 0x10;
+  led_ctrl.data[1].ch[14].pwm_r = 0x0000;
+  led_ctrl.data[1].ch[14].pwm_g = 0x0000;
   led_ctrl.data[1].ch[14].pwm_b = 0x0000;
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  unsigned long x = micros();
   led_ctrl.update();
-  delay(200);
+  unsigned long y = micros();
+  Serial.printf("micros: %lu\n", y - x);
+  delay(1000);
 }
