@@ -39,7 +39,7 @@ PE ====| (-) |----.    |                    | / 275VAC       |  RAC20           
 ```
 
 Between the following groups, minimum creepage is 4mm and minimum clearance is
-1mm (TODO, verify):
+1mm:
 
  - L;
  - Lp;
@@ -177,7 +177,7 @@ current (10.56A), the device will ignore the timers, and latch off within
 The microcontroller can get a reading of the total current draw through the
 Imon signal. At 3V3 ADC full scale, the current will be around 7A. The
 datasheet mentions vaguely that the Imon signal should not have a capacitor,
-but doesn't mention if this is because it prevents the frequency response of
+but doesn't mention if this is because it affects the frequency response of
 the monitoring signal (duh, that's the point), or if it affects internal
 behavior. Therefore, to be safe, it's buffered by an opamp before it's
 filtered. The microcontroller wants at most 5k source impedance anyway.
