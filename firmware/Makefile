@@ -6,7 +6,13 @@ PROJECT = gated-clock
 IMAGE = jvanstraten/gated-clock
 
 .PHONY: all
-all: $(PROJECT).hex loader/teensy_loader_cli
+all: program
+
+.PHONY: build
+build: $(PROJECT).hex loader/teensy_loader_cli
+
+.PHONY: program
+program: build
 	-stty -F /dev/serial/by-id/usb-Teensyduino_USB_Serial* -drain 134 # this is Teensy magic to reboot the board
 	loader/teensy_loader_cli --mcu=TEENSYLC -w -v $(PROJECT).hex
 

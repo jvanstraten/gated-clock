@@ -639,10 +639,10 @@ The Teensy's pinout is as follows.
  - Arduino 0, used as MOSI1: display data input (`disp.SIN`)
  - Arduino 1, used as MISO1: display fault data output (`disp.SOUT`)
  - Arduino 2: minutes configuration increment switch readout (`mcfg.Isw.L`)
- - Arduino 3, usable as PWM or input capture for FTM2: 50/60Hz readback &
-   override (`f50hz.O`)
- - Arduino 4, usable as input capture for FTM2: PPS signal from the GPS
-   (`gps.PPS`)
+ - Arduino 3, usable as PWM or input capture for FTM2 channel 0: 50/60Hz
+   readback & override (`f50hz.O`)
+ - Arduino 4, usable as input capture for FTM2 channel 1: PPS signal from the
+   GPS (`gps.PPS`)
  - Arduino 5: minutes configuration increment switch enable (`mcfg.Ien.L`)
  - Arduino 6, possibly used as CS1: display data latch control (`disp.LAT`)
  - Arduino 7, RX3: GPS data input (`gps.G2U`)

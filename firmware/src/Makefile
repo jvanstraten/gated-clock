@@ -28,7 +28,7 @@ OBJDUMP = $(BINDIR)$(TARGETTYPE)-objdump
 CPPFLAGS = -c -Os -g -Wall -ffunction-sections -fdata-sections -nostdlib -MMD \
  -mthumb -mcpu=cortex-m0plus -fsingle-precision-constant \
  -D__MKL26Z64__ -DTEENSYDUINO=153 -DARDUINO=10809 -DF_CPU=48000000 \
- -DUSB_SERIAL -DLAYOUT_US_ENGLISH -I$(TEENSY_DIR)
+ -DUSB_SERIAL -DLAYOUT_US_ENGLISH -I$(TEENSY_DIR) -I.
 
 # Flags only for C++
 CXXFLAGS = -fno-exceptions -felide-constructors -std=gnu++0x -fno-rtti
