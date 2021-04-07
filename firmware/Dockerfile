@@ -23,7 +23,8 @@ RUN curl -o /etc/udev/rules.d/49-teensy.rules http://www.pjrc.com/teensy/49-teen
 
 # Download Teensy core library
 RUN git clone https://github.com/PaulStoffregen/cores /teensy && \
-    (cd /teensy && git reset 1.53 --hard)
+    (cd /teensy && git reset 1.53 --hard) && \
+    sed -i'' -e 's/#define stricmp[(]a, b[)] strcasecmp[(]a, b[)]/#define stricmp strcasecmp/g' /teensy/teensy3/wiring.h
 
 # Copy code
 COPY src /src

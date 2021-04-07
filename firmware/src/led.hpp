@@ -124,8 +124,8 @@ extern bool display_override;
 void setup();
 
 /**
- * Updates the above LED config structure. This takes about 18ms when there
- * are no interrupts in between.
+ * Updates the continuous bit-banged data transfer between the LED controllers
+ * and the configuration structure.
  */
 void update();
 

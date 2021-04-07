@@ -60,8 +60,8 @@ volatile uint32_t gps_period;
 void setup() {
 
     // Configure pin modes.
-    pinMode(3, INPUT);          // 50Hz override/readout; FTM2 channel 0
-    pinMode(4, INPUT);          // GPS PPS; FTM2 channel 1
+    pinMode(PIN_GRID_F, INPUT);     // = FTM2 channel 0
+    pinMode(PIN_GPS_PPS, INPUT);    // = FTM2 channel 1
 
     // Configure TPM2.
     TPM2_SC     = (0ul << 8)    // disable DMA
@@ -97,16 +97,13 @@ void setup() {
                 | (1ul << 3)    // increment on clock
                 | (0ul << 0);   // prescaler divide by 1
 
-    // Connect the input pins.
+    // Connect the input pins to the timer.
     CORE_PIN3_CONFIG = PORT_PCR_MUX(3) | PORT_PCR_SRE;
     CORE_PIN4_CONFIG = PORT_PCR_MUX(3) | PORT_PCR_SRE;
-    Serial.printf("kokolores\n");
 
     // Set max priority for the timer interrupt.
     NVIC_SET_PRIORITY(IRQ_FTM2, 0);
     NVIC_ENABLE_IRQ(IRQ_FTM2);
-
-    Serial.printf("alarm\n");
 
     // Tick is handled in a low-priority software interrupt. We're not using
     // FTM1, so we abuse its interrupt vector.
@@ -220,7 +217,7 @@ void ftm2_isr(void) {
  * Low-priority tick interrupt.
  */
 void ftm1_isr(void) {
-    // TODO
+    tick();
 }
 
 } // extern "C"
