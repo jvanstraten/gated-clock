@@ -1,0 +1,4 @@
+mouser 588-OL4705E-R52
+model R-OL
+value 47R
+power 0.5W
