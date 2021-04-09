@@ -1,26 +1,34 @@
 #include <Arduino.h>
+#include "pwr.hpp"
+#include "clk.hpp"
 #include "led.hpp"
-#include "timer.hpp"
+#include "gps.hpp"
 #include "gpio.hpp"
+#include "timer.hpp"
 
 /**
  * Initialization function called by Arduino's main().
  */
 void setup() {
     Serial.begin(115200);
-    pinMode(7, INPUT);    // GPS RX
-    pinMode(8, OUTPUT);   // GPS TX
-    digitalWrite(8, HIGH);
-    pinMode(22, INPUT);   // power Imon
-    pinMode(23, INPUT);   // power good
+    pwr::setup();
+    clk::setup();
     led::setup();
+    gps::setup();
     gpio::setup();
     timer::setup();
 }
 
+void update() {
+    pwr::update();
+    clk::update();
+    led::update();
+    gps::update();
+    gpio::update();
+}
+
 int cycle_count = 0;
 uint32_t cycle_accum = 0;
-volatile uint32_t ticks = 0;
 
 /**
  * Main loop, called by Arduino's main().
@@ -28,8 +36,7 @@ volatile uint32_t ticks = 0;
 void loop() {
     // put your main code here, to run repeatedly:
     unsigned long t1 = micros();
-    gpio::update();
-    led::update();
+    update();
     unsigned long t2 = micros();
     if (timer::grid_period) {
         if (timer::gps_period < 47000000 || timer::gps_period > 49000000) {
@@ -48,20 +55,34 @@ void loop() {
         cycle_count++;
         if (cycle_count == 50) {
             Serial.printf("grid: %u mHz\n", (uint64_t)timer::gps_period * 50000 / cycle_accum);
-            Serial.printf("ticks: %u\n", ticks);
             Serial.printf("update micros: %lu\n", t2 - t1);
             Serial.printf("gpio exp: %04X\n", gpio::mcp_gpio_in);
+            if (gps::valid) {
+                Serial.printf(
+                    "gps time: %04d-%02d-%02d %02d:%02d:%02d\n",
+                    gps::year, gps::month, gps::day,
+                    gps::hours, gps::minutes, gps::seconds
+                );
+            } else {
+                Serial.printf("gps time: no fix\n");
+            }
+            if (led::displayed_time_valid) {
+                Serial.printf(
+                    "displayed time: %02d:%02d:%02d\n",
+                    led::displayed_hours, led::displayed_minutes, led::displayed_seconds
+                );
+            } else {
+                Serial.printf("displayed time: unknown\n");
+            }
+            Serial.printf("pgood: %d\n", digitalRead(23));
+            Serial.printf("current: %d mA\n", analogRead(8) * 1709 / 1000);
+            Serial.println("");
             cycle_accum = 0;
             cycle_count = 0;
         }
         timer::grid_period = 0;
     }
-    delay(4);
-}
-
-/**
- * 1 kHz tick, called from a low-priority timer interrupt (from timer.cpp).
- */
-void tick() {
-    ticks++;
+    if (!clk::valid && gps::valid) {
+        clk::configure((gps::hours + 2) % 24, gps::minutes, gps::seconds);
+    }
 }

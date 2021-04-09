@@ -24,13 +24,23 @@ extern volatile uint32_t grid_period;
 extern volatile uint32_t gps_period;
 
 /**
+ * Overrides the clock's clk signal to the given state.
+ */
+void override_clk(bool state);
+
+/**
+ * Releases the clock's clk signal, giving control to the power grid.
+ */
+void release_clk();
+
+/**
+ * Returns the detected grid frequency (either 50 or 60Hz).
+ */
+uint8_t grid_frequency();
+
+/**
  * Configures the timer logic.
  */
 void setup();
 
 } // namespace timer
-
-/**
- * Declaration for the tick callback function, defined in main().
- */
-extern void tick();

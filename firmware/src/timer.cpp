@@ -1,5 +1,7 @@
 #include "timer.hpp"
+
 #include <WProgram.h>
+#include "clk.hpp"
 
 /**
  * FTM2 input capture and repetitive tick interrupt logic.
@@ -43,21 +45,27 @@ static uint16_t grid_prev_valid;
 static uint16_t gps_prev_valid;
 
 /**
- * Detected grid cycle period in 24MHz ticks. Set by an ISR when two
+ * Detected grid cycle period in 48MHz ticks. Set by an ISR when two
  * consecutive edges are detected, cleared when processed by the main loop.
  */
 volatile uint32_t grid_period;
 
 /**
- * Detected GPS 1PPs period in 24MHz ticks. Set by an ISR when two
+ * Detected GPS 1PPs period in 48MHz ticks. Set by an ISR when two
  * consecutive edges are detected, cleared when processed by the main loop.
  */
 volatile uint32_t gps_period;
 
 /**
+ * Clock signal override state.
+ */
+static volatile bool clk_override;
+
+/**
  * Configures the timer logic.
  */
 void setup() {
+    clk_override = false;
 
     // Configure pin modes.
     pinMode(PIN_GRID_F, INPUT);     // = FTM2 channel 0
@@ -105,11 +113,36 @@ void setup() {
     NVIC_SET_PRIORITY(IRQ_FTM2, 0);
     NVIC_ENABLE_IRQ(IRQ_FTM2);
 
-    // Tick is handled in a low-priority software interrupt. We're not using
-    // FTM1, so we abuse its interrupt vector.
-    NVIC_SET_PRIORITY(IRQ_FTM1, 192);
-    NVIC_ENABLE_IRQ(IRQ_FTM1);
+}
 
+/**
+ * Overrides the clock's clk signal to the given state.
+ */
+void override_clk(bool state) {
+    clk_override = true;
+    grid_prev_valid = 0;
+    digitalWrite(PIN_GRID_F, state);
+    pinMode(PIN_GRID_F, OUTPUT);
+}
+
+/**
+ * Releases the clock's clk signal, giving control to the power grid.
+ */
+void release_clk() {
+    pinMode(PIN_GRID_F, INPUT);
+    CORE_PIN3_CONFIG = PORT_PCR_MUX(3) | PORT_PCR_SRE;
+    clk_override = false;
+}
+
+/**
+ * Returns the detected grid frequency (either 50 or 60Hz).
+ */
+uint8_t grid_frequency() {
+    if (grid_period < 48000000/55) {
+        return 50;
+    } else {
+        return 60;
+    }
 }
 
 /**
@@ -123,6 +156,9 @@ static inline bool ordered(uint32_t a, uint32_t b) {
  * Handles a grid edge capture event.
  */
 static void grid_edge(uint32_t grid_cap) {
+    if (clk_override) {
+        return;
+    }
     if (grid_prev_valid) {
         grid_period = grid_cap - grid_prev;
     }
@@ -203,21 +239,14 @@ void ftm2_isr(void) {
     }
 
     // Decrement edge validity counters.
-    if (grid_prev_valid) grid_prev_valid--;
+    if (grid_prev_valid) {
+        grid_prev_valid--;
+        if (!grid_prev_valid) {
+            clk::valid = false;
+        }
+    }
     if (gps_prev_valid) gps_prev_valid--;
 
-    // Call tick() on overflow via a low-priority software interrupt.
-    if (flags & (1ul << 8)) {
-        NVIC_SET_PENDING(IRQ_FTM1);
-    }
-
-}
-
-/**
- * Low-priority tick interrupt.
- */
-void ftm1_isr(void) {
-    tick();
 }
 
 } // extern "C"

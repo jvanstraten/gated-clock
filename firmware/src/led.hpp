@@ -114,9 +114,84 @@ struct Controller {
 extern Controller config[3];
 
 /**
+ * Controller index for the hours 7-segment displays.
+ */
+static const uint8_t HOURS_CTRL = 0;
+
+/**
+ * Controller index for the minutes 7-segment displays.
+ */
+static const uint8_t MINUTES_CTRL = 1;
+
+/**
+ * Controller index for the seconds 7-segment displays.
+ */
+static const uint8_t SECONDS_CTRL = 2;
+
+/**
+ * Controller channels for the tens 7-segment displays.
+ */
+static const uint8_t TENS_CH[7] = {1, 5, 12, 9, 8, 0, 4};
+
+/**
+ * Controller channels for the units 7-segment displays.
+ */
+static const uint8_t UNITS_CH[7] = {2, 3, 11, 10, 15, 6, 7};
+
+/**
+ * Controller indices for the left and right colons.
+ */
+static const uint8_t COLON_CTRL[2] = {0, 2};
+
+/**
+ * Controller channels for the lower and upper part of the colons.
+ */
+static const uint8_t COLON_CH[2] = {14, 13};
+
+/**
+ * LED controller index for the status LED.
+ */
+static const uint8_t STATUS_CTRL = 1;
+
+/**
+ * LED controller channel for the status LED.
+ */
+static const uint8_t STATUS_CH = 14;
+
+/**
+ * LED controller index for the status LED.
+ */
+static const uint8_t BRIGHTNESS_CTRL = 1;
+
+/**
+ * LED controller channel for gate, flipflop, and synchroscope LED brightness.
+ */
+static const uint8_t BRIGHTNESS_CH = 13;
+
+/**
  * Whether to enable the display override signal.
  */
 extern bool display_override;
+
+/**
+ * Displayed hours in UTC.
+ */
+extern uint8_t displayed_hours;
+
+/**
+ * Displayed minutes in UTC.
+ */
+extern uint8_t displayed_minutes;
+
+/**
+ * Displayed seconds in UTC.
+ */
+extern uint8_t displayed_seconds;
+
+/**
+ * Displayed time validity.
+ */
+extern bool displayed_time_valid;
 
 /**
  * Sets up pins related to LED control.

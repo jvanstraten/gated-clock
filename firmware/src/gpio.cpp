@@ -1,5 +1,7 @@
 #include "gpio.hpp"
+
 #include <WProgram.h>
+#include "pwr.hpp"
 
 /**
  * Regular GPIO & MCP23S17 logic.
@@ -10,9 +12,7 @@ namespace gpio {
  * Starts a SPI transaction by pulling SS low.
  */
 static inline void spi_start() {
-    //delayMicroseconds(1);
     digitalWrite(PIN_EXP_CS, LOW);
-    //delayMicroseconds(1);
 }
 
 /**
@@ -29,9 +29,7 @@ static uint8_t spi_xfer(uint8_t val) {
  * Drains the receive buffer and asserts SS, returning the last byte read.
  */
 static void spi_stop() {
-    //delayMicroseconds(1);
     digitalWrite(PIN_EXP_CS, HIGH);
-    //delayMicroseconds(1);
 }
 
 /**
@@ -169,7 +167,6 @@ void update() {
     // Update synchroscope LEDs.
     mcp_gpio_out &= ~PIN_SYNCHRO_H_MASK;
     mcp_iodir &= ~PIN_SYNCHRO_L_MASK;
-    uint8_t sync_led = synchro >> 8;
     uint16_t tab = PIN_SYNCHRO_TAB[(synchro >> 8) % 30];
     mcp_gpio_out |= tab & PIN_SYNCHRO_H_MASK;
     mcp_iodir |= tab & PIN_SYNCHRO_L_MASK;
@@ -183,10 +180,18 @@ void update() {
     analogWrite(PIN_SYNCHRO_A, (sync_pwm_a > 255) ? 255 : sync_pwm_a);
     analogWrite(PIN_SYNCHRO_B, (sync_pwm_b > 255) ? 255 : sync_pwm_b);
 
+    // Override the reset output pin if power is bad.
+    auto actual_gpio_out = mcp_gpio_out;
+    auto actual_iodir = mcp_iodir;
+    if (pwr::power_bad) {
+        actual_gpio_out &= ~PIN_RESET_MASK;
+        actual_iodir |= PIN_RESET_MASK;
+    }
+
     // Perform the data transfer with the MCP23S17.
     mcp_gpio_in = mcp_read_word(0x12);
-    mcp_write_word(0x12, mcp_gpio_out);
-    mcp_write_word(0x00, ~mcp_iodir);
+    mcp_write_word(0x12, actual_gpio_out);
+    mcp_write_word(0x00, ~actual_iodir);
 
 }
 
