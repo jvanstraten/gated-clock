@@ -5,37 +5,77 @@ Aside from the lasercut acrylic plates, all structural parts, buttons, and
 switches are 3D-printed. The parts are sized for a Prusa MK3S, so a build
 surface of 21x25cm; this is not just the boundary for packing multiple parts
 in one print, but the actual part boundary. The clock has a 40cm diameter,
-after all. Your mileage may vary with other printers. Hell, your mileage may
-vary with the MK3s and the settings. I managed to print the quarter panels with
-faster settings, but then my printer started giving me massive trouble, so I
-reverted back to stock there.
+after all.
 
-Anyway, the following parts are needed.
+Some of the printed parts depend on the actual acrylic thickness that you got.
+You can set the sheet thicknesses in the `Makefile` and run `make`, or override
+on the command line with
+`make FRONT_THICKNESS=... DISPLAY_THICKNESS=... HIGHLIGHT_THICKNESS=...`.
+The sizes are set in mm. Note that the generator only tolerates +/-1mm
+deviation from nominal; anything more than that will be clamped.
 
- - The four "quarter panels" that cover the back of the circuit board.
-   These are independent prints due to their size.
- - The support board interface; that is, the part that sits between the support
-   board and the back of the quarter panels. This is part of misc1.
- - The support board cover; that is, the part that covers the back of the
-   support board. This is an independent print due to its size.
- - A small cutout for a panel-mount SMA connector, slid between the support
-   board interface and cover. This is a separate part because the shape of the
-   SMA connector cutout is pretty important, and the print direction is wrong
-   otherwise. This is part of misc1.
- - The high voltage covers (top and bottom). These wrap around the
-   mains-referenced part of the support board. They are printed together
-   with...
- - The strain relief clasp for the mains input cable, which mounts to the
-   bottom high-voltage cover.
- - The display extensions.
- - The user interface components: two slide switches, two singular button
-   covers, and one dual button cover. These are part of misc1.
+Running this will give you an `stl` directory with a three directories;
+`white`, `black`, and `any`. The parts in the `white` directory are visible
+from the front of the clock, and should thus be printed in white (assuming
+you're using the same color scheme as I did). The parts in the `black`
+directory need to be printed black, in order to avoid light bleed between the
+segments of the display. The remaining parts can be printed in any color.
 
-Colors are up to you, I suppose. I have black, white, and clear PETG laying
-around, so that's what I printed with: the quarter panels in black as a
-backdrop for the LED holes, the high voltage covers in clear so you can sort
-of see if everything's okay in there, and everything else in white (mostly
-because that's what I had the most of).
+Some STL files have `.###` suffixes, with a shared filename as prefix. This
+just means the part with the shared filename needs to be printed more than
+once. So if you print all the STL files once, you should have exactly the
+amount of parts you need.
 
-Once printed, everything is fastened using 41 M3x12 screws, 25 M3 nuts, and 16
-tapped M3 holes in the front acrylic sheet.
+Here's a list of the parts:
+
+ - `StrainRelief`: mounts to the `HighVoltageBottom` part to clamp down on the
+   mains cable.
+ - `QP.Grid`, `QP.Seconds`, `QP.Minutes`, and `QP.Hours`: the "quarter panels"
+   that, together with the acrylic sheets, sandwich the mainboard for
+   protection and slightly improved structural integrity (the prints themselves
+   are super flimsy though, they only become somewhat rigid when the clock is
+   fully assembled). The screw head recess depths of this part depend on the
+   thickness of the acrylic sheets.
+ - `WallMountBracket`: a bracket that mounts to the top of the back of the
+   clock, providing something that the clock can be hung from. A nail or screw
+   will work, but to be safe, you might want to use the following part;
+ - `WallMountBracketB`: a bracket that mounts to a wall and mates nicely with
+   its counterpart. It's mounted to the wall with two up-to 4mm thick screws,
+   spaced 75mm+/-2mm apart.
+ - `SupportBoardInterface`: the part that the support board mounts to. It
+   itself mounts to the back of the quarter panels.
+ - `SupportBoardCover`: the protective cover for the support board.
+ - `SMAInsert` OR `NoSMAInsert`: these slot into the square hole formed when
+   mating the support board cover and interface parts. The former has a cutout
+   for a panel-mount SMA connector; the latter is a blind insert. You only need
+   one of these; which you use depends on whether you intend to populate the
+   clock with a GPS module or not.
+ - `HighVoltageBottom` and `HighVoltageTop`: plastic shielding for the
+   mains-referenced parts of the support board. When these are mounted to the
+   board, you *SHOULD* not be able to touch any live metal accidentally. But
+   be careful anyway when the thing is plugged in! This is just an extra
+   precaution.
+ - `DisplayExtender`: a printed light guide for the 7-segment displays that
+   sits immediately behind the acrylic. The dimensions of this part depend on
+   the acrylic thickness.
+ - `DisplayLightGuide`: counterpart of the above part, that mounts to the
+   support board. Its dimensions do not depend on the acrylic.
+ - `SingleButton`, `DualButton`, and `SlideSwitch`: these form the caps for the
+   four pushbuttons and two slide switches. `SingleButton` and `SlideSwitch`
+   need to be printed twice. These parts heavily depend on the thickness of the
+   acrylic, and relatively difficult to print compared to the other parts due
+   to their shape; they rely heavily on build plate supports. You'll probably
+   need to do some post-processing on these to make them work; this goes
+   especially for the slide switches.
+ - `HeaderSpacer`: a small part that you can slide over the extra-tall headers
+   to give the plastic part the right height. Needs to be printed five times.
+   You'll probably need to post-process these with a small drill to make the
+   holes large enough for the headers; they're so small that the printer tends
+   to clog them.
+ - `LedBendBottomDie` and `LedBendTopDie`: these parts aid in bending the leads
+   of the 3mm flipflop LEDs. They are not part of the actual clock.
+
+I printed everything with the Prusa defaults for PETG and the
+default 0.20mm SPEED setting for the stock 0.4mm nozzle, aside from enabling
+build-plate supports for the parts that need it; that worked for me. Your
+mileage may vary with other printers or settings.
