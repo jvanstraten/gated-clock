@@ -153,8 +153,8 @@ void setup() {
     // Send update twice during initialization to configure the max current
     // latch.
     delay(1);
-    update();
-    update();
+    while (!update());
+    while (!update());
 
 }
 
@@ -180,9 +180,10 @@ static inline void shift_word(uint16_t d, uint8_t nb) {
 
 /**
  * Updates the continuous bit-banged data transfer between the LED controllers
- * and the configuration structure.
+ * and the configuration structure. Returns true when a full sequence was
+ * completed (this takes a while, so it's divided up into multiple updates).
  */
-void update() {
+bool update() {
     static uint8_t state = 0;
     static uint32_t last_gs_write = 0;
     static bool time_blank;
@@ -195,7 +196,7 @@ void update() {
             if ((uint32_t)millis() - last_gs_write < 5) {
                 // Wait for a grayscale cycle to complete for sure before
                 // starting the next transfer.
-                return;
+                return false;
             }
             digitalWrite(PIN_LAT, LOW);
         case 2:
@@ -231,7 +232,7 @@ void update() {
             }
             // next shift is write 370
             state++;
-            break;
+            return false;
         }
         case 1:
         case 3:
@@ -277,7 +278,7 @@ void update() {
                 digitalWrite(PIN_LAT, HIGH);
             }
             state++;
-            break;
+            return false;
         }
 
         // Send grayscale data.
@@ -329,37 +330,15 @@ void update() {
                 last_gs_write = millis();
             }
             state++;
-            break;
+            return false;
         }
-        /*case 7:
-        case 9:
-        case 11:
-        {
-            auto &d = config[5 - (state >> 1)];
-            for (int8_t channel = 7; channel >= 0; channel--) {
-                const auto &c = d.ch[channel];
-                if (display_override && !c.enable) {
-                    shift_word(0, 48);
-                } else {
-                    shift_word(c.pwm_b, 16);
-                    shift_word(c.pwm_g, 16);
-                    shift_word(c.pwm_r, 16);
-                }
-            }
-            // full shift complete
-            if (state == 11) {
-                digitalWrite(PIN_LAT, HIGH);
-                last_gs_write = millis();
-            }
-            state++;
-            break;
-        }*/
 
         // Detect displayed time.
         default:
         {
             displayed_time_valid = detect_time();
             state = 0;
+            return true;
         }
 
     }

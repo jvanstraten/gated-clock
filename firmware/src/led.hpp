@@ -200,8 +200,9 @@ void setup();
 
 /**
  * Updates the continuous bit-banged data transfer between the LED controllers
- * and the configuration structure.
+ * and the configuration structure. Returns true when a full sequence was
+ * completed (this takes a while, so it's divided up into multiple updates).
  */
-void update();
+bool update();
 
 } // namespace led
