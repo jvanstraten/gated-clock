@@ -140,7 +140,7 @@ void setup() {
     }
     config[1].ch[13].pwm_r = 0xFFFF;
     config[1].ch[13].pwm_g = 0xFFFF;
-    config[1].ch[13].pwm_b = 0x9000;
+    config[1].ch[13].pwm_b = 0xA000;
     config[1].ch[13].dc_r = 0x1F;
     config[1].ch[13].dc_g = 0x10;
     config[1].ch[13].dc_b = 0x00;

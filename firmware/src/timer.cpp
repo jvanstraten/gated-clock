@@ -208,17 +208,47 @@ void ftm2_isr(void) {
     current += offs;
 
     // We have flags for the capture and overflow events, but if we receive
-    // multiple at once, we can't trivially tell what the order is. That has
-    // to be done by comparing the captured values with the current timer
-    // value. The current value is captured after the capture values and the
-    // flags, so it always represents a later time. Thus, if current is
-    // actually less than capture, we know the overflow happened after the
-    // capture, and thus that we have to adjust the capture value too.
-    if (!ordered(cap_grid, current)) {
-        cap_grid += MODULO;
-    }
-    if (!ordered(cap_gps, current)) {
-        cap_gps += MODULO;
+    // multiple at once, we can't trivially tell what the order is. Possible
+    // cases are:
+    //
+    //  -------------
+    //    ^   ^   ^         A: no overflow
+    //   CAP ISR CUR
+    //
+    //  -----------------
+    //    ^   ^   ^   ^     B: overflow before capture in same ISR
+    //   OVF CAP ISR CUR
+    //
+    //  -----------------
+    //    ^   ^   ^   ^     C: capture before overflow in same ISR
+    //   CAP OVF ISR CUR
+    //
+    //  -----------------
+    //    ^   ^   ^   ^     D: overflow between flags and current value readout
+    //   CAP ISR OVF CUR
+    //
+    // In the code above, we assume that either A or B happened; overflow is
+    // applied to offset, and the new offset is applied to the capture values
+    // and current values. If this is indeed what happened, cap < cur.
+    // Otherwise, we need to adjust.
+    //
+    // In case C and D, cap will appear to have happened later than cur,
+    // which is logically impossible. If we rule out interrupts not being
+    // processed within one timer cycle, this uniquely tells us that C or
+    // D did in fact happen. If this is combined with an overflow flag readout,
+    // case C is what happened, which means we've "overestimated" the capture
+    // event time by MODULO by already having applied the overflow offset to
+    // it, which is easily remedied by subtracting MODULO. In case D, the
+    // logical impossibility is also there, but only because cur was not
+    // adjusted for the overflow yet, which will happen in the next interrupt,
+    // so we don't need to adjust the capture value.
+    if (flags & (1ul << 8)) {
+        if (!ordered(cap_grid, current)) {
+            cap_grid -= MODULO;
+        }
+        if (!ordered(cap_gps, current)) {
+            cap_gps -= MODULO;
+        }
     }
 
     // Call the grid_edge() and gps_edge() functions in the right order.
