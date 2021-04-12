@@ -269,10 +269,16 @@ void ftm2_isr(void) {
     }
 
     // Decrement edge validity counters.
+    static uint16_t invalidate_cooldown = 500;
     if (grid_prev_valid) {
         grid_prev_valid--;
-        if (!grid_prev_valid) {
+        invalidate_cooldown = 500;
+    } else {
+        if (invalidate_cooldown) {
+            invalidate_cooldown--;
+        } else {
             clk::valid = false;
+            invalidate_cooldown = 500;
         }
     }
     if (gps_prev_valid) gps_prev_valid--;
