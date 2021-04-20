@@ -105,6 +105,109 @@ static bool detect_time() {
 }
 
 /**
+ * Sets the override for a digit to the specified (representable) character.
+ * Supported are alphanumerics except k, m, v, w, x, y, and z, as well as
+ * space, dash, and underscore. Any unrecognized character becomes a dash on
+ * the display.
+ */
+static void set_digit(uint8_t ctrl, const uint8_t *ch, char c) {
+    uint8_t val = 0;
+    if (c) {
+        switch (c) {
+            case 'a':
+            case 'A': val = 0b1110111; break;
+            case 'b':
+            case 'B': val = 0b1111100; break;
+            case 'c': val = 0b1011000; break;
+            case 'C': val = 0b0111001; break;
+            case 'd':
+            case 'D': val = 0b1011110; break;
+            case 'e':
+            case 'E': val = 0b1111001; break;
+            case 'f':
+            case 'F': val = 0b1110001; break;
+            case 'g':
+            case 'G': val = 0b0111101; break;
+            case 'h': val = 0b1110100; break;
+            case 'H': val = 0b1110110; break;
+            case 'i': val = 0b0000100; break;
+            case 'I': val = 0b0000110; break;
+            case 'j':
+            case 'J': val = 0b0011110; break;
+            case 'l':
+            case 'L': val = 0b0111000; break;
+            case 'n':
+            case 'N': val = 0b1010100; break;
+            case 'o': val = 0b1011100; break;
+            case 'O': val = 0b0111111; break;
+            case 'p':
+            case 'P': val = 0b1110011; break;
+            case 'q':
+            case 'Q': val = 0b1100111; break;
+            case 'r':
+            case 'R': val = 0b1010000; break;
+            case 's':
+            case 'S': val = 0b1101101; break;
+            case 't':
+            case 'T': val = 0b1111000; break;
+            case 'u': val = 0b0011100; break;
+            case 'U': val = 0b0111110; break;
+            case '_': val = 0b0001000; break;
+            case ' ': val = 0b0000000; break;
+            case '0': val = 0b0111111; break;
+            case '1': val = 0b0000110; break;
+            case '2': val = 0b1011011; break;
+            case '3': val = 0b1001111; break;
+            case '4': val = 0b1100110; break;
+            case '5': val = 0b1101101; break;
+            case '6': val = 0b1111101; break;
+            case '7': val = 0b0000111; break;
+            case '8': val = 0b1111111; break;
+            case '9': val = 0b1101111; break;
+            default:  val = 0b1000000; break;
+        }
+    }
+    for (uint8_t i = 0; i < 7; i++) {
+        config[ctrl].ch[ch[i]].enable = (val >> i) & 1;
+    }
+}
+
+/**
+ * Sets the override for a digit to the specified (representable) character.
+ * Supported are alphanumerics except k, m, v, w, x, y, and z, as well as
+ * space, dash, and underscore. Any unrecognized character becomes a dash on
+ * the display.
+ */
+static void set_digit_index(uint8_t i, char c) {
+    switch (i) {
+        case 0: set_digit(HOURS_CTRL,   TENS_CH,  c); break;
+        case 1: set_digit(HOURS_CTRL,   UNITS_CH, c); break;
+        case 2: set_digit(MINUTES_CTRL, TENS_CH,  c); break;
+        case 3: set_digit(MINUTES_CTRL, UNITS_CH, c); break;
+        case 4: set_digit(SECONDS_CTRL, TENS_CH,  c); break;
+        case 5: set_digit(SECONDS_CTRL, UNITS_CH, c); break;
+    }
+}
+
+
+/**
+ * Sets the text on the display, enabling override. Specify an empty string or
+ * nullptr to disable override.
+ */
+void set_text(const char *text) {
+    if (text == nullptr || text[0] == 0) {
+        display_override = false;
+        return;
+    }
+    for (uint8_t i = 0; i < 6; i++) {
+        set_digit_index(i, *text);
+        if (*text) text++;
+    }
+    display_override = true;
+}
+
+
+/**
  * Sets up pins related to LED control.
  */
 void setup() {
@@ -136,6 +239,7 @@ void setup() {
             config[dev].ch[ch].dc_r = 0x0F;
             config[dev].ch[ch].dc_g = 0x0F;
             config[dev].ch[ch].dc_b = 0x0F;
+            config[dev].ch[ch].enable = true;
         }
     }
     config[1].ch[13].pwm_r = 0xFFFF;
@@ -336,6 +440,7 @@ bool update() {
         // Detect displayed time.
         default:
         {
+            digitalWrite(PIN_OVER, display_override);
             displayed_time_valid = detect_time();
             state = 0;
             return true;

@@ -194,6 +194,12 @@ extern uint8_t displayed_seconds;
 extern bool displayed_time_valid;
 
 /**
+ * Sets the text on the display, enabling override. Specify an empty string or
+ * nullptr to disable override.
+ */
+void set_text(const char *text);
+
+/**
  * Sets up pins related to LED control.
  */
 void setup();
