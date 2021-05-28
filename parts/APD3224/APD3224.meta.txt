@@ -1,6 +1,51 @@
-mouser 604-APD3224SECKF01
-model APD3224
-color Orange
-wavelength 601nm
-angle 20deg
-datasheet https://nl.mouser.com/datasheet/2/216/APD3224SECK-F01-64915.pdf
+O/mouser        604-APD3224SECKF01
+O/color         Orange
+O/fw_voltage    
+O/wavelength    601nm
+O/datasheet     https://nl.mouser.com/datasheet/2/216/APD3224SECK-F01-64915.pdf
+
+
+R/mouser        604-APD3224SURCKF01
+R/color         red
+R/fw_voltage    1.9V
+R/wavelength    650nm
+R/datasheet     https://nl.mouser.com/datasheet/2/216/APD3224SURCK-F01-82145.pdf
+
+OR/mouser       604-APD3224SURCKF01
+OR/color        red
+OR/fw_voltage   1.9V
+OR/wavelength   650nm
+OR/datasheet    https://nl.mouser.com/datasheet/2/216/APD3224SURCK-F01-82145.pdf
+
+O/mouser        604-APD3224SECKF01
+O/color         orange
+O/fw_voltage    2.1V
+O/wavelength    601nm
+O/datasheet     https://nl.mouser.com/datasheet/2/216/APD3224SECK-F01-64915.pdf
+
+Y/mouser        604-APD3224SYCKF01
+Y/color         yellow
+Y/fw_voltage    2.0V
+Y/wavelength    590nm
+Y/datasheet     https://nl.mouser.com/datasheet/2/216/APD3224SYCK-F01-76740.pdf
+
+YG/mouser       604-APD3224CGCK-F01
+YG/color        green
+YG/fw_voltage   2.1V
+YG/wavelength   570nm
+YG/datasheet    https://nl.mouser.com/datasheet/2/216/APD3224CGCK_F01-71773.pdf
+
+G/mouser        604-APD3224ZGCF01
+G/color         green
+G/fw_voltage    3.3V
+G/wavelength    525nm
+G/datasheet     https://nl.mouser.com/datasheet/2/216/APD3224ZGC-F01-76766.pdf
+
+B/mouser        604-APD3224QBC/D-F01
+B/color         blue
+B/fw_voltage    3.3V
+B/wavelength    470nm
+B/datasheet     https://nl.mouser.com/datasheet/2/216/APD3224QBC-D-F01-64871.pdf
+
+model           APD3224
+angle           20deg

@@ -1,3 +1,5 @@
-mouser 595-TLC6C5748QDCARQ1
+#mouser 595-TLC6C5748QDCARQ1
+mouser 595-TLC5955DCAR
 model DCA56
 datasheet https://www.ti.com/lit/ds/symlink/tlc6c5748-q1.pdf
+datasheet2 http://www.ti.com/general/docs/suppproductinfo.tsp?distId=26&gotoUrl=http%3A%2F%2Fwww.ti.com%2Flit%2Fgpn%2Ftlc5955
