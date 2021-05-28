@@ -200,6 +200,11 @@ extern bool displayed_time_valid;
 void set_text(const char *text);
 
 /**
+ * Sets the color of the display.
+ */
+void set_color(uint16_t r, uint16_t g, uint16_t b);
+
+/**
  * Sets up pins related to LED control.
  */
 void setup();

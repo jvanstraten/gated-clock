@@ -106,7 +106,7 @@ static bool detect_time() {
 
 /**
  * Sets the override for a digit to the specified (representable) character.
- * Supported are alphanumerics except k, m, v, w, x, y, and z, as well as
+ * Supported are alphanumerics except k, m, v, w, x, and z, as well as
  * space, dash, and underscore. Any unrecognized character becomes a dash on
  * the display.
  */
@@ -152,6 +152,8 @@ static void set_digit(uint8_t ctrl, const uint8_t *ch, char c) {
             case 'T': val = 0b1111000; break;
             case 'u': val = 0b0011100; break;
             case 'U': val = 0b0111110; break;
+            case 'y':
+            case 'Y': val = 0b1101110; break;
             case '_': val = 0b0001000; break;
             case ' ': val = 0b0000000; break;
             case '0': val = 0b0111111; break;
@@ -206,6 +208,19 @@ void set_text(const char *text) {
     display_override = true;
 }
 
+/**
+ * Sets the color of the display.
+ */
+void set_color(uint16_t r, uint16_t g, uint16_t b) {
+    for (uint8_t dev = 0; dev < 3; dev++) {
+        for (uint8_t ch = 0; ch < 16; ch++) {
+            if (dev == 1 && (ch == 13 || ch == 14)) continue;
+            config[dev].ch[ch].pwm_r = r;
+            config[dev].ch[ch].pwm_g = g;
+            config[dev].ch[ch].pwm_b = b;
+        }
+    }
+}
 
 /**
  * Sets up pins related to LED control.
@@ -251,6 +266,9 @@ void setup() {
     config[1].ch[14].pwm_r = 0x0000;
     config[1].ch[14].pwm_g = 0x0000;
     config[1].ch[14].pwm_b = 0x0000;
+    config[1].ch[14].dc_r = 0x10;
+    config[1].ch[14].dc_g = 0x10;
+    config[1].ch[14].dc_b = 0x10;
     display_override = false;
     displayed_time_valid = false;
 

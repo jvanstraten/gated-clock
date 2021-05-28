@@ -5,6 +5,7 @@
 #include "gps.hpp"
 #include "gpio.hpp"
 #include "timer.hpp"
+#include "sine.hpp"
 
 /**
  * Initialization function called by Arduino's main().
@@ -17,6 +18,7 @@ void setup() {
     gps::setup();
     gpio::setup();
     timer::setup();
+    //led::set_text("  LL_ ");
 }
 
 void update() {
@@ -34,10 +36,15 @@ uint32_t cycle_accum = 0;
  * Main loop, called by Arduino's main().
  */
 void loop() {
-    // put your main code here, to run repeatedly:
     unsigned long t1 = micros();
     update();
     unsigned long t2 = micros();
+    
+    /*uint16_t color = millis() * 100;
+    uint16_t r = sine::sine(color) + 32768;
+    uint16_t g = sine::sine(color + 21845) + 32768;
+    uint16_t b = sine::sine(color + 43691) + 32768;
+    led::set_color(r, g >> 1, b >> 1);*/
     if (timer::grid_period) {
         if (timer::gps_period < 47000000 || timer::gps_period > 49000000) {
             timer::gps_period = 48000000;
