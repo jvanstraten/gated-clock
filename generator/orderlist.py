@@ -12,23 +12,23 @@ import math
 # You can generate an order list for multiple clocks at once by adding multiple
 # variants to the list. If you're just ordering for yourself, make sure there's
 # only one here.
-variants = ['R', 'B', 'B', 'YG', 'YG', 'G']
+variants = ['O']
 
 # When stuff is out of stock, you can specify alternative ordering numbers
 # here. You'll need to find the alternatives yourself. Supply-chain management
 # is a bitch!
 alternatives = {
-    '863-MMBT4403WT1G':     '863-BC858BWT1G',
-    '71-CRCW06031K00FKEAC': '603-RC0603FR-071KL',
-    '71-CRCW0603100RFKEAC': '603-RC0603JR-07100RL',
-    '652-CR0603JW-471ELF':  '603-AC0603JR-13470RL',
-    '611-PTS526SK15SMR2L':  '611-PTS526SMG15SMR2L',
-    '603-RT0603FRE07680RL': '603-RC0603JR-07680RL',
-    '603-RC0603FR-0710KL':  '603-RC0603JR-0710KL',
-    '595-TPS26631PWPR':     '595-TPS26631PWPT',
-    '595-SN74LVC1G17DCKR':  '595-SN74LVC1G17DCK3',
-    '530-5ET1-R':           '530-5TT1-R',
-    '530-FC-203BRIGHTTIN':  '534-3521'
+    #'863-MMBT4403WT1G':     '863-BC858BWT1G',
+    #'71-CRCW06031K00FKEAC': '603-RC0603FR-071KL',
+    #'71-CRCW0603100RFKEAC': '603-RC0603JR-07100RL',
+    #'652-CR0603JW-471ELF':  '603-AC0603JR-13470RL',
+    #'611-PTS526SK15SMR2L':  '611-PTS526SMG15SMR2L',
+    #'603-RT0603FRE07680RL': '603-RC0603JR-07680RL',
+    #'603-RC0603FR-0710KL':  '603-RC0603JR-0710KL',
+    #'595-TPS26631PWPR':     '595-TPS26631PWPT',
+    #'595-SN74LVC1G17DCKR':  '595-SN74LVC1G17DCK3',
+    #'530-5ET1-R':           '530-5TT1-R',
+    #'530-FC-203BRIGHTTIN':  '534-3521',
 }
 
 # Make sure that, once stuff is in your cart, you round things like resistors
