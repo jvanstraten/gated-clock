@@ -1,10 +1,3 @@
-O/mouser        604-APD3224SECKF01
-O/color         Orange
-O/fw_voltage    
-O/wavelength    601nm
-O/datasheet     https://nl.mouser.com/datasheet/2/216/APD3224SECK-F01-64915.pdf
-
-
 R/mouser        604-APD3224SURCKF01
 R/color         red
 R/fw_voltage    1.9V

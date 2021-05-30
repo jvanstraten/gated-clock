@@ -1,3 +1,43 @@
-mouser 604-WP132XND
-model LED-T1
-color orange
+R/mouser        710-151031SS06000
+R/color         red
+R/fw_voltage    2.2V
+R/wavelength    640nm
+R/datasheet     https://eu.mouser.com/datasheet/2/445/151031SS06000-1715676.pdf
+
+OR/mouser       604-WP3A10ID
+OR/color        orange/red
+OR/fw_voltage   1.9V
+OR/wavelength   625nm
+OR/datasheet    https://eu.mouser.com/datasheet/2/216/WP3A10ID-31003.pdf
+
+O/mouser        604-WP132XND
+O/color         orange
+O/fw_voltage    2.1V
+O/wavelength    610nm
+O/datasheet     https://eu.mouser.com/datasheet/2/216/WP132XND-50542.pdf
+
+Y/mouser        696-SSL-LX3044LYD
+Y/color         yellow
+Y/fw_voltage    2.1V
+Y/wavelength    585nm
+Y/datasheet     https://eu.mouser.com/datasheet/2/244/SSL-LX3044LYD-1137277.pdf
+
+YG/mouser       859-LTL-4231N
+YG/color        green
+YG/fw_voltage   2.1V
+YG/wavelength   569nm
+YG/datasheet    https://eu.mouser.com/datasheet/2/239/LTL-4231N-1139959.pdf
+
+G/mouser        696-SSL-LX3044PGD
+G/color         green
+G/fw_voltage    2.2V
+G/wavelength    555nm
+G/datasheet     https://eu.mouser.com/datasheet/2/244/SSL-LX3044PGD-1137140.pdf
+
+B/mouser        593-VAOL-3LSBY1
+B/color         blue
+B/fw_voltage    3.5V
+B/wavelength    470nm
+B/datasheet     https://eu.mouser.com/datasheet/2/423/VAOL-3LSBY1-1064793.pdf
+
+model           LED-T1
