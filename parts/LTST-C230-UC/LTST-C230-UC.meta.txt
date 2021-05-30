@@ -1,8 +1,8 @@
-R/mouser        859-LTST-C230TGKT
-R/color         green
-R/fw_voltage    3.2V
-R/wavelength    525nm
-R/datasheet     https://nl.mouser.com/datasheet/2/239/Lite-On-LTST-C230TGKT-1175362.pdf
+R/mouser        LTST-C230TBKT
+R/color         blue
+R/fw_voltage    3.4V
+R/wavelength    470nm
+R/datasheet     https://nl.mouser.com/datasheet/2/239/Lite-On-LTST-C230TBKT-1175374.pdf
 
 OR/mouser       859-LTST-C230TGKT
 OR/color        green
@@ -34,10 +34,10 @@ G/fw_voltage    3.4V
 G/wavelength    470nm
 G/datasheet     https://nl.mouser.com/datasheet/2/239/Lite-On-LTST-C230TBKT-1175374.pdf
 
-B/mouser        859-LTST-C230TGKT
-B/color         green
-B/fw_voltage    3.2V
-B/wavelength    525nm
-B/datasheet     https://nl.mouser.com/datasheet/2/239/Lite-On-LTST-C230TGKT-1175362.pdf
+B/mouser        859-LTST-C230CKT
+B/color         red
+B/fw_voltage    1.8V
+B/wavelength    638nm
+B/datasheet     https://nl.mouser.com/datasheet/2/239/liteon_LTST-C230CKT-1175184.pdf
 
 model LTST-C230

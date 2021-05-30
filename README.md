@@ -336,6 +336,11 @@ will want to set the following environment variables:
 These are added to the SVG/PDF files that are generated for Laserbeest for
 their reference, as per their instructions.
 
+You'll also want to update the header of `generator/orderlist.py` to select
+the LED color you want. Seven color schemes are predefined. At the time of
+writing I've only tried orange; your mileage may vary with the resistor values
+for other colors. LED brightness differs a lot based on color.
+
 Once you have all that, or the computer part at least, run `make` in the root
 directory and go get coffee. It takes 20 minutes or so to generate everything
 on my fairly beefy computer, though most of it is single-threaded because I'm
@@ -368,33 +373,33 @@ You should start by ordering the parts, obviously: the Mouser/TinyTronics
 electronics parts, the PCBs, the acrylic sheets, and the consumables if you
 don't have them laying around like I do.
 
-For the parts, you should probably start by figuring out which color LEDs you
-want; the 7-segment displays have RGB LEDs, but everything else is
-single-color. There are four groups of LEDs:
+As stated, the build process generates `mouser.txt` for the mouser ordering
+list, usable [here](https://nl.mouser.com/Tools/part-list-import.aspx). If
+things are not in stock, you'll either have to wait or look for alternatives
+yourself; you can specify these alternatives in `generator/orderlist.py`, after
+which you can regenerate by just running `python3 generator/orderlist.py`. If
+you (have to) go for the backorder route, I strongly recommend the "ship items
+as they become available" option; in my experience, Mouser doesn't reserve
+anything for your order, so by the time the originally problematic part is
+finally back in stock, something else might be out of stock again.
 
- - the gate state LEDs (`LTST-C230-GATE`, default orange);
- - the flipflop state LEDs (`FFLED`, standard 3mm T1 LED, default orange);
- - the synchroscope LEDs (`APD3224`, default orange); and
- - the LEDs that light when the microcontroller is influencing the circuit
-   (`LTST-C230-UC`, default green).
+After you copy the part list into your basket, make sure to round up the part
+count, especially for uncommonly used resistor values and such: Mouser levies
+what I can only describe as an "asshole tax" for people who order small amounts
+of these, as ordering more will often cost *less*. I've seen an extreme case
+where the price break for 10+ was so much cheaper than the price break for 1+
+that buying ten was cheaper than buying one! The ordering system does not
+notify you of this. In general, by the way, it's good practice to over-order
+the tiny parts a little bit, so you don't have to place a new order if you
+misplace or break a few of them.
 
-The LEDs I chose are all highly efficient; the LTSTs only receive about 2.5mA
-at max brightness, and the flipflop LEDs receive about 5mA. However, the
-efficiency of an LED depends a lot on its color (due to different material
-characteristics, I suppose). So, if you want to change the color, you'll
-probably want to change the resistance value as well. The values are easy to
-change in the `parts` folder; simply modify the text files for the LED parts
-and their resistors (`R-` prefix).
-
-When ordering at Mouser, make sure to round up the part count, especially for
-uncommonly used resistor values and such: Mouser levies what I can only
-describe as an "asshole tax" for people who order small amounts of these, as
-ordering more will often cost *less*. I've seen an extreme case where the
-price break for 10+ was so much cheaper than the price break for 1+ that buying
-ten was cheaper than buying one! The ordering system does not notify you of
-this. In general, by the way, it's good practice to over-order the tiny parts a
-little bit, so you don't have to place a new order if you misplace or break a
-few of them.
+As for the Tinytronics parts, the actual parts are a Teensy LC (which you can
+get just about anywhere), and any GPS module with a VCC|GND|TX|RX|PPS pinout
+using a standard 2.54mm header. You can probably source both from wherever if
+Tinytronics doesn't work for you. Don't forget to buy an antenna with a long
+lead as well; they're commonly available for use in cars. Headers to mount
+these are not included in the Mouser order either, so you'll need to get them
+yourself.
 
 For the PCBs, everything assumes standard 1.6mm 4-layer PCBs with 1oz copper on
 the outer layers and something around .5oz on the inner layers. The mainboard
