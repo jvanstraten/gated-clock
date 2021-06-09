@@ -67,7 +67,7 @@ class GerberLayer:
                 for c1, c2 in zip(aper, ap2):
                     err += (c1[0] - c2[0])**2
                     err += (c1[1] - c2[1])**2
-                    if err > 10:
+                    if err > 100:
                         break
                 else:
                     aper = ap2
