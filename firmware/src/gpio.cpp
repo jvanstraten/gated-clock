@@ -94,6 +94,11 @@ uint16_t mcp_iodir = 0;
 uint16_t synchro = 0;
 
 /**
+ * Whether the synchroscope should be enabled.
+ */
+bool synchro_enable = false;
+
+/**
  * Configures the GPIO logic.
  */
 void setup() {
@@ -173,10 +178,12 @@ void update() {
     mcp_iodir |= PIN_SYNCHRO_H_MASK;
     uint32_t sync_pwm = synchro & 0xFF;
     if (synchro & 0x100) sync_pwm = 256 - sync_pwm;
-//     uint32_t sync_pwm_a = 256 - ((sync_pwm * sync_pwm) >> 8);
-//     uint32_t sync_pwm_b = 256 - (((256-sync_pwm) * (256-sync_pwm)) >> 8);
     uint32_t sync_pwm_a = 256 - sync_pwm;
     uint32_t sync_pwm_b = sync_pwm;
+    if (!synchro_enable) {
+        sync_pwm_a = 255;
+        sync_pwm_b = 255;
+    }
     analogWrite(PIN_SYNCHRO_A, (sync_pwm_a > 255) ? 255 : sync_pwm_a);
     analogWrite(PIN_SYNCHRO_B, (sync_pwm_b > 255) ? 255 : sync_pwm_b);
 

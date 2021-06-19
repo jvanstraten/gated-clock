@@ -42,6 +42,11 @@ extern uint8_t minutes;
 extern uint8_t seconds;
 
 /**
+ * GPS milliseconds.
+ */
+extern int16_t milliseconds;
+
+/**
  * GPS time validity; nonzero means valid.
  */
 extern uint16_t valid;

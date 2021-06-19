@@ -57,6 +57,17 @@ volatile uint32_t grid_period;
 volatile uint32_t gps_period;
 
 /**
+ * The value of micros() when the PPS input last rose.
+ */
+volatile unsigned long gps_pulse_micros;
+
+/**
+ * The number of PPS input rising edges detected, incremented when gps_period
+ * and gps_pulse_micros are updated.
+ */
+volatile uint32_t gps_edges;
+
+/**
  * Clock signal override state.
  */
 static volatile bool clk_override;
@@ -175,6 +186,8 @@ static void gps_edge(uint32_t gps_cap) {
     }
     gps_prev = gps_cap;
     gps_prev_valid = 1200;
+    gps_pulse_micros = micros();
+    gps_edges++;
 }
 
 } // namespace timer
@@ -270,7 +283,7 @@ void ftm2_isr(void) {
 
     // Decrement edge validity counters.
     static uint16_t invalidate_cooldown = 500;
-    if (grid_prev_valid) {
+    if (grid_prev_valid || clk_override) {
         grid_prev_valid--;
         invalidate_cooldown = 500;
     } else {

@@ -97,6 +97,11 @@ extern uint16_t mcp_iodir;
 extern uint16_t synchro;
 
 /**
+ * Whether the synchroscope should be enabled.
+ */
+extern bool synchro_enable;
+
+/**
  * Configures the GPIO logic.
  */
 void setup();

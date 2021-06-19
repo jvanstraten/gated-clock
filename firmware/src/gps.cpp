@@ -1,4 +1,5 @@
 #include "gps.hpp"
+#include "timer.hpp"
 #include <WProgram.h>
 
 /**
@@ -42,7 +43,17 @@ uint8_t minutes;
 uint8_t seconds;
 
 /**
- * GPS time validity; nonzero means valid.
+ * GPS time validity down to seconds; nonzero means valid.
+ */
+static uint16_t seconds_valid;
+
+/**
+ * GPS milliseconds.
+ */
+int16_t milliseconds;
+
+/**
+ * GPS time validity down to milliseconds; nonzero means valid.
  */
 uint16_t valid;
 
@@ -56,8 +67,9 @@ void setup() {
     Serial3.begin(9600, SERIAL_8N1);
     Serial3.setRX(PIN_RX);
     Serial3.setTX(PIN_TX);
-    valid = 0;
     fix_valid = 0;
+    seconds_valid = 0;
+    valid = 0;
 }
 
 /**
@@ -85,7 +97,50 @@ static void handle_field(const char *sentence, uint8_t field, const char *value)
             year    = (value[0] - '0') * 1000 + (value[1] - '0') * 100
                     + (value[2] - '0') * 10 + (value[3] - '0');
             if (fix_valid) {
-                valid = 1100;
+                seconds_valid = 1100;
+            }
+        }
+    }
+}
+
+/**
+ * Increments the current GPS time by the given number of milliseconds.
+ */
+static void increment_time(uint16_t amt = 1) {
+    while (amt > 1000) {
+        increment_time(1000);
+        amt -= 1000;
+    }
+    milliseconds += amt;
+    if (milliseconds >= 1000) {
+        milliseconds -= 1000;
+        seconds++;
+        if (seconds >= 60) {
+            seconds = 0;
+            minutes++;
+            if (minutes >= 60) {
+                minutes = 0;
+                hours++;
+                if (hours >= 24) {
+                    hours = 0;
+                    day++;
+                    uint8_t days = 30 + month % 2;
+                    if (month == 2) {
+                        if (((year % 4 == 0) && !(year % 100 == 0)) || (year % 400 == 0)) {
+                            days = 29;
+                        } else {
+                            days = 28;
+                        }
+                    }
+                    if (day > days) {
+                        day = 1;
+                        month++;
+                        if (month > 12) {
+                            month = 1;
+                            year++;
+                        }
+                    }
+                }
             }
         }
     }
@@ -96,15 +151,48 @@ static void handle_field(const char *sentence, uint8_t field, const char *value)
  */
 void update() {
 
-    // Update time record validity.
+    // Update validity counters.
     uint32_t now = millis();
     static uint32_t then;
-    uint32_t delta = now - then;
+    int32_t delta = now - then;
     then = now;
-    while (delta--) {
-        if (valid) valid--;
-        if (fix_valid) fix_valid--;
+    if (valid > (uint16_t)delta) {
+        valid -= (uint16_t)delta;
+    } else {
+        valid = 0;
     }
+    if (seconds_valid > (uint16_t)delta) {
+        seconds_valid -= (uint16_t)delta;
+    } else {
+        seconds_valid = 0;
+    }
+    if (fix_valid > (uint16_t)delta) {
+        fix_valid -= (uint16_t)delta;
+    } else {
+        fix_valid = 0;
+    }
+
+    // Align the time to the PPS pulse.
+    static int32_t adjust = 0;
+    static uint32_t last_edges;
+    if (last_edges != timer::gps_edges) {
+        last_edges = timer::gps_edges;
+        auto millis_passed = (micros() - timer::gps_pulse_micros) / 1000;
+        adjust = (int32_t)millis_passed - (int32_t)milliseconds;
+        if (adjust < -500) adjust += 1000;
+        if (adjust > 500) adjust -= 1000;
+        if (adjust > -5 && adjust < 5 && seconds_valid) {
+            valid = 1100;
+        }
+    }
+    if (adjust > -delta) {
+        delta += adjust;
+        adjust = 0;
+    } else {
+        adjust += delta;
+        delta = 0;
+    }
+    increment_time(delta);
 
     // Update NMEA sentence parsing.
     while (Serial3.available()) {
@@ -162,6 +250,7 @@ void update() {
         }
 
     }
+
 }
 
 } // namespace gps
