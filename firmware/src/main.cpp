@@ -7,6 +7,7 @@
 #include "timer.hpp"
 #include "sine.hpp"
 #include "synchro.hpp"
+#include "ldr.hpp"
 
 /**
  * Initialization function called by Arduino's main().
@@ -19,6 +20,7 @@ void setup() {
     gps::setup();
     gpio::setup();
     timer::setup();
+    ldr::setup();
 }
 
 void update() {
@@ -28,6 +30,7 @@ void update() {
     gps::update();
     synchro::update();
     gpio::update();
+    ldr::update();
 }
 
 int cycle_count = 0;
@@ -70,7 +73,8 @@ void loop() {
             Serial.printf("displayed time: unknown\n");
         }
         Serial.printf("pgood: %d\n", digitalRead(23));
-        Serial.printf("current: %d mA\n", analogRead(8) * 1709 / 1000);
+        Serial.printf("current: %d mA\n", pwr::current);
+        Serial.printf("LDR: %d\n", ldr::brightness);
         Serial.println("");
         debug_timer = now;
     }
@@ -81,4 +85,6 @@ void loop() {
             clk::configure((gps::hours + 2) % 24, gps::minutes, gps::seconds);
         }
     }
+
+    led::set_color(ldr::brightness*64, ldr::brightness*8, 0);
 }

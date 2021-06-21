@@ -664,3 +664,9 @@ The Teensy's pinout is as follows.
  - Arduino 22, used as analog 8: current monitor ADC (`pwr.Imon`)
  - Arduino 23: power good input, GPIO pullup needed (`pwr.Pgood`)
  - Arduino 26: automatic configuration, enable (`cfg.Ren.L`)
+
+In the end, I ended up hacking a small circuit with a GL5528 LDR on top of the
+Teensy as well, using pin 24/A10. The LDR is connected between 0V and A10, with
+a 220k pullup resistor from A10 to 3V3, facing down out from the support board
+cover/housing using some creative soldering and shrinkwrap. The circuit lets
+the system detect ambient light conditions, and dim itself accordingly.
