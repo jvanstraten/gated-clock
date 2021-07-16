@@ -5,9 +5,7 @@ else
 BLENDER = blender-2.91
 endif
 
-FRONT_THICKNESS = 3.0
-DISPLAY_THICKNESS = 3.0
-HIGHLIGHT_THICKNESS = 5.0
+include config.make
 
 .PHONY: all
 all: assembly.blend assembly.py led-bender.blend led-bender.py
