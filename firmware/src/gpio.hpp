@@ -59,6 +59,9 @@ static const uint16_t PIN_SYNCHRO_TAB[30]   = {
 static const int PIN_BTN_MODE               = 0;
 static const int PIN_BTN_DOWN               = 1;
 static const int PIN_BTN_UP                 = 2;
+static const uint16_t PIN_BTN_MODE_MASK     = 0b0000000000000001;
+static const uint16_t PIN_BTN_DOWN_MASK     = 0b0000000000000010;
+static const uint16_t PIN_BTN_UP_MASK       = 0b0000000000000100;
 static const uint16_t PIN_BTN_MASK          = 0b0000000000000111;
 
 // Clock configuration pin number definitions (Arduino).
@@ -100,6 +103,28 @@ extern uint16_t synchro;
  * Whether the synchroscope should be enabled.
  */
 extern bool synchro_enable;
+
+/**
+ * Event code for the event shared variable.
+ */
+enum class Event {
+    NONE,    // no event
+    CANCEL,  // up + down
+    SHORT,   // short mode press
+    LONG,    // long mode press
+    UP_INIT, // up initial press
+    UP_AUTO, // up auto-increment
+    DN_INIT, // down initial press
+    DN_AUTO, // down auto-increment
+    RESET,   // circuit reset released
+    INACTIVE // 30 seconds after last input
+};
+
+/**
+ * Button event code for the UI logic to use. Must be cleared to NONE by the UI
+ * logic.
+ */
+extern Event event;
 
 /**
  * Configures the GPIO logic.

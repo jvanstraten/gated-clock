@@ -13,7 +13,7 @@ namespace synchro {
 /**
  * Current synchroscope mode.
  */
-Mode mode = Mode::LEAD_LAG;
+Mode mode = Mode::SYNCHRO;
 
 /**
  * Updates the power management logic.

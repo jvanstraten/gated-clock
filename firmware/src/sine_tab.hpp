@@ -2,6 +2,8 @@
 
 #pragma once
 
+namespace sine {
+
 static const int16_t SINE[256] = {
     0x0065,
     0x012E,
@@ -260,3 +262,5 @@ static const int16_t SINE[256] = {
     0x7FFE,
     0x7FFF,
 };
+
+} // namespace sine

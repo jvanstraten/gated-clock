@@ -99,6 +99,12 @@ uint16_t synchro = 0;
 bool synchro_enable = false;
 
 /**
+ * Button event code for the UI logic to use. Must be cleared to NONE by the UI
+ * logic.
+ */
+Event event = Event::NONE;
+
+/**
  * Configures the GPIO logic.
  */
 void setup() {
@@ -162,6 +168,7 @@ void setup() {
     mcp_gpio_out &= ~PIN_RESET_MASK;
     update();
     mcp_iodir &= ~PIN_RESET_MASK;
+
 }
 
 /**
@@ -199,6 +206,105 @@ void update() {
     mcp_gpio_in = mcp_read_word(0x12);
     mcp_write_word(0x12, actual_gpio_out);
     mcp_write_word(0x00, ~actual_iodir);
+
+    // Detect time since last update.
+    static unsigned long prev_time = millis();
+    unsigned long time = millis();
+    unsigned long delta = time - prev_time;
+    prev_time = time;
+
+    // Detect mode button presses.
+    static uint16_t mode_timer = 0;
+    bool mode = !(mcp_gpio_in & PIN_BTN_MODE_MASK);
+    if (mode) {
+        if (mode_timer < 1000) {
+            mode_timer += delta;
+            if (mode_timer >= 1000) {
+                event = Event::LONG;
+            }
+        }
+    } else {
+        if (mode_timer > 20 && mode_timer < 1000) {
+            event = Event::SHORT;
+        }
+        mode_timer = 0;
+    }
+
+    // Handle up & down buttons.
+    bool up = !(mcp_gpio_in & PIN_BTN_UP_MASK);
+    bool dn = !(mcp_gpio_in & PIN_BTN_DOWN_MASK);
+    static bool both = false;
+    if (up && dn) {
+        if (!both) {
+            event = Event::CANCEL;
+        }
+        both = true;
+    }
+    if (!up && !dn) {
+        both = false;
+    }
+    if (!both) {
+
+        // Handle up button.
+        static uint16_t up_timer = 0;
+        if (up) {
+            if (up_timer < 1000) {
+                if (up_timer < 20 && (up_timer + delta) >= 20) {
+                    event = Event::UP_INIT;
+                }
+                up_timer += delta;
+                if (up_timer >= 1000) {
+                    event = Event::UP_AUTO;
+                    up_timer -= 128;
+                }
+            }
+        } else {
+            up_timer = 0;
+        }
+
+        // Handle down button.
+        static uint16_t dn_timer = 0;
+        if (dn) {
+            if (dn_timer < 1000) {
+                if (dn_timer < 20 && (dn_timer + delta) >= 20) {
+                    event = Event::DN_INIT;
+                }
+                dn_timer += delta;
+                if (dn_timer >= 1000) {
+                    event = Event::DN_AUTO;
+                    dn_timer -= 128;
+                }
+            }
+        } else {
+            dn_timer = 0;
+        }
+
+    }
+
+    // Detect reset button press+releases.
+    static uint8_t auto_reset = 0;
+    static bool resetting_prev = false;
+    bool resetting = !(mcp_gpio_in & PIN_RESET_MASK);
+    if (actual_iodir & PIN_RESET_MASK) {
+        auto_reset = 100;
+    } else if (auto_reset) {
+        auto_reset--;
+    }
+    if (!resetting && resetting_prev && !auto_reset) {
+        event = Event::RESET;
+    }
+    resetting_prev = resetting;
+
+    // Detect UI inactivity.
+    static uint16_t inactivity_timer = 0;
+    if (event != Event::NONE) {
+        inactivity = 60000;
+    } else if (inactivity_timer) {
+        inactivity_timer--;
+        if (!inactivity_timer) {
+            event = Event::INACTIVE;
+        }
+    }
 
 }
 

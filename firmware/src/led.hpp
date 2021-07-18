@@ -149,6 +149,21 @@ static const uint8_t COLON_CTRL[2] = {0, 2};
 static const uint8_t COLON_CH[2] = {14, 13};
 
 /**
+ * X coordinates for 7-segment display segments.
+ */
+static const uint8_t SEG_X[7] = {1, 2, 2, 1, 0, 0, 1};
+
+/**
+ * Y coordinates for 7-segment display segments.
+ */
+static const uint8_t SEG_Y[7] = {0, 1, 3, 4, 3, 1, 2};
+
+/**
+ * Y coordinates for the colon segments.
+ */
+static const uint8_t COLON_Y[7] = {3, 1};
+
+/**
  * LED controller index for the status LED.
  */
 static const uint8_t STATUS_CTRL = 1;
@@ -203,6 +218,13 @@ void set_text(const char *text);
  * Sets the color of the display.
  */
 void set_color(uint16_t r, uint16_t g, uint16_t b);
+
+/**
+ * Sets the color of the display with hue, dark PWM level, light PWM level,
+ * and hue delta per X coord and per Y coord (for a rainbow-y effect, because
+ * why not?).
+ */
+void set_color(uint16_t h, uint16_t d, uint16_t l, int16_t hx, int16_t hy);
 
 /**
  * Sets up pins related to LED control.

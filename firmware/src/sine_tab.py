@@ -1,6 +1,7 @@
 import math
+import os
 
-with open('sine_tab.hpp', 'w') as f:
+with open(os.path.dirname(os.path.realpath(__file__)) + '/sine_tab.hpp', 'w') as f:
     f.write("""#include <inttypes.h>
 
 #pragma once
