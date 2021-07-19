@@ -210,20 +210,6 @@ void set_text(const char *text) {
 }
 
 /**
- * Sets the color of the display.
- */
-void set_color(uint16_t r, uint16_t g, uint16_t b) {
-    for (uint8_t dev = 0; dev < 3; dev++) {
-        for (uint8_t ch = 0; ch < 16; ch++) {
-            if (dev == 1 && (ch == 13 || ch == 14)) continue;
-            config[dev].ch[ch].pwm_r = r;
-            config[dev].ch[ch].pwm_g = g;
-            config[dev].ch[ch].pwm_b = b;
-        }
-    }
-}
-
-/**
  * Computes the PWM value for the red channel for our simplistic HDL color
  * model (hue, dark value, light value). Green is computed by adding 43690
  * to h, and blue by adding 21845.
@@ -242,10 +228,13 @@ static uint16_t compute_hdl(uint16_t h, uint16_t d, uint16_t l) {
 /**
  * Internal call for set_color() that handles a particular segment.
  */
-static void set_segment_color(Channel &ch, uint16_t h, uint16_t d, uint16_t l) {
+static void set_segment_color(Channel &ch, uint16_t h, uint16_t d, uint16_t l, uint8_t dc) {
     ch.pwm_r = compute_hdl(h +     0, d, l);
     ch.pwm_g = compute_hdl(h + 43690, d, l) >> 1;
     ch.pwm_b = compute_hdl(h + 21845, d, l) >> 1;
+    ch.dc_r = dc;
+    ch.dc_g = dc;
+    ch.dc_b = dc;
 }
 
 /**
@@ -253,41 +242,41 @@ static void set_segment_color(Channel &ch, uint16_t h, uint16_t d, uint16_t l) {
  * and hue delta per X coord and per Y coord (for a rainbow-y effect, because
  * why not?).
  */
-void set_color(uint16_t h, uint16_t d, uint16_t l, int16_t hx, int16_t hy) {
+void set_color(uint16_t h, uint16_t d, uint16_t l, uint8_t dc, bool es, int16_t hx, int16_t hy) {
     for (uint8_t i = 0; i < 7; i++) {
         set_segment_color(
             config[HOURS_CTRL].ch[TENS_CH[i]],
-            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 0) + (int32_t)hy * SEG_Y[i]), d, l
+            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 0) + (int32_t)hy * SEG_Y[i]), d, l, dc
         );
         set_segment_color(
             config[HOURS_CTRL].ch[UNITS_CH[i]],
-            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 3) + (int32_t)hy * SEG_Y[i]), d, l
+            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 3) + (int32_t)hy * SEG_Y[i]), d, l, dc
         );
         set_segment_color(
             config[MINUTES_CTRL].ch[TENS_CH[i]],
-            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 7) + (int32_t)hy * SEG_Y[i]), d, l
+            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 7) + (int32_t)hy * SEG_Y[i]), d, l, dc
         );
         set_segment_color(
             config[MINUTES_CTRL].ch[UNITS_CH[i]],
-            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 10) + (int32_t)hy * SEG_Y[i]), d, l
+            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 10) + (int32_t)hy * SEG_Y[i]), d, l, dc
         );
         set_segment_color(
             config[SECONDS_CTRL].ch[TENS_CH[i]],
-            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 14) + (int32_t)hy * SEG_Y[i]), d, l
+            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 14) + (int32_t)hy * SEG_Y[i]), es ? d : 0, es ? l : 0, dc
         );
         set_segment_color(
             config[SECONDS_CTRL].ch[UNITS_CH[i]],
-            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 17) + (int32_t)hy * SEG_Y[i]), d, l
+            h + (uint16_t)((int32_t)hx * (SEG_X[i] + 17) + (int32_t)hy * SEG_Y[i]), es ? d : 0, es ? l : 0, dc
         );
     }
     for (uint8_t i = 0; i < 2; i++) {
         set_segment_color(
             config[COLON_CTRL[0]].ch[COLON_CH[i]],
-            h + (uint16_t)((int32_t)hx * 6 + (int32_t)hy * COLON_Y[i]), d, l
+            h + (uint16_t)((int32_t)hx * 6 + (int32_t)hy * COLON_Y[i]), d, l, dc
         );
         set_segment_color(
             config[COLON_CTRL[1]].ch[COLON_CH[i]],
-            h + (uint16_t)((int32_t)hx * 13 + (int32_t)hy * COLON_Y[i]), d, l
+            h + (uint16_t)((int32_t)hx * 13 + (int32_t)hy * COLON_Y[i]), es ? d : 0, es ? l : 0, dc
         );
     }
 }
@@ -318,16 +307,22 @@ void setup() {
         config[dev].espwm = true;
         config[dev].lsdvlt = false;
         for (uint8_t ch = 0; ch < 16; ch++) {
-            config[dev].ch[ch].pwm_r = 0x4000;
+            /*config[dev].ch[ch].pwm_r = 0x4000;
             config[dev].ch[ch].pwm_g = 0x4000;
             config[dev].ch[ch].pwm_b = 0x4000;
             config[dev].ch[ch].dc_r = 0x0F;
             config[dev].ch[ch].dc_g = 0x0F;
-            config[dev].ch[ch].dc_b = 0x0F;
+            config[dev].ch[ch].dc_b = 0x0F;*/
+            config[dev].ch[ch].pwm_r = 0;
+            config[dev].ch[ch].pwm_g = 0;
+            config[dev].ch[ch].pwm_b = 0;
+            config[dev].ch[ch].dc_r = 0;
+            config[dev].ch[ch].dc_g = 0;
+            config[dev].ch[ch].dc_b = 0;
             config[dev].ch[ch].enable = true;
         }
     }
-    config[1].ch[13].pwm_r = 0xFFFF;
+    /*config[1].ch[13].pwm_r = 0xFFFF;
     config[1].ch[13].pwm_g = 0xFFFF;
     config[1].ch[13].pwm_b = 0xA000;
     config[1].ch[13].dc_r = 0x1F;
@@ -338,7 +333,7 @@ void setup() {
     config[1].ch[14].pwm_b = 0x0000;
     config[1].ch[14].dc_r = 0x10;
     config[1].ch[14].dc_g = 0x10;
-    config[1].ch[14].dc_b = 0x10;
+    config[1].ch[14].dc_b = 0x10;*/
     display_override = false;
     displayed_time_valid = false;
 

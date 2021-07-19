@@ -8,6 +8,7 @@
 #include "sine.hpp"
 #include "synchro.hpp"
 #include "ldr.hpp"
+#include "ui.hpp"
 
 /**
  * Initialization function called by Arduino's main().
@@ -21,6 +22,7 @@ void setup() {
     gpio::setup();
     timer::setup();
     ldr::setup();
+    ui::setup();
 }
 
 void update() {
@@ -31,6 +33,7 @@ void update() {
     synchro::update();
     gpio::update();
     ldr::update();
+    ui::update();
 }
 
 /**
@@ -88,14 +91,6 @@ void loop() {
         if (gps::milliseconds < prev) {
             clk::configure((gps::hours + 2) % 24, gps::minutes, gps::seconds);
         }
-    }
-
-    if (gpio::event != gpio::Event::NONE) {
-        if (gpio::event == gpio::Event::RESET) {
-            clk::valid = false;
-        }
-        Serial.printf("Event: %d\n", (int)gpio::event);
-        gpio::event = gpio::Event::NONE;
     }
 
     /*led::set_text("888888");

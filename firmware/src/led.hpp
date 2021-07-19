@@ -174,7 +174,7 @@ static const uint8_t STATUS_CTRL = 1;
 static const uint8_t STATUS_CH = 14;
 
 /**
- * LED controller index for the status LED.
+ * LED controller index for gate, flipflop, and synchroscope LED brightness.
  */
 static const uint8_t BRIGHTNESS_CTRL = 1;
 
@@ -215,16 +215,12 @@ extern bool displayed_time_valid;
 void set_text(const char *text);
 
 /**
- * Sets the color of the display.
- */
-void set_color(uint16_t r, uint16_t g, uint16_t b);
-
-/**
  * Sets the color of the display with hue, dark PWM level, light PWM level,
- * and hue delta per X coord and per Y coord (for a rainbow-y effect, because
- * why not?).
+ * dot correction value, and hue delta per X coord and per Y coord (for a
+ * rainbow-y effect, because why not?). In addition, es specifies whether the
+ * seconds digits should be enabled or not.
  */
-void set_color(uint16_t h, uint16_t d, uint16_t l, int16_t hx, int16_t hy);
+void set_color(uint16_t h, uint16_t d, uint16_t l, uint8_t dc, bool es, int16_t hx=0, int16_t hy=0);
 
 /**
  * Sets up pins related to LED control.

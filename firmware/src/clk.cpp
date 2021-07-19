@@ -96,6 +96,37 @@ void configure(uint8_t h, uint8_t m, uint8_t s) {
 }
 
 /**
+ * Sends the given amount of clock pulses to the clock circuitry, while
+ * disabling carry to minutes.
+ */
+static void send_clk_pulses(uint16_t count) {
+    digitalWrite(gpio::PIN_REN, LOW);
+    while (count--) {
+        timer::override_clk(true);
+        delayMicroseconds(2);
+        timer::override_clk(false);
+        delayMicroseconds(2);
+    }
+    timer::release_clk();
+    delayMicroseconds(2);
+    digitalWrite(gpio::PIN_REN, HIGH);
+}
+
+/**
+ * Increments seconds value without carry.
+ */
+void increment() {
+    send_clk_pulses(timer::grid_frequency());
+}
+
+/**
+ * Decrements seconds value without carry.
+ */
+void decrement() {
+    send_clk_pulses(timer::grid_frequency() * 59);
+}
+
+/**
  * Initializes the clock control logic.
  */
 void setup() {

@@ -298,7 +298,7 @@ void update() {
     // Detect UI inactivity.
     static uint16_t inactivity_timer = 0;
     if (event != Event::NONE) {
-        inactivity = 60000;
+        inactivity_timer = 60000;
     } else if (inactivity_timer) {
         inactivity_timer--;
         if (!inactivity_timer) {

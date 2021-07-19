@@ -27,12 +27,6 @@ enum class Mode {
     LEAD_LAG,
 
     /**
-     * This unit does not update the synchroscope position, giving the UI full
-     * control.
-     */
-    EXT,
-
-    /**
      * The synchroscope LEDs are off, but the grid is used as frequency
      * reference.
      */
@@ -49,7 +43,13 @@ enum class Mode {
     /**
      * Same as GPS_50, but generating 60Hz rather than 50Hz.
      */
-    GPS_60
+    GPS_60,
+
+    /**
+     * This unit does not update the synchroscope position, giving the UI full
+     * control.
+     */
+    EXT
 
 };
 
