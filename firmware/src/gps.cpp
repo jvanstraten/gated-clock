@@ -58,6 +58,29 @@ int16_t milliseconds;
 uint16_t valid;
 
 /**
+ * Maximum number of entries in the GSV list.
+ */
+#define GSV_MAX 5
+
+/**
+ * Number of valid entries in GSV list.
+ */
+static uint8_t gsv_count = 0;
+
+/**
+ * SNRs of the 5 best-received satellites. Only the first gsv_count entries
+ * are valid.
+ */
+static uint8_t gsv_data[GSV_MAX];
+
+/**
+ * Signal strength indicator. This is the sum of the SNRs in dB of the 5 best
+ * satellites being tracked. SNR is max 99 per satellite, so the maximum value
+ * is 495.
+ */
+uint16_t signal_strength = 0;
+
+/**
  * Sets up stuff related to GPS readout.
  */
 void setup() {
@@ -83,6 +106,12 @@ static void handle_field(const char *sentence, uint8_t field, const char *value)
             } else {
                 fix_valid = 0;
             }
+        } else if (field == 0) {
+            signal_strength = 0;
+            for (uint8_t i = 0; i < gsv_count; i++) {
+                signal_strength += gsv_data[i];
+            }
+            gsv_count = 0;
         }
     } else if (!strcmp(sentence + 2, "ZDA")) {
         if (field == 0) {
@@ -98,6 +127,25 @@ static void handle_field(const char *sentence, uint8_t field, const char *value)
                     + (value[2] - '0') * 10 + (value[3] - '0');
             if (fix_valid) {
                 seconds_valid = 1100;
+            }
+        }
+    } else if (!strcmp(sentence + 2, "GSV")) {
+        if ((field == 6 || field == 10 || field == 14 || field == 18) && value[0] && value[1]) {
+            uint8_t snr = (value[0] - '0') * 10 + (value[1] - '0');
+            if (gsv_count < GSV_MAX) {
+                gsv_data[gsv_count++] = snr;
+            } else {
+                uint8_t lowest_value = 100;
+                uint8_t lowest_index = 0;
+                for (uint8_t i = 0; i < GSV_MAX; i++) {
+                    if (gsv_data[i] < lowest_value) {
+                        lowest_value = gsv_data[i];
+                        lowest_index = i;
+                    }
+                }
+                if (snr > gsv_data[lowest_index]) {
+                    gsv_data[lowest_index] = snr;
+                }
             }
         }
     }

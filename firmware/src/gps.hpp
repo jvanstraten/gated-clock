@@ -52,6 +52,13 @@ extern int16_t milliseconds;
 extern uint16_t valid;
 
 /**
+ * Signal strength indicator. This is the sum of the SNRs in dB of the 5 best
+ * satellites being tracked. SNR is max 99 per satellite, so the maximum value
+ * is 495.
+ */
+extern uint16_t signal_strength;
+
+/**
  * Sets up stuff related to GPS readout.
  */
 void setup();

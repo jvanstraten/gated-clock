@@ -35,16 +35,6 @@ void release_reset();
 void configure(uint8_t h, uint8_t m, uint8_t s);
 
 /**
- * Increments seconds value without carry.
- */
-void increment();
-
-/**
- * Decrements seconds value without carry.
- */
-void decrement();
-
-/**
  * Initializes the clock control logic.
  */
 void setup();

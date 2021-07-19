@@ -1,4 +1,3 @@
-#include <inttypes.h>
 static const uint32_t TIMEZONES[3885] = {
     0x00000011,
     0x00000021,

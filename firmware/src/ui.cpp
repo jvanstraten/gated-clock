@@ -39,9 +39,6 @@ until manual configuration.
 
 Menu items and values:
 
-Second      select to modify seconds value                          | synchroscope
-            (display shows time when selected)                      | is disabled
-
 Fb ###      flipflop LED brightness (0..100)                        |
                                                                     |
 Gb ###      gate LED brightness (0..100)                            |
@@ -72,10 +69,9 @@ AInc 0      disable auto-increment                                  |
 LC ###      location code for GPS synchronization (0..num_codes)    | synchroscope shows
             (0 to disable synchronization)                          | GPS signal strength
 
-dSt A0      auto DST (auto DST not in effect)                       | synchroscope is
-dSt A1      auto DST (auto DST in effect)                           | disabled; menu entry
-dSt  1      DST on                                                  | is not shown when GPS
-dSt  0      DST off                                                 | sync is disabled
+dSt  A      auto DST                                                | synchroscope is disabled;
+dSt  1      DST on                                                  | menu entry is not shown
+dSt  0      DST off                                                 | when GPS sync is disabled
 
 */
 
@@ -90,6 +86,7 @@ dSt  0      DST off                                                 | sync is di
 #include "ldr.hpp"
 #include "gps.hpp"
 #include "pwr.hpp"
+#include "tz.hpp"
 
 /**
  * User interface logic.
@@ -111,7 +108,6 @@ Screen screen;
  * The currently selected config entry for MENU and VALUE screens.
  */
 enum class ConfigEntry {
-    SECONDS_CONFIG,
     FF_BRIGHTNESS,
     GATE_BRIGHTNESS,
     SYNCHRO_BRIGHTNESS,
@@ -352,7 +348,7 @@ static void commit_config(
     clk::enable_auto_inc = config.auto_inc_enable;
 
     // Configure location and DST system.
-    // TODO: once implemented.
+    tz::set_location(config.location_code, config.dst_mode);
 
 }
 
@@ -414,7 +410,7 @@ void update() {
                     case gpio::Event::LONG:
                         distraction_free = false;
                         screen = Screen::MENU;
-                        config_entry = ConfigEntry::SECONDS_CONFIG;
+                        config_entry = ConfigEntry::FF_BRIGHTNESS;
                         break;
                     default:
                         break;
@@ -457,7 +453,6 @@ void update() {
                         break;
                     case gpio::Event::SHORT:
                         switch (config_entry) {
-                            case ConfigEntry::SECONDS_CONFIG:
                             case ConfigEntry::FF_BRIGHTNESS:
                             case ConfigEntry::GATE_BRIGHTNESS:
                             case ConfigEntry::SYNCHRO_BRIGHTNESS:
@@ -526,21 +521,6 @@ void update() {
                 uint16_t *value16;
                 uint16_t max;
                 switch (config_entry) {
-                    case ConfigEntry::SECONDS_CONFIG:
-                        switch (gpio::event) {
-                            case gpio::Event::UP_INIT:
-                            case gpio::Event::UP_AUTO:
-                                clk::increment();
-                                break;
-                            case gpio::Event::DN_INIT:
-                            case gpio::Event::DN_AUTO:
-                                clk::decrement();
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-
                     case ConfigEntry::FF_BRIGHTNESS:
                         value8 = &config.ff_brightness;
                         goto handle8;
@@ -580,15 +560,15 @@ void update() {
                         goto handle16;
                     case ConfigEntry::LOCATION_CODE:
                         value16 = &config.location_code;
-                        max = 1; // TODO
+                        max = tz::num_locations();
                         goto handle16;
                     handle16: {
                         int8_t delta;
                         switch (gpio::event) {
                             case gpio::Event::UP_INIT: delta = 1; break;
-                            case gpio::Event::UP_AUTO: delta = 10; break;
+                            case gpio::Event::UP_AUTO: delta = 5; break;
                             case gpio::Event::DN_INIT: delta = -1; break;
-                            case gpio::Event::DN_AUTO: delta = -10; break;
+                            case gpio::Event::DN_AUTO: delta = -5; break;
                             default: delta = 0; break;
                         }
                         int16_t value = (int16_t)*value16 + delta;
@@ -648,14 +628,6 @@ void update() {
         case Screen::MENU:
         case Screen::VALUE:
             switch (config_entry) {
-                case ConfigEntry::SECONDS_CONFIG:
-                    if (screen == Screen::VALUE) {
-                        text[0] = 0;
-                    } else {
-                        snprintf(text, 7, "Second");
-                    }
-                    break;
-
                 case ConfigEntry::FF_BRIGHTNESS:
                     snprintf(text, 7, "Fb %3d", (int)config.ff_brightness);
                     if (screen == Screen::VALUE) blink_from = 3;
@@ -738,8 +710,7 @@ void update() {
                             snprintf(text, 7, "dst  1");
                             break;
                         case 2:
-                            // TODO: current auto-DST value.
-                            snprintf(text, 7, "dst A-");
+                            snprintf(text, 7, "dst  A");
                             break;
                     }
                     break;
@@ -766,8 +737,8 @@ void update() {
                     break;
 
                 case ConfigEntry::LOCATION_CODE:
-                    // TODO signal strength/number of satellites in lock
-                    status_synchro = -1;
+                    status_synchro = gps::signal_strength * 37;
+                    if (status_synchro > 29*256) status_synchro = 29*256;
                     break;
 
                 default:

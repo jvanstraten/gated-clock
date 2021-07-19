@@ -140,8 +140,7 @@ encoded.append(0)
 print('encoded size = {} bytes'.format(len(encoded) * 4))
 
 # Write the header file with the data in it.
-with open(script_dir + '/timezones.hpp', 'w') as f:
-    f.write('#include <inttypes.h>\n')
+with open(script_dir + '/timezones.inc', 'w') as f:
     f.write('static const uint32_t TIMEZONES[{}] = {{\n'.format(len(encoded)))
     for word in encoded[:-1]:
         f.write('    0x{:08X},\n'.format(word))
