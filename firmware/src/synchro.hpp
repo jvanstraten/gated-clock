@@ -13,18 +13,18 @@ namespace synchro {
 enum class Mode {
 
     /**
-     * Synchroscope mode. The LED bar behaves as if it's the needle of a
-     * mechanical synchroscope (though rolling over every 84 degrees).
-     */
-    SYNCHRO,
-
-    /**
      * Lead-lag mode. The LED position indicates by how many seconds the
      * grid time is leading or lagging behind GPS time, judging only by the
      * current second. When it's in the middle, the phase is aligned. The
      * rollover point is +/-30 seconds.
      */
     LEAD_LAG,
+
+    /**
+     * Synchroscope mode. The LED bar behaves as if it's the needle of a
+     * mechanical synchroscope (though rolling over every 84 degrees).
+     */
+    SYNCHRO,
 
     /**
      * The synchroscope LEDs are off, but the grid is used as frequency

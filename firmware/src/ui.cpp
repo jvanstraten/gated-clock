@@ -337,8 +337,12 @@ static void commit_config(
     if (status_synchro >= 0) {
         mode = synchro::Mode::EXT;
         gpio::synchro = status_synchro;
-    } else if (!config.seconds_shown || (text && text[0])) {
-        if (mode == synchro::Mode::SYNCHRO || mode == synchro::Mode::LEAD_LAG) {
+    } else if (text && text[0]) {
+        if (mode == synchro::Mode::LEAD_LAG || mode == synchro::Mode::SYNCHRO) {
+            mode = synchro::Mode::OFF;
+        }
+    } else if (!config.seconds_shown) {
+        if (mode == synchro::Mode::LEAD_LAG) {
             mode = synchro::Mode::OFF;
         }
     }
@@ -470,8 +474,8 @@ void update() {
                             case ConfigEntry::SECONDS_SHOWN:
                                 config.seconds_shown = !config.seconds_shown;
                                 if (!config.seconds_shown) {
-                                    if (config.synchro_mode == synchro::Mode::SYNCHRO || config.synchro_mode == synchro::Mode::LEAD_LAG) {
-                                        config.synchro_mode = synchro::Mode::OFF;
+                                    if (config.synchro_mode == synchro::Mode::LEAD_LAG) {
+                                        config.synchro_mode = synchro::Mode::SYNCHRO;
                                     }
                                 }
                                 break;
@@ -480,9 +484,9 @@ void update() {
                                 if (config.synchro_mode != synchro::Mode::GPS_60) {
                                     config.synchro_mode = synchro::Mode((int)config.synchro_mode + 1);
                                 } else if (!config.seconds_shown) {
-                                    config.synchro_mode = synchro::Mode::OFF;
-                                } else {
                                     config.synchro_mode = synchro::Mode::SYNCHRO;
+                                } else {
+                                    config.synchro_mode = synchro::Mode::LEAD_LAG;
                                 }
                                 break;
 

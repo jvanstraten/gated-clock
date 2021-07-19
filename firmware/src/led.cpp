@@ -307,12 +307,6 @@ void setup() {
         config[dev].espwm = true;
         config[dev].lsdvlt = false;
         for (uint8_t ch = 0; ch < 16; ch++) {
-            /*config[dev].ch[ch].pwm_r = 0x4000;
-            config[dev].ch[ch].pwm_g = 0x4000;
-            config[dev].ch[ch].pwm_b = 0x4000;
-            config[dev].ch[ch].dc_r = 0x0F;
-            config[dev].ch[ch].dc_g = 0x0F;
-            config[dev].ch[ch].dc_b = 0x0F;*/
             config[dev].ch[ch].pwm_r = 0;
             config[dev].ch[ch].pwm_g = 0;
             config[dev].ch[ch].pwm_b = 0;
@@ -322,18 +316,6 @@ void setup() {
             config[dev].ch[ch].enable = true;
         }
     }
-    /*config[1].ch[13].pwm_r = 0xFFFF;
-    config[1].ch[13].pwm_g = 0xFFFF;
-    config[1].ch[13].pwm_b = 0xA000;
-    config[1].ch[13].dc_r = 0x1F;
-    config[1].ch[13].dc_g = 0x10;
-    config[1].ch[13].dc_b = 0x00;
-    config[1].ch[14].pwm_r = 0x0000;
-    config[1].ch[14].pwm_g = 0x0000;
-    config[1].ch[14].pwm_b = 0x0000;
-    config[1].ch[14].dc_r = 0x10;
-    config[1].ch[14].dc_g = 0x10;
-    config[1].ch[14].dc_b = 0x10;*/
     display_override = false;
     displayed_time_valid = false;
 
