@@ -62,7 +62,7 @@ $(PROJECT).hex: $(PROJECT).elf
 $(PROJECT).elf: $(PROJ_OBJS) teensy3.a
 	$(CC) -Os -Wl,--gc-sections,--relax,--defsym=__rtc_localtime=1470636289 "-T$(TEENSY_DIR)/mkl26z64.ld" \
 		--specs=nano.specs -mthumb -mcpu=cortex-m0plus -fsingle-precision-constant \
-		-o $@ $(PROJ_OBJS) teensy3.a -L$(TEENSY_DIR)
+		-o $@ $(PROJ_OBJS) teensy3.a -L$(TEENSY_DIR) -lm
 
 teensy3.a: $(CORE_OBJS)
 	rm -f $@

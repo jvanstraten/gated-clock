@@ -210,9 +210,9 @@ void set_text(const char *text) {
 }
 
 /**
- * Computes the PWM value for the red channel for our simplistic HDL color
- * model (hue, dark value, light value). Green is computed by adding 43690
- * to h, and blue by adding 21845.
+ * Computes the PWM value for the green channel for our simplistic HDL color
+ * model (hue, dark value, light value). Red is computed by adding 21845
+ * to h, and blue by adding 43690.
  */
 static uint16_t compute_hdl(uint16_t h, uint16_t d, uint16_t l) {
     if (h > 43690) return d;
@@ -229,9 +229,9 @@ static uint16_t compute_hdl(uint16_t h, uint16_t d, uint16_t l) {
  * Internal call for set_color() that handles a particular segment.
  */
 static void set_segment_color(Channel &ch, uint16_t h, uint16_t d, uint16_t l, uint8_t dc) {
-    ch.pwm_r = compute_hdl(h +     0, d, l);
-    ch.pwm_g = compute_hdl(h + 43690, d, l) >> 1;
-    ch.pwm_b = compute_hdl(h + 21845, d, l) >> 1;
+    ch.pwm_r = compute_hdl(h + 21845, d, l);
+    ch.pwm_g = compute_hdl(h +     0, d, l) >> 1;
+    ch.pwm_b = compute_hdl(h + 43690, d, l) >> 1;
     ch.dc_r = dc;
     ch.dc_g = dc;
     ch.dc_b = dc;

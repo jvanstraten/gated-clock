@@ -116,8 +116,9 @@ void setup() {
     pinMode(PIN_EXP_SCK, OUTPUT);   digitalWrite(PIN_EXP_SCK, HIGH);
     pinMode(PIN_EXP_IRQ, INPUT);
 
-    pinMode(PIN_SYNCHRO_A, OUTPUT); analogWrite(PIN_SYNCHRO_A, 128);
-    pinMode(PIN_SYNCHRO_B, OUTPUT); analogWrite(PIN_SYNCHRO_B, 128);
+    analogWriteResolution(16);
+    pinMode(PIN_SYNCHRO_A, OUTPUT); analogWrite(PIN_SYNCHRO_A, 65535);
+    pinMode(PIN_SYNCHRO_B, OUTPUT); analogWrite(PIN_SYNCHRO_B, 65535);
 
     pinMode(PIN_MIN_ISW, INPUT);
     pinMode(PIN_MIN_IEN, OUTPUT);   digitalWrite(PIN_MIN_IEN, HIGH);
@@ -183,16 +184,19 @@ void update() {
     mcp_gpio_out |= tab & PIN_SYNCHRO_H_MASK;
     mcp_iodir |= tab & PIN_SYNCHRO_L_MASK;
     mcp_iodir |= PIN_SYNCHRO_H_MASK;
-    uint32_t sync_pwm = synchro & 0xFF;
-    if (synchro & 0x100) sync_pwm = 256 - sync_pwm;
-    uint32_t sync_pwm_a = 256 - sync_pwm;
-    uint32_t sync_pwm_b = sync_pwm;
+    uint32_t sync_pwm = (synchro & 0xFF) << 8;
+    if (synchro & 0x100) sync_pwm = 65535 - sync_pwm;
+    uint32_t sync_pwm_a = sync_pwm;
+    uint32_t sync_pwm_b = 65535 - sync_pwm;
     if (!synchro_enable) {
-        sync_pwm_a = 255;
-        sync_pwm_b = 255;
+        sync_pwm_a = 0;
+        sync_pwm_b = 0;
+    } else {
+        sync_pwm_a = (powf(sync_pwm_a / 65535.0f, 1.5f) * 65535);
+        sync_pwm_b = (powf(sync_pwm_b / 65535.0f, 1.5f) * 65535);
     }
-    analogWrite(PIN_SYNCHRO_A, (sync_pwm_a > 255) ? 255 : sync_pwm_a);
-    analogWrite(PIN_SYNCHRO_B, (sync_pwm_b > 255) ? 255 : sync_pwm_b);
+    analogWrite(PIN_SYNCHRO_A, 65535 - sync_pwm_a);
+    analogWrite(PIN_SYNCHRO_B, 65535 - sync_pwm_b);
 
     // Override the reset output pin if power is bad.
     auto actual_gpio_out = mcp_gpio_out;
