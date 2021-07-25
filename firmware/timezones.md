@@ -47,14 +47,11 @@ index, that you'll have to look up in the following list yourself.
 
  - Ndjamena: [1](#zone-index-1)
 
-### Congo, Democratic Republic of the
-
- - Kinshasa: [1](#zone-index-1)
- - Lubumbashi: [2](#zone-index-2)
-
 ### Congo
 
  - Brazzaville: [1](#zone-index-1)
+ - Kinshasa: [1](#zone-index-1)
+ - Lubumbashi: [2](#zone-index-2)
 
 ### Côte d'Ivoire
 
@@ -79,7 +76,7 @@ index, that you'll have to look up in the following list yourself.
 
 ### Ethiopia
 
- - Addis_Ababa: [4](#zone-index-4)
+ - Addis Ababa: [4](#zone-index-4)
 
 ### Gabon
 
@@ -155,7 +152,7 @@ index, that you'll have to look up in the following list yourself.
 
 ### Sao Tome and Principe
 
- - Sao_Tome: [3](#zone-index-3)
+ - Sao Tome: [3](#zone-index-3)
 
 ### Senegal
 
@@ -185,9 +182,9 @@ index, that you'll have to look up in the following list yourself.
 
  - Khartoum: [2](#zone-index-2)
 
-### Tanzania, United Republic of
+### Tanzania
 
- - Dar_es_Salaam: [4](#zone-index-4)
+ - Dar es Salaam: [4](#zone-index-4)
 
 ### Togo
 
@@ -203,7 +200,7 @@ index, that you'll have to look up in the following list yourself.
 
 ### Western Sahara
 
- - El_Aaiun: [5](#zone-index-5)
+ - El Aaiun: [5](#zone-index-5)
 
 ### Zambia
 
@@ -223,18 +220,18 @@ index, that you'll have to look up in the following list yourself.
 
 ### Argentina
 
- - Argentina/Buenos_Aires: [9](#zone-index-9)
- - Argentina/Catamarca: [9](#zone-index-9)
- - Argentina/Cordoba: [9](#zone-index-9)
- - Argentina/Jujuy: [9](#zone-index-9)
- - Argentina/La_Rioja: [9](#zone-index-9)
- - Argentina/Mendoza: [9](#zone-index-9)
- - Argentina/Rio_Gallegos: [9](#zone-index-9)
- - Argentina/Salta: [9](#zone-index-9)
- - Argentina/San_Juan: [9](#zone-index-9)
- - Argentina/San_Luis: [9](#zone-index-9)
- - Argentina/Tucuman: [9](#zone-index-9)
- - Argentina/Ushuaia: [9](#zone-index-9)
+ - Buenos Aires: [9](#zone-index-9)
+ - Catamarca: [9](#zone-index-9)
+ - Cordoba: [9](#zone-index-9)
+ - Jujuy: [9](#zone-index-9)
+ - La Rioja: [9](#zone-index-9)
+ - Mendoza: [9](#zone-index-9)
+ - Rio Gallegos: [9](#zone-index-9)
+ - Salta: [9](#zone-index-9)
+ - San Juan: [9](#zone-index-9)
+ - San Luis: [9](#zone-index-9)
+ - Tucuman: [9](#zone-index-9)
+ - Ushuaia: [9](#zone-index-9)
  - Aruba: [8](#zone-index-8)
 
 ### Bahamas
@@ -243,9 +240,9 @@ index, that you'll have to look up in the following list yourself.
  - Barbados: [8](#zone-index-8)
  - Belize: [11](#zone-index-11)
 
-### Bolivia (Plurinational State of)
+### Bolivia
 
- - La_Paz: [8](#zone-index-8)
+ - La Paz: [8](#zone-index-8)
 
 ### Bonaire, Sint Eustatius and Saba
 
@@ -256,45 +253,45 @@ index, that you'll have to look up in the following list yourself.
  - Araguaina: [9](#zone-index-9)
  - Bahia: [9](#zone-index-9)
  - Belem: [9](#zone-index-9)
- - Boa_Vista: [8](#zone-index-8)
- - Campo_Grande: [8](#zone-index-8)
+ - Boa Vista: [8](#zone-index-8)
+ - Campo Grande: [8](#zone-index-8)
  - Cuiaba: [8](#zone-index-8)
  - Eirunepe: [12](#zone-index-12)
  - Fortaleza: [9](#zone-index-9)
  - Maceio: [9](#zone-index-9)
  - Manaus: [8](#zone-index-8)
  - Noronha: [13](#zone-index-13)
- - Porto_Velho: [8](#zone-index-8)
+ - Porto Velho: [8](#zone-index-8)
  - Recife: [9](#zone-index-9)
- - Rio_Branco: [12](#zone-index-12)
+ - Rio Branco: [12](#zone-index-12)
  - Santarem: [9](#zone-index-9)
- - Sao_Paulo: [9](#zone-index-9)
+ - Sao Paulo: [9](#zone-index-9)
 
 ### Canada
 
  - Atikokan: [12](#zone-index-12)
  - Blanc-Sablon: [8](#zone-index-8)
- - Cambridge_Bay: [14](#zone-index-14)
+ - Cambridge Bay: [14](#zone-index-14)
  - Creston: [15](#zone-index-15)
  - Dawson: [16](#zone-index-16)
- - Dawson_Creek: [15](#zone-index-15)
+ - Dawson Creek: [15](#zone-index-15)
  - Edmonton: [14](#zone-index-14)
- - Fort_Nelson: [15](#zone-index-15)
- - Glace_Bay: [17](#zone-index-17)
- - Goose_Bay: [17](#zone-index-17)
+ - Fort Nelson: [15](#zone-index-15)
+ - Glace Bay: [17](#zone-index-17)
+ - Goose Bay: [17](#zone-index-17)
  - Halifax: [17](#zone-index-17)
  - Inuvik: [14](#zone-index-14)
  - Iqaluit: [10](#zone-index-10)
  - Moncton: [17](#zone-index-17)
  - Nipigon: [10](#zone-index-10)
  - Pangnirtung: [10](#zone-index-10)
- - Rainy_River: [18](#zone-index-18)
- - Rankin_Inlet: [18](#zone-index-18)
+ - Rainy River: [18](#zone-index-18)
+ - Rankin Inlet: [18](#zone-index-18)
  - Regina: [11](#zone-index-11)
  - Resolute: [18](#zone-index-18)
- - St_Johns: [19](#zone-index-19)
- - Swift_Current: [11](#zone-index-11)
- - Thunder_Bay: [10](#zone-index-10)
+ - St Johns: [19](#zone-index-19)
+ - Swift Current: [11](#zone-index-11)
+ - Thunder Bay: [10](#zone-index-10)
  - Toronto: [10](#zone-index-10)
  - Vancouver: [20](#zone-index-20)
  - Whitehorse: [16](#zone-index-16)
@@ -307,16 +304,13 @@ index, that you'll have to look up in the following list yourself.
 
 ### Chile
 
- - Punta_Arenas: [21](#zone-index-21)
+ - Punta Arenas: [21](#zone-index-21)
  - Santiago: [22](#zone-index-22)
 
 ### Colombia
 
  - Bogota: [12](#zone-index-12)
-
-### Costa Rica
-
- - Costa_Rica: [11](#zone-index-11)
+ - Costa Rica: [11](#zone-index-11)
 
 ### Cuba
 
@@ -329,15 +323,12 @@ index, that you'll have to look up in the following list yourself.
 
 ### Dominican Republic
 
- - Santo_Domingo: [8](#zone-index-8)
+ - Santo Domingo: [8](#zone-index-8)
 
 ### Ecuador
 
  - Guayaquil: [12](#zone-index-12)
-
-### El Salvador
-
- - El_Salvador: [11](#zone-index-11)
+ - El Salvador: [11](#zone-index-11)
 
 ### French Guiana
 
@@ -366,14 +357,14 @@ index, that you'll have to look up in the following list yourself.
 
 ### Mexico
 
- - Bahia_Banderas: [26](#zone-index-26)
+ - Bahia Banderas: [26](#zone-index-26)
  - Cancun: [12](#zone-index-12)
  - Chihuahua: [27](#zone-index-27)
  - Hermosillo: [15](#zone-index-15)
  - Matamoros: [18](#zone-index-18)
  - Mazatlan: [27](#zone-index-27)
  - Merida: [26](#zone-index-26)
- - Mexico_City: [26](#zone-index-26)
+ - Mexico City: [26](#zone-index-26)
  - Monterrey: [26](#zone-index-26)
  - Ojinaga: [14](#zone-index-14)
  - Tijuana: [20](#zone-index-20)
@@ -391,22 +382,19 @@ index, that you'll have to look up in the following list yourself.
 ### Peru
 
  - Lima: [12](#zone-index-12)
-
-### Puerto Rico
-
- - Puerto_Rico: [8](#zone-index-8)
+ - Puerto Rico: [8](#zone-index-8)
 
 ### Saint Barthélemy
 
- - St_Barthelemy: [8](#zone-index-8)
+ - St Barthelemy: [8](#zone-index-8)
 
 ### Saint Kitts and Nevis
 
- - St_Kitts: [8](#zone-index-8)
+ - St Kitts: [8](#zone-index-8)
 
 ### Saint Lucia
 
- - St_Lucia: [8](#zone-index-8)
+ - St Lucia: [8](#zone-index-8)
 
 ### Saint Martin (French part)
 
@@ -418,11 +406,11 @@ index, that you'll have to look up in the following list yourself.
 
 ### Saint Vincent and the Grenadines
 
- - St_Vincent: [8](#zone-index-8)
+ - St Vincent: [8](#zone-index-8)
 
 ### Sint Maarten (Dutch part)
 
- - Lower_Princes: [8](#zone-index-8)
+ - Lower Princes: [8](#zone-index-8)
 
 ### Suriname
 
@@ -430,13 +418,13 @@ index, that you'll have to look up in the following list yourself.
 
 ### Trinidad and Tobago
 
- - Port_of_Spain: [8](#zone-index-8)
+ - Port of Spain: [8](#zone-index-8)
 
 ### Turks and Caicos Islands
 
- - Grand_Turk: [10](#zone-index-10)
+ - Grand Turk: [10](#zone-index-10)
 
-### United States of America
+### USA
 
  - Adak: [30](#zone-index-30)
  - Anchorage: [31](#zone-index-31)
@@ -448,21 +436,21 @@ index, that you'll have to look up in the following list yourself.
  - Indiana/Knox: [18](#zone-index-18)
  - Indiana/Marengo: [10](#zone-index-10)
  - Indiana/Petersburg: [10](#zone-index-10)
- - Indiana/Tell_City: [18](#zone-index-18)
+ - Indiana/Tell City: [18](#zone-index-18)
  - Indiana/Vevay: [10](#zone-index-10)
  - Indiana/Vincennes: [10](#zone-index-10)
  - Indiana/Winamac: [10](#zone-index-10)
  - Juneau: [31](#zone-index-31)
  - Kentucky/Louisville: [10](#zone-index-10)
  - Kentucky/Monticello: [10](#zone-index-10)
- - Los_Angeles: [20](#zone-index-20)
+ - Los Angeles: [20](#zone-index-20)
  - Menominee: [18](#zone-index-18)
  - Metlakatla: [31](#zone-index-31)
- - New_York: [10](#zone-index-10)
+ - New York: [10](#zone-index-10)
  - Nome: [31](#zone-index-31)
- - North_Dakota/Beulah: [18](#zone-index-18)
- - North_Dakota/Center: [18](#zone-index-18)
- - North_Dakota/New_Salem: [18](#zone-index-18)
+ - North Dakota/Beulah: [18](#zone-index-18)
+ - North Dakota/Center: [18](#zone-index-18)
+ - North Dakota/New Salem: [18](#zone-index-18)
  - Phoenix: [15](#zone-index-15)
  - Sitka: [31](#zone-index-31)
  - Yakutat: [31](#zone-index-31)
@@ -471,7 +459,7 @@ index, that you'll have to look up in the following list yourself.
 
  - Montevideo: [9](#zone-index-9)
 
-### Venezuela (Bolivarian Republic of)
+### Venezuela
 
  - Caracas: [8](#zone-index-8)
 
@@ -481,7 +469,7 @@ index, that you'll have to look up in the following list yourself.
 
 ### Virgin Islands (U.S.)
 
- - St_Thomas: [8](#zone-index-8)
+ - St Thomas: [8](#zone-index-8)
 
 ## Antarctica
 
@@ -537,7 +525,7 @@ index, that you'll have to look up in the following list yourself.
 
 ### Cambodia
 
- - Phnom_Penh: [33](#zone-index-33)
+ - Phnom Penh: [33](#zone-index-33)
 
 ### China
 
@@ -552,10 +540,7 @@ index, that you'll have to look up in the following list yourself.
 ### Georgia
 
  - Tbilisi: [41](#zone-index-41)
-
-### Hong Kong
-
- - Hong_Kong: [42](#zone-index-42)
+ - Hong Kong: [42](#zone-index-42)
 
 ### India
 
@@ -568,7 +553,7 @@ index, that you'll have to look up in the following list yourself.
  - Makassar: [42](#zone-index-42)
  - Pontianak: [33](#zone-index-33)
 
-### Iran (Islamic Republic of)
+### Iran
 
  - Tehran: [46](#zone-index-46)
 
@@ -597,21 +582,13 @@ index, that you'll have to look up in the following list yourself.
  - Oral: [49](#zone-index-49)
  - Qostanay: [50](#zone-index-50)
  - Qyzylorda: [35](#zone-index-35)
-
-### Korea (Democratic People's Republic of)
-
- - Pyongyang: [45](#zone-index-45)
-
-### Korea, Republic of
-
- - Seoul: [45](#zone-index-45)
  - Kuwait: [4](#zone-index-4)
 
 ### Kyrgyzstan
 
  - Bishkek: [50](#zone-index-50)
 
-### Lao People's Democratic Republic
+### Laos
 
  - Vientiane: [33](#zone-index-33)
 
@@ -625,7 +602,7 @@ index, that you'll have to look up in the following list yourself.
 
 ### Malaysia
 
- - Kuala_Lumpur: [42](#zone-index-42)
+ - Kuala Lumpur: [42](#zone-index-42)
  - Kuching: [42](#zone-index-42)
 
 ### Mongolia
@@ -642,6 +619,10 @@ index, that you'll have to look up in the following list yourself.
 
  - Kathmandu: [53](#zone-index-53)
 
+### North Korea
+
+ - Pyongyang: [45](#zone-index-45)
+
 ### Oman
 
  - Muscat: [41](#zone-index-41)
@@ -650,7 +631,7 @@ index, that you'll have to look up in the following list yourself.
 
  - Karachi: [35](#zone-index-35)
 
-### Palestine, State of
+### Palestine
 
  - Gaza: [54](#zone-index-54)
  - Hebron: [54](#zone-index-54)
@@ -660,7 +641,7 @@ index, that you'll have to look up in the following list yourself.
  - Manila: [42](#zone-index-42)
  - Qatar: [4](#zone-index-4)
 
-### Russian Federation
+### Russia
 
  - Anadyr: [55](#zone-index-55)
  - Barnaul: [33](#zone-index-33)
@@ -686,11 +667,15 @@ index, that you'll have to look up in the following list yourself.
  - Riyadh: [4](#zone-index-4)
  - Singapore: [42](#zone-index-42)
 
+### South Korea
+
+ - Seoul: [45](#zone-index-45)
+
 ### Sri Lanka
 
  - Colombo: [44](#zone-index-44)
 
-### Syrian Arab Republic
+### Syria
 
  - Damascus: [57](#zone-index-57)
 
@@ -725,7 +710,7 @@ index, that you'll have to look up in the following list yourself.
 
 ### Viet Nam
 
- - Ho_Chi_Minh: [33](#zone-index-33)
+ - Ho Chi Minh: [33](#zone-index-33)
 
 ### Yemen
 
@@ -737,7 +722,7 @@ index, that you'll have to look up in the following list yourself.
 
 ### Cabo Verde
 
- - Cape_Verde: [58](#zone-index-58)
+ - Cape Verde: [58](#zone-index-58)
 
 ### Falkland Islands (Malvinas)
 
@@ -758,11 +743,11 @@ index, that you'll have to look up in the following list yourself.
 
 ### Saint Helena, Ascension and Tristan da Cunha
 
- - St_Helena: [3](#zone-index-3)
+ - St Helena: [3](#zone-index-3)
 
 ### South Georgia and the South Sandwich Islands
 
- - South_Georgia: [13](#zone-index-13)
+ - South Georgia: [13](#zone-index-13)
 
 ### Spain
 
@@ -772,12 +757,12 @@ index, that you'll have to look up in the following list yourself.
 
  - Adelaide: [60](#zone-index-60)
  - Brisbane: [34](#zone-index-34)
- - Broken_Hill: [60](#zone-index-60)
+ - Broken Hill: [60](#zone-index-60)
  - Darwin: [61](#zone-index-61)
  - Eucla: [62](#zone-index-62)
  - Hobart: [39](#zone-index-39)
  - Lindeman: [34](#zone-index-34)
- - Lord_Howe: [63](#zone-index-63)
+ - Lord Howe: [63](#zone-index-63)
  - Melbourne: [39](#zone-index-39)
  - Perth: [42](#zone-index-42)
  - Sydney: [39](#zone-index-39)
@@ -856,10 +841,7 @@ index, that you'll have to look up in the following list yourself.
 ### Ireland
 
  - Dublin: [64](#zone-index-64)
-
-### Isle of Man
-
- - Isle_of_Man: [59](#zone-index-59)
+ - Isle of Man: [59](#zone-index-59)
 
 ### Italy
 
@@ -880,7 +862,7 @@ index, that you'll have to look up in the following list yourself.
  - Luxembourg: [7](#zone-index-7)
  - Malta: [7](#zone-index-7)
 
-### Moldova, Republic of
+### Moldova
 
  - Chisinau: [65](#zone-index-65)
  - Monaco: [7](#zone-index-7)
@@ -913,7 +895,7 @@ index, that you'll have to look up in the following list yourself.
 
  - Bucharest: [43](#zone-index-43)
 
-### Russian Federation
+### Russia
 
  - Astrakhan: [41](#zone-index-41)
  - Kaliningrad: [2](#zone-index-2)
@@ -923,10 +905,7 @@ index, that you'll have to look up in the following list yourself.
  - Saratov: [41](#zone-index-41)
  - Ulyanovsk: [41](#zone-index-41)
  - Volgograd: [66](#zone-index-66)
-
-### San Marino
-
- - San_Marino: [7](#zone-index-7)
+ - San Marino: [7](#zone-index-7)
 
 ### Serbia
 
@@ -963,7 +942,7 @@ index, that you'll have to look up in the following list yourself.
  - Uzhgorod: [43](#zone-index-43)
  - Zaporozhye: [43](#zone-index-43)
 
-### United Kingdom of Great Britain and Northern Ireland
+### United Kingdom
 
  - London: [59](#zone-index-59)
 
@@ -1014,7 +993,7 @@ index, that you'll have to look up in the following list yourself.
 
 ### American Samoa
 
- - Pago_Pago: [67](#zone-index-67)
+ - Pago Pago: [67](#zone-index-67)
 
 ### Chile
 
@@ -1047,7 +1026,7 @@ index, that you'll have to look up in the following list yourself.
  - Kwajalein: [55](#zone-index-55)
  - Majuro: [55](#zone-index-55)
 
-### Micronesia (Federated States of)
+### Micronesia
 
  - Chuuk: [34](#zone-index-34)
  - Kosrae: [56](#zone-index-56)
@@ -1076,7 +1055,7 @@ index, that you'll have to look up in the following list yourself.
 ### Papua New Guinea
 
  - Bougainville: [56](#zone-index-56)
- - Port_Moresby: [34](#zone-index-34)
+ - Port Moresby: [34](#zone-index-34)
  - Pitcairn: [77](#zone-index-77)
 
 ### Samoa
@@ -1099,14 +1078,11 @@ index, that you'll have to look up in the following list yourself.
 
  - Funafuti: [55](#zone-index-55)
 
-### United States Minor Outlying Islands
-
- - Midway: [67](#zone-index-67)
- - Wake: [55](#zone-index-55)
-
-### United States of America
+### USA
 
  - Honolulu: [69](#zone-index-69)
+ - Midway: [67](#zone-index-67)
+ - Wake: [55](#zone-index-55)
 
 ### Vanuatu
 

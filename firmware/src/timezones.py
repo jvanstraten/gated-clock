@@ -32,7 +32,27 @@ with open(timezonedb_fname, 'rb') as f:
             def combine(country, path):
                 path = path.split('/')
                 path.insert(1, country)
-                return '/'.join(path)
+                return ('/'.join(path)
+                    .replace('_', ' ')
+                    # abbreviate some of the official country names because they're super long
+                    .replace('Congo, Democratic Republic of the', 'Congo')
+                    .replace('Tanzania, United Republic of', 'Tanzania')
+                    .replace('Bolivia (Plurinational State of)', 'Bolivia')
+                    .replace('United States of America', 'USA')
+                    .replace('United States Minor Outlying Islands', 'USA')
+                    .replace('Iran (Islamic Republic of)', 'Iran')
+                    .replace('Korea (Democratic People\'s Republic of)', 'North Korea')
+                    .replace('Korea, Republic of', 'South Korea')
+                    .replace('Lao People\'s Democratic Republic', 'Laos')
+                    .replace('Russian Federation', 'Russia')
+                    .replace('Syrian Arab Republic', 'Syria')
+                    .replace('United Kingdom of Great Britain and Northern Ireland', 'United Kingdom')
+                    .replace('Micronesia (Federated States of)', 'Micronesia')
+                    .replace('Argentina/Argentina', 'Argentina')
+                    .replace('Moldova, Republic of', 'Moldova')
+                    .replace('Palestine, State of', 'Palestine')
+                    .replace('Venezuela (Bolivarian Republic of)', 'Venezuela')
+                )
             Zone = collections.namedtuple('Zone', ['name', 'offsets'])
             zone_dict = dict(map(lambda x: (int(x[0]), Zone(combine(countries[x[1]], x[2]), [])), csv.reader(map(lambda x: x.decode('utf8'), zfi))))
         with zf.open('timezone.csv') as zfi:
@@ -202,3 +222,8 @@ The data associated with each zone index is shown below.
         if ds:
             f.write(' (DST)')
         f.write('\n')
+
+with open(script_dir + '/../timezones.txt', 'w') as f:
+    prev_path = []
+    for location, index in sorted(locations, key=lambda x: x[0].split('/', maxsplit=1)[1]):
+        f.write('{}: {}\n'.format(location.split('/', maxsplit=1)[1], index + 1))

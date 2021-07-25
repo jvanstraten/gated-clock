@@ -1,0 +1,424 @@
+Afghanistan/Kabul: 40
+Albania/Tirane: 7
+Algeria/Algiers: 1
+American Samoa/Pago Pago: 67
+Andorra/Andorra: 7
+Angola/Luanda: 1
+Anguilla/Anguilla: 8
+Antarctica/Casey: 32
+Antarctica/Davis: 33
+Antarctica/DumontDUrville: 34
+Antarctica/Mawson: 35
+Antarctica/McMurdo: 36
+Antarctica/Palmer: 21
+Antarctica/Rothera: 9
+Antarctica/Syowa: 4
+Antarctica/Troll: 37
+Antarctica/Vostok: 38
+Antigua and Barbuda/Antigua: 8
+Argentina/Buenos Aires: 9
+Argentina/Catamarca: 9
+Argentina/Cordoba: 9
+Argentina/Jujuy: 9
+Argentina/La Rioja: 9
+Argentina/Mendoza: 9
+Argentina/Rio Gallegos: 9
+Argentina/Salta: 9
+Argentina/San Juan: 9
+Argentina/San Luis: 9
+Argentina/Tucuman: 9
+Argentina/Ushuaia: 9
+Armenia/Yerevan: 41
+Aruba/Aruba: 8
+Australia/Adelaide: 60
+Australia/Brisbane: 34
+Australia/Broken Hill: 60
+Australia/Darwin: 61
+Australia/Eucla: 62
+Australia/Hobart: 39
+Australia/Lindeman: 34
+Australia/Lord Howe: 63
+Australia/Macquarie: 39
+Australia/Melbourne: 39
+Australia/Perth: 42
+Australia/Sydney: 39
+Austria/Vienna: 7
+Azerbaijan/Baku: 41
+Bahamas/Nassau: 10
+Bahrain/Bahrain: 4
+Bangladesh/Dhaka: 38
+Barbados/Barbados: 8
+Belarus/Minsk: 4
+Belgium/Brussels: 7
+Belize/Belize: 11
+Benin/Porto-Novo: 1
+Bermuda/Bermuda: 17
+Bhutan/Thimphu: 38
+Bolivia/La Paz: 8
+Bonaire, Sint Eustatius and Saba/Kralendijk: 8
+Bosnia and Herzegovina/Sarajevo: 7
+Botswana/Gaborone: 2
+Brazil/Araguaina: 9
+Brazil/Bahia: 9
+Brazil/Belem: 9
+Brazil/Boa Vista: 8
+Brazil/Campo Grande: 8
+Brazil/Cuiaba: 8
+Brazil/Eirunepe: 12
+Brazil/Fortaleza: 9
+Brazil/Maceio: 9
+Brazil/Manaus: 8
+Brazil/Noronha: 13
+Brazil/Porto Velho: 8
+Brazil/Recife: 9
+Brazil/Rio Branco: 12
+Brazil/Santarem: 9
+Brazil/Sao Paulo: 9
+British Indian Ocean Territory/Chagos: 38
+Brunei Darussalam/Brunei: 42
+Bulgaria/Sofia: 43
+Burkina Faso/Ouagadougou: 3
+Burundi/Bujumbura: 2
+Cabo Verde/Cape Verde: 58
+Cambodia/Phnom Penh: 33
+Cameroon/Douala: 1
+Canada/Atikokan: 12
+Canada/Blanc-Sablon: 8
+Canada/Cambridge Bay: 14
+Canada/Creston: 15
+Canada/Dawson: 16
+Canada/Dawson Creek: 15
+Canada/Edmonton: 14
+Canada/Fort Nelson: 15
+Canada/Glace Bay: 17
+Canada/Goose Bay: 17
+Canada/Halifax: 17
+Canada/Inuvik: 14
+Canada/Iqaluit: 10
+Canada/Moncton: 17
+Canada/Nipigon: 10
+Canada/Pangnirtung: 10
+Canada/Rainy River: 18
+Canada/Rankin Inlet: 18
+Canada/Regina: 11
+Canada/Resolute: 18
+Canada/St Johns: 19
+Canada/Swift Current: 11
+Canada/Thunder Bay: 10
+Canada/Toronto: 10
+Canada/Vancouver: 20
+Canada/Whitehorse: 16
+Canada/Winnipeg: 18
+Canada/Yellowknife: 14
+Cayman Islands/Cayman: 12
+Central African Republic/Bangui: 1
+Chad/Ndjamena: 1
+Chile/Easter: 68
+Chile/Punta Arenas: 21
+Chile/Santiago: 22
+China/Shanghai: 42
+China/Urumqi: 38
+Christmas Island/Christmas: 33
+Cocos (Keeling) Islands/Cocos: 52
+Colombia/Bogota: 12
+Comoros/Comoro: 4
+Congo/Brazzaville: 1
+Congo/Kinshasa: 1
+Congo/Lubumbashi: 2
+Cook Islands/Rarotonga: 69
+Costa Rica/Costa Rica: 11
+Croatia/Zagreb: 7
+Cuba/Havana: 23
+Curaçao/Curacao: 8
+Cyprus/Famagusta: 43
+Cyprus/Nicosia: 43
+Czechia/Prague: 7
+Côte d'Ivoire/Abidjan: 3
+Denmark/Copenhagen: 7
+Djibouti/Djibouti: 4
+Dominica/Dominica: 8
+Dominican Republic/Santo Domingo: 8
+Ecuador/Galapagos: 11
+Ecuador/Guayaquil: 12
+Egypt/Cairo: 2
+El Salvador/El Salvador: 11
+Equatorial Guinea/Malabo: 1
+Eritrea/Asmara: 4
+Estonia/Tallinn: 43
+Eswatini/Mbabane: 2
+Ethiopia/Addis Ababa: 4
+Falkland Islands (Malvinas)/Stanley: 9
+Faroe Islands/Faroe: 59
+Fiji/Fiji: 70
+Finland/Helsinki: 43
+France/Paris: 7
+French Guiana/Cayenne: 9
+French Polynesia/Gambier: 71
+French Polynesia/Marquesas: 72
+French Polynesia/Tahiti: 69
+French Southern Territories/Kerguelen: 35
+Gabon/Libreville: 1
+Gambia/Banjul: 3
+Georgia/Tbilisi: 41
+Germany/Berlin: 7
+Germany/Busingen: 7
+Ghana/Accra: 3
+Gibraltar/Gibraltar: 7
+Greece/Athens: 43
+Greenland/Danmarkshavn: 3
+Greenland/Nuuk: 24
+Greenland/Scoresbysund: 25
+Greenland/Thule: 17
+Grenada/Grenada: 8
+Guadeloupe/Guadeloupe: 8
+Guam/Guam: 34
+Guatemala/Guatemala: 11
+Guernsey/Guernsey: 59
+Guinea-Bissau/Bissau: 3
+Guinea/Conakry: 3
+Guyana/Guyana: 8
+Haiti/Port-au-Prince: 10
+Holy See/Vatican: 7
+Honduras/Tegucigalpa: 11
+Hong Kong/Hong Kong: 42
+Hungary/Budapest: 7
+Iceland/Reykjavik: 3
+India/Kolkata: 44
+Indonesia/Jakarta: 33
+Indonesia/Jayapura: 45
+Indonesia/Makassar: 42
+Indonesia/Pontianak: 33
+Iran/Tehran: 46
+Iraq/Baghdad: 4
+Ireland/Dublin: 64
+Isle of Man/Isle of Man: 59
+Israel/Jerusalem: 47
+Italy/Rome: 7
+Jamaica/Jamaica: 12
+Japan/Tokyo: 45
+Jersey/Jersey: 59
+Jordan/Amman: 48
+Kazakhstan/Almaty: 38
+Kazakhstan/Aqtau: 49
+Kazakhstan/Aqtobe: 35
+Kazakhstan/Atyrau: 49
+Kazakhstan/Oral: 49
+Kazakhstan/Qostanay: 50
+Kazakhstan/Qyzylorda: 35
+Kenya/Nairobi: 4
+Kiribati/Enderbury: 73
+Kiribati/Kiritimati: 74
+Kiribati/Tarawa: 55
+Kuwait/Kuwait: 4
+Kyrgyzstan/Bishkek: 50
+Laos/Vientiane: 33
+Latvia/Riga: 43
+Lebanon/Beirut: 51
+Lesotho/Maseru: 2
+Liberia/Monrovia: 3
+Libya/Tripoli: 2
+Liechtenstein/Vaduz: 7
+Lithuania/Vilnius: 43
+Luxembourg/Luxembourg: 7
+Macao/Macau: 42
+Madagascar/Antananarivo: 4
+Malawi/Blantyre: 2
+Malaysia/Kuala Lumpur: 42
+Malaysia/Kuching: 42
+Maldives/Maldives: 35
+Mali/Bamako: 3
+Malta/Malta: 7
+Marshall Islands/Kwajalein: 55
+Marshall Islands/Majuro: 55
+Martinique/Martinique: 8
+Mauritania/Nouakchott: 3
+Mauritius/Mauritius: 41
+Mayotte/Mayotte: 4
+Mexico/Bahia Banderas: 26
+Mexico/Cancun: 12
+Mexico/Chihuahua: 27
+Mexico/Hermosillo: 15
+Mexico/Matamoros: 18
+Mexico/Mazatlan: 27
+Mexico/Merida: 26
+Mexico/Mexico City: 26
+Mexico/Monterrey: 26
+Mexico/Ojinaga: 14
+Mexico/Tijuana: 20
+Micronesia/Chuuk: 34
+Micronesia/Kosrae: 56
+Micronesia/Pohnpei: 56
+Moldova/Chisinau: 65
+Monaco/Monaco: 7
+Mongolia/Choibalsan: 42
+Mongolia/Hovd: 33
+Mongolia/Ulaanbaatar: 42
+Montenegro/Podgorica: 7
+Montserrat/Montserrat: 8
+Morocco/Casablanca: 5
+Mozambique/Maputo: 2
+Myanmar/Yangon: 52
+Namibia/Windhoek: 2
+Nauru/Nauru: 55
+Nepal/Kathmandu: 53
+Netherlands/Amsterdam: 7
+New Caledonia/Noumea: 56
+New Zealand/Auckland: 36
+New Zealand/Chatham: 75
+Nicaragua/Managua: 11
+Niger/Niamey: 1
+Nigeria/Lagos: 1
+Niue/Niue: 67
+Norfolk Island/Norfolk: 76
+North Korea/Pyongyang: 45
+North Macedonia/Skopje: 7
+Northern Mariana Islands/Saipan: 34
+Norway/Oslo: 7
+Oman/Muscat: 41
+Pakistan/Karachi: 35
+Palau/Palau: 45
+Palestine/Gaza: 54
+Palestine/Hebron: 54
+Panama/Panama: 12
+Papua New Guinea/Bougainville: 56
+Papua New Guinea/Port Moresby: 34
+Paraguay/Asuncion: 28
+Peru/Lima: 12
+Philippines/Manila: 42
+Pitcairn/Pitcairn: 77
+Poland/Warsaw: 7
+Portugal/Azores: 25
+Portugal/Lisbon: 59
+Portugal/Madeira: 59
+Puerto Rico/Puerto Rico: 8
+Qatar/Qatar: 4
+Romania/Bucharest: 43
+Russia/Anadyr: 55
+Russia/Astrakhan: 41
+Russia/Barnaul: 33
+Russia/Chita: 45
+Russia/Irkutsk: 42
+Russia/Kaliningrad: 2
+Russia/Kamchatka: 55
+Russia/Khandyga: 45
+Russia/Kirov: 4
+Russia/Krasnoyarsk: 33
+Russia/Magadan: 56
+Russia/Moscow: 4
+Russia/Novokuznetsk: 33
+Russia/Novosibirsk: 33
+Russia/Omsk: 38
+Russia/Sakhalin: 56
+Russia/Samara: 41
+Russia/Saratov: 41
+Russia/Srednekolymsk: 56
+Russia/Tomsk: 33
+Russia/Ulyanovsk: 41
+Russia/Ust-Nera: 34
+Russia/Vladivostok: 34
+Russia/Volgograd: 66
+Russia/Yakutsk: 45
+Russia/Yekaterinburg: 35
+Rwanda/Kigali: 2
+Réunion/Reunion: 41
+Saint Barthélemy/St Barthelemy: 8
+Saint Helena, Ascension and Tristan da Cunha/St Helena: 3
+Saint Kitts and Nevis/St Kitts: 8
+Saint Lucia/St Lucia: 8
+Saint Martin (French part)/Marigot: 8
+Saint Pierre and Miquelon/Miquelon: 29
+Saint Vincent and the Grenadines/St Vincent: 8
+Samoa/Apia: 78
+San Marino/San Marino: 7
+Sao Tome and Principe/Sao Tome: 3
+Saudi Arabia/Riyadh: 4
+Senegal/Dakar: 3
+Serbia/Belgrade: 7
+Seychelles/Mahe: 41
+Sierra Leone/Freetown: 3
+Singapore/Singapore: 42
+Sint Maarten (Dutch part)/Lower Princes: 8
+Slovakia/Bratislava: 7
+Slovenia/Ljubljana: 7
+Solomon Islands/Guadalcanal: 56
+Somalia/Mogadishu: 4
+South Africa/Johannesburg: 2
+South Georgia and the South Sandwich Islands/South Georgia: 13
+South Korea/Seoul: 45
+South Sudan/Juba: 6
+Spain/Canary: 59
+Spain/Ceuta: 7
+Spain/Madrid: 7
+Sri Lanka/Colombo: 44
+Sudan/Khartoum: 2
+Suriname/Paramaribo: 9
+Svalbard and Jan Mayen/Longyearbyen: 7
+Sweden/Stockholm: 7
+Switzerland/Zurich: 7
+Syria/Damascus: 57
+Taiwan, Province of China/Taipei: 42
+Tajikistan/Dushanbe: 35
+Tanzania/Dar es Salaam: 4
+Thailand/Bangkok: 33
+Timor-Leste/Dili: 45
+Togo/Lome: 3
+Tokelau/Fakaofo: 73
+Tonga/Tongatapu: 73
+Trinidad and Tobago/Port of Spain: 8
+Tunisia/Tunis: 1
+Turkey/Istanbul: 4
+Turkmenistan/Ashgabat: 35
+Turks and Caicos Islands/Grand Turk: 10
+Tuvalu/Funafuti: 55
+USA/Adak: 30
+USA/Anchorage: 31
+USA/Boise: 14
+USA/Chicago: 18
+USA/Denver: 14
+USA/Detroit: 10
+USA/Honolulu: 69
+USA/Indiana/Indianapolis: 10
+USA/Indiana/Knox: 18
+USA/Indiana/Marengo: 10
+USA/Indiana/Petersburg: 10
+USA/Indiana/Tell City: 18
+USA/Indiana/Vevay: 10
+USA/Indiana/Vincennes: 10
+USA/Indiana/Winamac: 10
+USA/Juneau: 31
+USA/Kentucky/Louisville: 10
+USA/Kentucky/Monticello: 10
+USA/Los Angeles: 20
+USA/Menominee: 18
+USA/Metlakatla: 31
+USA/Midway: 67
+USA/New York: 10
+USA/Nome: 31
+USA/North Dakota/Beulah: 18
+USA/North Dakota/Center: 18
+USA/North Dakota/New Salem: 18
+USA/Phoenix: 15
+USA/Sitka: 31
+USA/Wake: 55
+USA/Yakutat: 31
+Uganda/Kampala: 4
+Ukraine/Kiev: 43
+Ukraine/Simferopol: 4
+Ukraine/Uzhgorod: 43
+Ukraine/Zaporozhye: 43
+United Arab Emirates/Dubai: 41
+United Kingdom/London: 59
+Uruguay/Montevideo: 9
+Uzbekistan/Samarkand: 35
+Uzbekistan/Tashkent: 35
+Vanuatu/Efate: 56
+Venezuela/Caracas: 8
+Viet Nam/Ho Chi Minh: 33
+Virgin Islands (British)/Tortola: 8
+Virgin Islands (U.S.)/St Thomas: 8
+Wallis and Futuna/Wallis: 55
+Western Sahara/El Aaiun: 5
+Yemen/Aden: 4
+Zambia/Lusaka: 2
+Zimbabwe/Harare: 2
+Åland Islands/Mariehamn: 43
