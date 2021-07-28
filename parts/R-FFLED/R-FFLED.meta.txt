@@ -1,5 +1,24 @@
-mouser 652-CR0603JW-471ELF
+R/mouser 652-CR0603JW-471ELF
+R/value 470R
+
+OR/mouser 652-CR0603JW-471ELF
+OR/value 470R
+
+O/mouser 652-CR0603JW-471ELF
+O/value 470R
+O/current 6.88mA
+
+Y/mouser 652-CR0603JW-471ELF
+Y/value 470R
+
+YG/mouser 652-CR0603JW-471ELF
+YG/value 470R
+
+G/mouser 652-CR0603JW-471ELF
+G/value 470R
+
+B/mouser 603-RC0603FR-105K11L
+B/value 5k11
+
 model 0603R
-value 470R
 power 0.1W
-current 6.88mA
