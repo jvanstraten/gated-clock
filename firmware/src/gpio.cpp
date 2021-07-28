@@ -2,6 +2,7 @@
 
 #include <WProgram.h>
 #include "pwr.hpp"
+#include "sine.hpp"
 
 /**
  * Regular GPIO & MCP23S17 logic.
@@ -186,14 +187,15 @@ void update() {
     mcp_iodir |= PIN_SYNCHRO_H_MASK;
     uint32_t sync_pwm = (synchro & 0xFF) << 8;
     if (synchro & 0x100) sync_pwm = 65535 - sync_pwm;
+    sync_pwm = sine::sine(sync_pwm / 2 - 16384) + 32768;
     uint32_t sync_pwm_a = sync_pwm;
     uint32_t sync_pwm_b = 65535 - sync_pwm;
     if (!synchro_enable) {
         sync_pwm_a = 0;
         sync_pwm_b = 0;
     } else {
-        sync_pwm_a = (powf(sync_pwm_a / 65535.0f, 1.5f) * 65535);
-        sync_pwm_b = (powf(sync_pwm_b / 65535.0f, 1.5f) * 65535);
+        /*sync_pwm_a = (powf(sync_pwm_a / 65535.0f, 1.5f) * 65535);
+        sync_pwm_b = (powf(sync_pwm_b / 65535.0f, 1.5f) * 65535);*/
     }
     analogWrite(PIN_SYNCHRO_A, 65535 - sync_pwm_a);
     analogWrite(PIN_SYNCHRO_B, 65535 - sync_pwm_b);
