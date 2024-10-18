@@ -56,7 +56,7 @@ $(OUTDIR)/%.mouser.txt $(OUTDIR)/%.tinytronics.txt: generator/orderlist.py $(OUT
 	$(MAGICK) convert $< $@
 
 # Deal with stuff in sub-makes (parts and primitives)
-$(OUTDIR)/%.stamp: %/Makefile
+$(OUTDIR)/%.stamp: %/Makefile | $(OUTDIR)/
 	cd $* && $(MAKE) BLENDER=$(BLENDER)
 	touch $@
 
