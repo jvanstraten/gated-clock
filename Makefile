@@ -22,6 +22,10 @@ clean:
 .SECONDARY:
 
 $(OUTDIR)/mainboard.zip: $(OUTDIR)/mainboard.normal.png
+# cheating a bit, as this gets generated along with these
+$(OUTDIR)/mainboard.normal.svg: $(OUTDIR)/mainboard.front.svg $(OUTDIR)/mainboard.back.svg
+	touch $@
+
 
 # Board output file: part lists, PCB layer files, traces
 $(OUTDIR)/%.zip: \
