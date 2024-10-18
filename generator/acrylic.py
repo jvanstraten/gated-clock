@@ -385,7 +385,7 @@ class LaseredAcrylic:
         with open('{}.laserbeest.svg'.format(fname), 'w') as f:
             f.write('\n'.join(svg) + '\n')
 
-        subprocess.run(['inkscape', '-C', '-A', '{}.laserbeest.pdf'.format(fname), '{}.laserbeest.svg'.format(fname)], check=True)
+        subprocess.run(['inkscape', '-C', '--export-type=pdf', '--export-filename={}.laserbeest.pdf'.format(fname), '{}.laserbeest.svg'.format(fname)], check=True)
 
 if __name__ == '__main__':
     import math
