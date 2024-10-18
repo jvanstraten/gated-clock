@@ -6,11 +6,10 @@ bpy.data.objects.remove(bpy.data.objects['PCB'])
 bpy.data.objects.remove(bpy.data.objects['Surface'])
 bpy.data.objects.remove(bpy.data.objects['Light'])
 
-bpy.ops.import_scene.obj(
+bpy.ops.wm.obj_import(
     filepath='../output/support_board.PCB.obj',
     use_split_groups=True,
-    use_image_search=False,
-    axis_forward='Y', axis_up='Z'
+    forward_axis='Y', up_axis='Z'
 )
 
 for obj in bpy.data.objects:

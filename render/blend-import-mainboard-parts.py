@@ -26,7 +26,7 @@ bpy.ops.wm.open_mainfile(filepath='parts.template.blend')
 
 for name, insts in instances.items():
 
-    with bpy.data.libraries.load('/mnt/d/Jeroen/hobby/clock/gated-clock/models/{0}/{0}.blend'.format(name), link=True) as (data_from, data_to):
+    with bpy.data.libraries.load('../models/{0}/{0}.blend'.format(name), link=True) as (data_from, data_to):
         data_to.collections = data_from.collections
 
     assert len(data_to.collections) == 1
