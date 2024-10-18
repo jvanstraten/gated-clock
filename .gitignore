@@ -1,3 +1,6 @@
 *.blend1
+*.blend.txt
+*.verif.txt
+
 __pycache__
 /output*/

@@ -13,8 +13,7 @@ all: $(COMPONENTS)
 
 .PHONY: clean
 clean:
-	rm $(COMPONENTS)
-	rm $(shell find . -name '*.blend1')
+	find . -name '*.blend1' -or -name '*.blend.txt' -delete
 
 %.blend.txt: %.blend blend-export.py
 	$(BLENDER) -b $< --python blend-export.py --python-exit-code 1

@@ -1,5 +1,6 @@
 from part import get_part
 import math
+import sys
 
 # Seven variants are defined, for different primary colors:
 #  - R: red
@@ -42,16 +43,22 @@ def add(data, key, amount):
     else:
         data[key] += amount
 
+
+if len(sys.argv) < 2:
+    print('usage: {} <pcb>'.format(sys.argv[0]), file=sys.stderr)
+    sys.exit(255)
+board = sys.argv[1]
+
+
 data = {}
 
-for board in ('mainboard', 'support_board'):
-    with open('output/{}.parts.txt'.format(board), 'r') as f:
-        for line in f.readlines():
-            line = line.split('#')[0].strip()
-            if not line:
-                continue
-            part, *_ = line.split()
-            add(data, part, 1)
+with open('output/{}.parts.txt'.format(board), 'r') as f:
+    for line in f.readlines():
+        line = line.split('#')[0].strip()
+        if not line:
+            continue
+        part, *_ = line.split()
+        add(data, part, 1)
 
 def print_led_color(part, variant):
     data = get_part(part).get_data()
@@ -134,11 +141,11 @@ for variant in variants:
         else:
             raise ValueError('no order info for part {}'.format(name))
 
-with open('output/mouser.txt', 'w') as f:
+with open('output/{}.mouser.txt'.format(board), 'w') as f:
     for order_no, count in sorted(mouser_order.items()):
         order_no = alternatives.get(order_no, order_no)
         f.write('{} | {}\n'.format(order_no, count))
 
-with open('output/tinytronics.txt', 'w') as f:
+with open('output/{}.tinytronics.txt'.format(board), 'w') as f:
     for order_no, count in sorted(tinytronics_order.items()):
         f.write('{} {}\n'.format(order_no, count))
