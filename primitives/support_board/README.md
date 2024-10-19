@@ -617,22 +617,59 @@ Third TLC6C5748 in daisy chain:
 Microcontroller and GPS
 -----------------------
 
-The clock is controlled using a [Teensy LC](https://www.pjrc.com/teensy/teensyLC.html)
-microcontroller board. This is a little more expensive than just using a
-discrete microcontroller, but the builtin USB programming circuitry makes it
-vastly more user-friendly.
+The clock is controlled using a microcontroller board. This is a little more
+expensive than just using a discrete microcontroller, but compared to the rest
+of the clock's pricetag it shouldn't really matter too much. Convenience was
+more important to me than price.
 
-The Teensy LC is powered by 5V, but internally converts this down to 3.3V, and
-its pins are not 5V-tolerant. Therefore, signals going to and coming from the
+Originally, the clock used a [Teensy LC](https://www.pjrc.com/teensy/teensyLC.html).
+However, they've since reached end of life (and were unobtanium for a long time
+anyway, thanks covid), so now there's a revision that uses a Raspberry Pi Pico
+W instead. This is now the default, but if you want the original Teensy variant,
+you can rename `support_board_teensy.blend` to `support_board.blend`.
+
+In both cases, the board is powered by 5V, but the I/O voltage is 3V3, and the
+pins are not 5V-tolerant. Therefore, signals going to and coming from the
 5V clock circuitry need to be translated up and down. This is done using
-74LV1T125s, with the /OE pin tied to Gnd. The Teensy's VUSB trace is to be cut,
-so it will operate from the local 5V rail rather than USB power. The circuitry
-is otherwise trivial.
+74LV1T125s, with the /OE pin tied to Gnd. In the Teensy's case, the VUSB trace
+is to be cut, so it will operate from the local 5V rail rather than USB power.
+For the Pico W, there is no such sanity, and instead we need a diode from 5V to
+VSYS to avoid USB from trying to power the clock. The circuitry is otherwise
+trivial.
 
 GPS connectivity is also achieved with a daughterboard. The connector uses the
-pinout of an ATGM336H: 5V, Gnd, TX, RX, PPS. Similar to the Teensy, this board
-has its own 3V3 LDO that the I/Os are referenced to. Therefore, no level
-shifters are included here.
+pinout of an ATGM336H: 5V, Gnd, TX, RX, PPS. Similar to the microcontroller
+boards, this board has its own 3V3 LDO that the I/Os are referenced to.
+Therefore, no level shifters are included here.
+
+The Pico W's pinout is as follows.
+
+ - GP0: hours configuration increment switch enable (`hcfg.Ien.L`)
+ - GP1 (SPI0 CS): display data latch control (`disp.LAT`)
+ - GP2 (SPI0 SCK): display clock (`disp.SCLK`)
+ - GP3 (SPI0 TX): display data input (`disp.SIN`)
+ - GP4: hours configuration increment switch readout (`hcfg.Isw.L`)
+ - GP5: automatic configuration, enable (`cfg.Ren.L`)
+ - GP6: automatic configuration, increment hours (`hcfg.Inc.L`)
+ - GP7: power good input, GPIO pullup needed (`pwr.Pgood`)
+ - GP8 (SPI1 RX): mainboard I/O expander read data (`uc.MISO.L`)
+ - GP9 (SPI1 CS): mainboard I/O expander chip select (`uc.CS.L`)
+ - GP10 (SPI1 SCK): mainboard I/O expander clock (`uc.SCK.L`)
+ - GP11 (SPI1 TX): mainboard I/O expander write data (`uc.MOSI.L`)
+ - GP12 (UART0 TX): GPS configuration output (`gps.U2G`)
+ - GP13 (UART0 RX): GPS data input (`gps.G2U`)
+ - GP14 (input capture?): PPS signal from the GPS (`gps.PPS`)
+ - GP15 (input capture?): 50/60Hz readback & override (`f50hz.O`)
+ - GP16 (SPI0 RX): display fault data output (`disp.SOUT`)
+ - GP17: minutes configuration increment switch readout (`mcfg.Isw.L`)
+ - GP18: minutes configuration increment switch enable (`mcfg.Ien.L`)
+ - GP19: automatic configuration, increment minutes (`mcfg.Inc.L`)
+ - GP20: display override (inverted, `override_n.L`)
+ - GP21 (PWM): synchroscope PWM channel B (`sync.BL`)
+ - GP22 (PWM): synchroscope PWM channel A (`sync.AL`)
+ - GP26: mainboard I/O expander interrupt request (`uc.IRQ.L`)
+ - GP27 (ADC1): current monitor ADC (`pwr.Imon`)
+ - GP28 (ADC2): LDR (`uc.LDR`)
 
 The Teensy's pinout is as follows.
 
@@ -651,7 +688,7 @@ The Teensy's pinout is as follows.
  - Arduino 10, possibly used as CS0: mainboard I/O expander chip select
    (`uc.CS.L`)
  - Arduino 11, used as MOSI0: mainboard I/O expander write data (`uc.MOSI.L`)
- - Arduino 12: used as MISO0: mainboard I/O expander read data (`uc.MISO.L`)
+ - Arduino 12, used as MISO0: mainboard I/O expander read data (`uc.MISO.L`)
  - Arduino 13 (LED): display override (non-inverted, `override.L`)
  - Arduino 14, used as SCK0: mainboard I/O expander clock (`uc.SCK.L`)
  - Arduino 15: mainboard I/O expander interrupt request (`uc.IRQ.L`)
@@ -665,8 +702,9 @@ The Teensy's pinout is as follows.
  - Arduino 23: power good input, GPIO pullup needed (`pwr.Pgood`)
  - Arduino 26: automatic configuration, enable (`cfg.Ren.L`)
 
-In the end, I ended up hacking a small circuit with a GL5528 LDR on top of the
-Teensy as well, using pin 24/A10. The LDR is connected between 0V and A10, with
-a 220k pullup resistor from A10 to 3V3, facing down out from the support board
-cover/housing using some creative soldering and shrinkwrap. The circuit lets
-the system detect ambient light conditions, and dim itself accordingly.
+For the Teensy variant, the LDR was an afterthought. I ended up 3D-soldering a
+small circuit with a GL5528 LDR on top of the Teensy for it, using pin 24/A10.
+The LDR is connected between 0V and A10, with a 220k pullup resistor from A10
+to 3V3, facing down out from the support board cover/housing using some
+creative soldering and shrinkwrap. The circuit lets the clock detect ambient
+light conditions, and dim itself accordingly.

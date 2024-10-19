@@ -7,10 +7,21 @@ OUTDIR = output
 
 
 # Main output: files for both boards
-.PHONY: all clean
+.PHONY: all render clean
 all: \
 	$(OUTDIR)/mainboard.zip \
-	$(OUTDIR)/support_board.zip 
+	$(OUTDIR)/support_board.zip \
+	render
+
+# WIP: proper dependencies for this
+render:
+	cd render && $(BLENDER) -b --python blend-import-support-board-parts.py --python-exit-code 1
+	cd render && $(BLENDER) -b --python blend-import-support-board.py --python-exit-code 1
+	cd render && $(BLENDER) -b --python blend-import-mainboard-parts.py --python-exit-code 1
+	cd render && $(BLENDER) -b --python blend-import-mainboard.py --python-exit-code 1
+	cd render && $(BLENDER) -b --python blend-import-front.py --python-exit-code 1
+	cd render && $(BLENDER) -b --python blend-import-display.py --python-exit-code 1
+	cd render && $(BLENDER) -b --python blend-import-highlight.py --python-exit-code 1
 
 clean:
 	rm -rf $(OUTDIR)

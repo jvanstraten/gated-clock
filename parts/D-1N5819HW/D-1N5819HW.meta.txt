@@ -1,0 +1,3 @@
+mouser 621-1N5819HW-F
+model SOD123
+value 1A
