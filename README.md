@@ -1,10 +1,11 @@
 Gated Clock
 ===========
 
-Hi! Looks like you stumbled upon this project before it's completely finished.
-Maybe one of JLCPCB's engineers decided to scan the QR code? :D
+A clock suitable for electronics nerds, built out of 3-input NAND gates.
 
-Anyway, the point of this project is to:
+![Clock](assets/finished-clock.jpg?raw=true "Clock")
+
+The point of this project is to:
 
  - build a functional digital clock out of only discrete logic gates (74LVC1G10
    3-input NANDs to be specific) and passives;
@@ -16,12 +17,22 @@ Anyway, the point of this project is to:
 Note that none of the above include anything about BOM cost. See the section on
 cost below.
 
+The status of the project is that I've manufactured a total of nine clocks for
+myself, friends, and family at this point. There's some renewed interest, so a
+second run might happen; however, the Teensy LC that the old design used for
+misc UI tasks is now EoL. Work is in progress to replace it with a Raspberry Pi
+Pico W.
+
 License
 -------
 
 Let's get the fine print out of the way first. The license for this stuff is
 [Creative Commons BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 See also the LICENSE file for the full plaintext.
+
+Note: if anyone out there would like to commercialize this somehow and needs a
+different license, I'm all ears. I mostly just want to know about it if someone
+does. See also: "why not build a bunch of them and sell them?"
 
 The only exceptions to the license are the 3D models of the electrical parts I
 used for the renders (basically, any of the .blend files in the `models`
