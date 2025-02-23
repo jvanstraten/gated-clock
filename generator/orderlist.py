@@ -13,7 +13,7 @@ import sys
 # You can generate an order list for multiple clocks at once by adding multiple
 # variants to the list. If you're just ordering for yourself, make sure there's
 # only one here.
-variants = ['O']
+variants = ['YG', 'Y', 'B', 'R', 'G']
 
 # When stuff is out of stock, you can specify alternative ordering numbers
 # here. You'll need to find the alternatives yourself. Supply-chain management
