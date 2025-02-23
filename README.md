@@ -245,19 +245,20 @@ You're going to need the following things.
 
  - A Linux computer or VM, probably. Some or all of it may work on Windows/Mac
    too, but your mileage may vary. The following software is needed:
-    - Blender. I'm using version 2.91. Blender is good with compatibility, but
-      with all the scripting going on, you might want to get that exact version.
-      The makefiles look for `blender-2.91` in your `PATH` first if it exists,
-      before defaulting to just `blender`.
-    - Python 3.x. I'm using 3.6 because I'm too lazy to upgrade my OpenSUSE
-      install. But it probably doesn't matter too much if it's newer than that.
+    - Blender. Scripts updated for blender 4.2. Blender is good with
+      compatibility, but with all the scripting going on, you might want to get
+      that exact version. The makefiles look for `blender-4.2` in your `PATH`
+      first if it exists, before defaulting to just `blender`.
+    - Python 3.x. It used to work back on 3.6, nothing has meaningfully changed
+      since, and it still works on 3.13 now that I'm writing this update. It
+      probably doesn't matter too much if your version is newer than that.
     - [Gerbertools](https://github.com/jvanstraten/gerbertools). Depending on how
       lazy I am you might have to build it yourself, but that should be pretty
       easy.
-    - The following regular Python modules: `matplotlib` (I'm using 3.1.0, but
-      it's only used to render text, so probably doesn't matter) and `qrcode`
-      (6.1, may or may not matter).
-    - ImageMagick for the `convert` command.
+    - The following regular Python modules: `matplotlib` (3.10) and `qrcode`
+      (worked with 6.1 initially, still works with 8.0 without changes).
+    - ImageMagick for converting huge SVGs that take forever to render to
+      big-enough PNGs.
     - Inkscape for making PDFs out of SVGs (part of the acrylic plate pipeline,
       you'll probably have to customize/redo this though).
     - `git`, as in the commandline version, should exist. It's used by the
