@@ -1,9 +1,4 @@
-
-ifeq (,$(shell which blender-2.91))
-BLENDER = blender
-else
-BLENDER = blender-2.91
-endif
+BLENDER = $(shell command -v blender-4.2 blender 2>/dev/null | head -n 1)
 
 include config.make
 

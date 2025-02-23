@@ -17,9 +17,18 @@ for ob in bpy.data.objects:
     print('Exporting {}...'.format(name))
     ob.select_set(True)
     bpy.context.view_layer.objects.active = ob
-    bpy.ops.export_mesh.stl(
-        filepath='stl/{}/{}.stl'.format(color, name),
-        check_existing=False,
-        use_selection=True
-    )
+    try:
+        # old API
+        bpy.ops.export_mesh.stl(
+            filepath='stl/{}/{}.stl'.format(color, name),
+            check_existing=False,
+            use_selection=True
+        )
+    except AttributeError:
+        # new API
+        bpy.ops.wm.stl_export(
+            filepath='stl/{}/{}.stl'.format(color, name),
+            check_existing=False,
+            export_selected_objects=True
+        )
     ob.select_set(False)
