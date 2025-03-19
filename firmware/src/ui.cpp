@@ -316,7 +316,7 @@ static void commit_config(
         display_dc = (config.display_brightness - 37) * 2 + 1;
     }
     if (config.ldr_dimming) {
-        display_bright = ((uint32_t)display_bright * (uint32_t)ldr::brightness) >> 10;
+        display_bright = ldr::dimmed_brightness(display_bright, 1);
     }
     display_dark = ((uint32_t)display_bright * (uint32_t)(100 - config.display_saturation)) / 100;
     display_hue = config.display_hue * 182;
@@ -737,7 +737,7 @@ void update() {
                     break;
 
                 case ConfigEntry::LDR_DIMMING:
-                    status_synchro = (ldr::brightness * 29) / 4;
+                    status_synchro = (ldr::dimmed_brightness(1023, 1) * 29) / 4;
                     break;
 
                 case ConfigEntry::LOCATION_CODE:

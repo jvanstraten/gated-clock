@@ -9,7 +9,7 @@ namespace ldr {
 /**
  * The current illuminance, stored in 10.6 fixed point
  */
-static uint16_t illuminance = 0;
+uint16_t illuminance = 0;
 
 /**
  * Sets up pins related to the LDR.
@@ -24,23 +24,29 @@ void setup() {
  */
 #define MAX_ADC_SAMPLES 4096
 
+/**
+ * The ambient illuminance at which we start dimming. 
+ * 100 lux, in 10.6 fixed point.
+ */
+#define MAX_DIMMING_ILLUMINANCE_FP10_6 6400
+
 // lookup table, of 12.4 fixed point normalized adc samples to 10.6 fixed point illuminance
 #define LDR_LOOKUP_TABLE_LENGTH 30
 const uint16_t ldr_lookup_table[LDR_LOOKUP_TABLE_LENGTH] = {
-    0,     0
-    5,     3
-    16,    14
-    26,    29
-    48,    66
-    112,   222
-    240,   661
-    496,   1864
-    1008,  5134
-    2032,  13977
-    4080,  37836
-    8176,  65535
-    16368, 65535
-    32752, 65535
+    0,     0,
+    5,     3,
+    16,    14,
+    26,    29,
+    48,    66,
+    112,   222,
+    240,   661,
+    496,   1864,
+    1008,  5134,
+    2032,  13977,
+    4080,  37836,
+    8176,  65535,
+    16368, 65535,
+    32752, 65535,
     65535, 65535
 };
 
@@ -102,7 +108,7 @@ uint16_t dimmed_brightness(uint16_t max_brightness, uint16_t min_brightness) {
 void update() {
 
     // Read the current ADC value.
-    int32_t adc = analogRead(ADC_LDR);
+    uint32_t adc = analogRead(ADC_LDR);
 
     // Filter it a lot.
     static uint8_t counter;
@@ -135,6 +141,20 @@ void update() {
 
     // convert back to 10.6 fp and write it to the global
     illuminance = (filter + (1 << (delay - 1))) >> delay;
+}
+
+/**
+ * Debug data: return the current ADC value in samples
+ */
+uint16_t debug_adc_value() {
+    return analogRead(ADC_LDR);
+}
+
+/**
+ * Debug data: current illuminance in 10.6 fixed point
+ */
+uint16_t debug_illuminance() {
+    return illuminance;
 }
 
 } // namespace ldr
