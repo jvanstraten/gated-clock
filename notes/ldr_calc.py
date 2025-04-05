@@ -5,14 +5,16 @@ import matplotlib.pyplot as plt
 
 SAMPLE_COUNT = 0x1000
 PULLUP_RESISTANCE = 220e3
+DARK_RESISTANCE = 1e6
+GAMMA = 0.7
 MIN_RESISTANCE = 10e3
-AVG_RESISTANCE = 15e3
+AVG_RESISTANCE = 14e3
 MAX_RESISTANCE = 20e3
 FULL_MOON = 0.1
 INDOORS = 150.0
 
 
-def calc_ldr_resistance(illuminance, gamma=0.7, dark_resistance=1e6, res_at_10lux=10e3):
+def calc_ldr_resistance(illuminance, gamma=GAMMA, dark_resistance=DARK_RESISTANCE, res_at_10lux=AVG_RESISTANCE):
     # (E / 10) ** gamma = (R_10lux / R)
     # so
     # R = R_10lux * (E / 10) ** -gamma
@@ -25,7 +27,7 @@ def wanted_brightness(illuminance, max_illuminance=100.0, max_val=1023, min_val=
     illuminance = np.minimum(illuminance, max_illuminance)
     return np.minimum(illuminance / max_illuminance, 1.0) * (max_val - min_val) + min_val
 
-def samples_to_illuminance_perfect(samples, gamma=0.7, res_at_10lux=15e3):
+def samples_to_illuminance_perfect(samples, gamma=GAMMA, res_at_10lux=AVG_RESISTANCE):
     resistance = PULLUP_RESISTANCE * samples / (SAMPLE_COUNT - samples)
     return 10 * (res_at_10lux / resistance) ** (1/gamma)
 
@@ -40,16 +42,16 @@ def clampfixedpoint(value, lowerbits, upperbits):
 class SamplesToIlluminanceApproximation:
     # The actual formula we're trying to solve works like
     # I = I_0 * (R_0  / R_pullup) ** (1 / gamma) * ((SAMPLE_COUNT - samples) / samples) ** (1 / gamma)
-    def __init__(self, gamma=0.7, res_at_10lux=15e3):
+    def __init__(self, gamma=GAMMA, res_at_10lux=AVG_RESISTANCE):
         # we store a lookup table of 
-        # ((SAMPLE_COUNT - samples) / samples) in 12.4 unsigned fixed point (full accuracy at low sample counts)
+        # ((SAMPLE_COUNT - samples) / samples) in 10.6 unsigned fixed point (full accuracy at low sample counts)
         # to illuminance in 10.6 unsigned fixed point
         self.table = []
 
-        for sample in reversed((2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x600, 0x800, 0xC00, 0xFFF)):
+        for sample in reversed((4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x600, 0x800, 0xC00, 0xFFF)):
 
             self.table.append((
-                ((SAMPLE_COUNT - sample) * (2 ** 4)) // sample,
+                min(((SAMPLE_COUNT - sample) * (2 ** 6)) // sample, 0xFFFF),
                 clampfixedpoint(samples_to_illuminance_perfect(sample, gamma, res_at_10lux), 6, 10)
             ))
 
@@ -87,9 +89,10 @@ class SamplesToIlluminanceApproximation:
                 rv.append(0xFFFF)
                 continue
 
-            # calculate this in 12.4 fixed point
-            sample = ((SAMPLE_COUNT - sample) * (2 ** 4)) // sample
-            #sample &= 0xFFFF
+            # calculate this in 10.6 fixed point
+            sample = ((SAMPLE_COUNT - sample) * (2 ** 6)) // sample
+            if sample > 0xFFFF:
+                sample = 0xFFFF
 
             # do the lookup
             illuminance = self.table_lookup(sample)

@@ -82,9 +82,9 @@ void loop() {
             }
             Serial.printf("pgood: %d\n", digitalRead(23));
             Serial.printf("current: %d mA\n", pwr::current);
-            Serial.printf("LDR adc: %d samples", ldr::debug_adc_value());
-            Serial.printf("LDR illuminance: %d/64 lux", ldr::debug_illuminance());
-            Serial.printf("LDR brightness: %d", ldr::dimmed_brightness(1023, 1));
+            Serial.printf("LDR adc: %d samples\n", ldr::debug_adc_value());
+            Serial.printf("LDR illuminance: %d/64 lux\n", ldr::debug_illuminance());
+            Serial.printf("LDR brightness: %d%%\n", ldr::dimmed_brightness(100, 1, 640) + 1);
             Serial.println("");
             debug_timer = now;
         }

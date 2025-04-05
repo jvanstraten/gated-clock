@@ -22,10 +22,11 @@ void setup();
 void update();
 
 /**
- * Based on the current ambient lighting conditions, returns a brightness value between
- * min_brightness and max_brightness that 
+ * Scale the brightness given in `max_brightness` linearly with the current illuminance.
+ * At `max_illuminance` or above the brightness matches `max_brightness`.
+ * The return value is clamped to `min_brightness`.
  */
-uint16_t dimmed_brightness(uint16_t max_brightness, uint16_t min_brightness);
+uint16_t dimmed_brightness(uint16_t max_brightness, uint16_t min_brightness, uint16_t max_illuminance);
 
 /**
  * Debug data: return the current ADC value in samples
