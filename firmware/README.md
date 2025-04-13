@@ -196,3 +196,47 @@ information while the option is selected.
 
 If necessary, you can do a "factory reset" of all options by holding down the
 mode button while the clock powers up.
+
+Debugging / Development notes
+-----------------------------
+
+### Listening to the serial port
+
+When connected via USB, the board acts as a serial device, and can print some
+debug data over serial. It will however only do so after being sent any
+character from the host first. In a linux terminal, you can for instance use
+the `screen` command to read this data. Note that the device file name may
+differ depending on your setup.
+
+- run `screen /dev/ttyUSB0`
+- press any character
+
+### Programming using Windows
+
+While the default build process is gearded towards linux, it is possible to
+program and debug the board from windows, using WSL. You will need to use
+`usbipd-win` to forward the USB connection from windows to the WSL instance.
+The workflow is as follows:
+
+- install `usbipd-win` on the host computer.
+- start your WSL instance on the host computer.
+- in a windows terminal, run `usbipd list` before connecting the Teensy board.
+- connect the Teensy board
+- run `usbipd list` again to identify the bus id of the Teensy board
+- run `usbipd bind --busid=BUSID`, where BUSID is the bus id of the Teensy board
+- run `usbipd attach --wsl --busid=BUSID`, to attach the Teensy board to the wsl
+  instance
+- in WSL, install the required dependencies as stated above, and manually start
+  the docker service if needed.
+- run `make build` to build the firmware
+- run `make program` to start the programming process. This will put the Teensy
+  board in programming mode, which will cause it to reconnect.
+- run `usbipd attach --wsl --busid=BUSID` again from the windows side to reattach
+  the teensy board to WSL
+- the programming process should now continue to completion.
+- the board will detach again after programming is finished. If you want to
+  debug it using the serial connection, simply reattach it again with the same
+  command as before.
+
+Note: while developing using WSL, the device will likely show up with a different
+name like `/dev/ttyACM0`.

@@ -41,18 +41,26 @@ Menu items and values:
 
 Fb ###      flipflop LED brightness (0..100)                        |
                                                                     |
+F- ###      flipflop LED minimum dimmed brightness (0..100)         |
+                                                                    |
 Gb ###      gate LED brightness (0..100)                            |
                                                                     |
-Sb ###      synchroscope LED brightness (0..100)                    | synchroscope shows
-                                                                    | current consumption
-db ###      display brightness (0..100)                             |
+G- ###      gate LED minimum dimmed brightness (0..100)             |
+                                                                    | synchroscope shows
+Sb ###      synchroscope LED brightness (0..100)                    | current consumption
+                                                                    |
+S- ###      synchroscope minimum dimmed LED brightness (0..100)     | ldr dimming is
+                                                                    | overridden to either
+db ###      display brightness (0..100)                             | max or min dimming
+                                                                    |
+d- ###      display minimum dimmed brightness (0..100)              |
                                                                     |
 dS ###      display saturation value (0..100)                       |
                                                                     |
 dh ###      display hue value (0..359, wraparound)                  |
 
-Ldr  1      enable LDR-based dimming (main display only)            | synchroscope shows
-Ldr  0      disable LDR-based dimming                               | LDR value
+Ldr###  LDR-based dimming cutoff, in units of 1/2 lux               | synchroscope shows
+Ldr  0      disable LDR-based dimming                               | estimated illuminance
 
 Sd   1      enable seconds display                                  |
 Sd   0      disable seconds display                                 |
@@ -109,9 +117,13 @@ Screen screen;
  */
 enum class ConfigEntry {
     FF_BRIGHTNESS,
+    FF_BRIGHTNESS_MIN,
     GATE_BRIGHTNESS,
+    GATE_BRIGHTNESS_MIN,
     SYNCHRO_BRIGHTNESS,
+    SYNCHRO_BRIGHTNESS_MIN,
     DISPLAY_BRIGHTNESS,
+    DISPLAY_BRIGHTNESS_MIN,
     DISPLAY_SATURATION,
     DISPLAY_HUE,
     LDR_DIMMING,
@@ -141,22 +153,41 @@ struct Config {
     uint8_t ff_brightness;
 
     /**
+     * Minimum flipflop LED brightness level, used when dimming is enabled, same encoding as above.
+     */
+    uint8_t ff_brightness_min;
+
+    /**
      * Gate LED brightness level, 0..100. 37..100 maps to DC, below that maps
      * to PWM control with factor 1771. Default 40.
      */
     uint8_t gate_brightness;
 
     /**
-     * Synchroscope LED brightness level, 0..100. 37..100 maps to DC, below
-     * that maps to PWM control with factor 1771. Default 40.
+     * Minimum gate LED brightness level, used when dimming is enabled, same encoding as above.
+     */
+    uint8_t gate_brightness_min;
+
+    /**
+     * Synchroscope LED brightness level, 0..100. All map to DC adjustment.
      */
     uint8_t synchro_brightness;
+
+    /**
+     * Minimum synchroscope LED brightness level, used when dimming is enabled, same encoding as above.
+     */
+    uint8_t synchro_brightness_min;
 
     /**
      * Display brightness level, 0..100. 37..100 maps to DC, below that maps
      * to PWM control with factor 1328 and minimum 16384. Default 40.
      */
     uint8_t display_brightness;
+
+    /**
+     * Minimum display brightness level, used when dimming is enabled, same encoding as above.
+     */
+    uint8_t display_brightness_min;
 
     /**
      * Display saturation level, 0..100. Controls PWM only; specifically, this
@@ -171,10 +202,10 @@ struct Config {
     uint16_t display_hue;
 
     /**
-     * Whether LDR-based display dimming is enabled. The LDR controls PWM only.
-     * Default false.
+     * Whether LDR-based dimming is enabled on all leds. Disabled if 0. If enabled, the value
+     * controls the illuminance cutoff below which dimming is enabled. It is in units of ~ 0.5lux.
      */
-    bool ldr_dimming;
+    uint8_t ldr_dimming;
 
     /**
      * Whether the seconds digits and second colon are shown. Default true.
@@ -212,6 +243,15 @@ Config config;
 bool distraction_free;
 
 /**
+ * Whether the current brightness settings are being overridden
+ */
+enum class DimmingOverride {
+    NONE,
+    MAX,
+    MIN
+};
+
+/**
  * Computes the correct checksum value for the current configuration.
  */
 static uint16_t compute_checksum() {
@@ -223,12 +263,16 @@ static uint16_t compute_checksum() {
  */
 static void load_defaults() {
     config.ff_brightness = 40;
+    config.ff_brightness_min = 10;
     config.gate_brightness = 40;
+    config.gate_brightness_min = 25;
     config.synchro_brightness = 40;
+    config.synchro_brightness_min = 10;
     config.display_brightness = 40;
+    config.display_brightness_min = 10;
     config.display_saturation = 0;
     config.display_hue = 0;
-    config.ldr_dimming = false;
+    config.ldr_dimming = 0;
     config.seconds_shown = true;
     config.synchro_mode = synchro::Mode::SYNCHRO;
     config.auto_inc_enable = true;
@@ -269,7 +313,8 @@ static void write_eeprom() {
 static void commit_config(
     const char *text = "",
     uint32_t status_color = 0,
-    int32_t status_synchro = -1
+    int32_t status_synchro = -1,
+    DimmingOverride dimming_override = DimmingOverride::NONE
 ) {
 
     // Configure brightness of the mainboard LEDs.
@@ -279,27 +324,43 @@ static void commit_config(
         brightness.pwm_g = 0;
         brightness.pwm_b = 0;
     } else {
-        if (config.ff_brightness < 37) {
-            brightness.pwm_r = config.ff_brightness * 1771;
+        // brightness settings are stored in the range 0 to 100 inclusive
+        // expand the range of these guys so we can dim them smoothly in the lower range
+        uint16_t ff_brightness_dimmed      = uint16_t(config.ff_brightness) << 8;
+        uint16_t gate_brightness_dimmed    = uint16_t(config.gate_brightness) << 8;
+        uint16_t synchro_brightness_dimmed = uint16_t(config.synchro_brightness) << 8;
+
+        if ((dimming_override == DimmingOverride::NONE) && config.ldr_dimming) {
+            uint16_t max_illuminance = config.ldr_dimming * 32;
+
+            ff_brightness_dimmed      = ldr::dimmed_brightness(ff_brightness_dimmed, uint16_t(config.ff_brightness_min) << 8, max_illuminance);
+            gate_brightness_dimmed    = ldr::dimmed_brightness(gate_brightness_dimmed, uint16_t(config.gate_brightness_min) << 8, max_illuminance);
+            synchro_brightness_dimmed = ldr::dimmed_brightness(synchro_brightness_dimmed, uint16_t(config.synchro_brightness_min) << 8, max_illuminance);
+
+        } else if (dimming_override == DimmingOverride::MIN) {
+            ff_brightness_dimmed = uint16_t(config.ff_brightness_min) << 8;
+            gate_brightness_dimmed = uint16_t(config.gate_brightness_min) << 8;
+            synchro_brightness_dimmed = uint16_t(config.synchro_brightness_min) << 8;
+
+        }
+
+        if (ff_brightness_dimmed < 9363) {
+            brightness.pwm_r = ff_brightness_dimmed * 7;
             brightness.dc_r = 0;
         } else {
             brightness.pwm_r = 0xFFFF;
-            brightness.dc_r = (config.ff_brightness - 37) * 2 + 1;
+            brightness.dc_r = uint8_t((ff_brightness_dimmed - 9363) >> 7) + 1;
         }
-        if (config.gate_brightness < 37) {
-            brightness.pwm_b = config.gate_brightness * 1771;
+        if (gate_brightness_dimmed < 9363) {
+            brightness.pwm_b = gate_brightness_dimmed * 7;
             brightness.dc_b = 0;
         } else {
             brightness.pwm_b = 0xFFFF;
-            brightness.dc_b = (config.gate_brightness - 37) * 2 + 1;
+            brightness.dc_b = uint8_t((gate_brightness_dimmed - 9363) >> 7) + 1;
         }
-        if (config.synchro_brightness < 37) {
-            brightness.pwm_g = config.synchro_brightness * 1771;
-            brightness.dc_g = 0;
-        } else {
-            brightness.pwm_g = 0xFFFF;
-            brightness.dc_g = (config.synchro_brightness - 37) * 2 + 1;
-        }
+        // synchroscope doesn't support PWM, so just map the brightness to DC
+        brightness.pwm_g = 0xFFFF;
+        brightness.dc_g = (uint32_t(synchro_brightness_dimmed) * 126) / 25600 + 1;
     }
 
     // Configure brightness and color of the 7-segment displays.
@@ -308,15 +369,27 @@ static void commit_config(
     uint16_t display_dark;
     uint16_t display_hue;
     bool enable_seconds;
-    if (config.display_brightness < 37) {
-        display_bright = config.display_brightness * 1328 + 16384;
+
+    // brightness settings are stored in the range 0 to 100 inclusive
+    // expand the range of these guys so we can dim them smoothly in the lower range
+    uint16_t display_brightness_dimmed = uint16_t(config.display_brightness) << 8;
+
+    if ((dimming_override == DimmingOverride::NONE) && config.ldr_dimming) {
+        uint16_t max_illuminance = config.ldr_dimming * 32;
+
+        display_brightness_dimmed = ldr::dimmed_brightness(display_brightness_dimmed, uint16_t(config.display_brightness_min) << 8, max_illuminance);
+
+    } else if (dimming_override == DimmingOverride::MIN) {
+        display_brightness_dimmed = uint16_t(config.display_brightness_min) << 8;
+
+    }
+
+    if (display_brightness_dimmed < 9363) {
+        display_bright = ((display_brightness_dimmed * 3) >> 2) * 7 + 16384;
         display_dc = 0;
     } else {
         display_bright = 0xFFFF;
-        display_dc = (config.display_brightness - 37) * 2 + 1;
-    }
-    if (config.ldr_dimming) {
-        display_bright = ((uint32_t)display_bright * (uint32_t)ldr::brightness) >> 10;
+        display_dc = uint8_t((display_brightness_dimmed - 9363) >> 7) + 1;
     }
     display_dark = ((uint32_t)display_bright * (uint32_t)(100 - config.display_saturation)) / 100;
     display_hue = config.display_hue * 182;
@@ -458,17 +531,18 @@ void update() {
                     case gpio::Event::SHORT:
                         switch (config_entry) {
                             case ConfigEntry::FF_BRIGHTNESS:
+                            case ConfigEntry::FF_BRIGHTNESS_MIN:
                             case ConfigEntry::GATE_BRIGHTNESS:
+                            case ConfigEntry::GATE_BRIGHTNESS_MIN:
                             case ConfigEntry::SYNCHRO_BRIGHTNESS:
+                            case ConfigEntry::SYNCHRO_BRIGHTNESS_MIN:
                             case ConfigEntry::DISPLAY_BRIGHTNESS:
+                            case ConfigEntry::DISPLAY_BRIGHTNESS_MIN:
                             case ConfigEntry::DISPLAY_SATURATION:
                             case ConfigEntry::DISPLAY_HUE:
                             case ConfigEntry::LOCATION_CODE:
-                                screen = Screen::VALUE;
-                                break;
-
                             case ConfigEntry::LDR_DIMMING:
-                                config.ldr_dimming = !config.ldr_dimming;
+                                screen = Screen::VALUE;
                                 break;
 
                             case ConfigEntry::SECONDS_SHOWN:
@@ -528,14 +602,29 @@ void update() {
                     case ConfigEntry::FF_BRIGHTNESS:
                         value8 = &config.ff_brightness;
                         goto handle8;
+                    case ConfigEntry::FF_BRIGHTNESS_MIN:
+                        value8 = &config.ff_brightness_min;
+                        goto handle8;
                     case ConfigEntry::GATE_BRIGHTNESS:
                         value8 = &config.gate_brightness;
+                        goto handle8;
+                    case ConfigEntry::GATE_BRIGHTNESS_MIN:
+                        value8 = &config.gate_brightness_min;
                         goto handle8;
                     case ConfigEntry::SYNCHRO_BRIGHTNESS:
                         value8 = &config.synchro_brightness;
                         goto handle8;
+                    case ConfigEntry::SYNCHRO_BRIGHTNESS_MIN:
+                        value8 = &config.synchro_brightness_min;
+                        goto handle8;
                     case ConfigEntry::DISPLAY_BRIGHTNESS:
                         value8 = &config.display_brightness;
+                        goto handle8;
+                    case ConfigEntry::DISPLAY_BRIGHTNESS_MIN:
+                        value8 = &config.display_brightness_min;
+                        goto handle8;
+                    case ConfigEntry::LDR_DIMMING:
+                        value8 = &config.ldr_dimming;
                         goto handle8;
                     case ConfigEntry::DISPLAY_SATURATION:
                         value8 = &config.display_saturation;
@@ -617,6 +706,7 @@ void update() {
         status_color = 0;
     }
     int32_t status_synchro = -1;
+    DimmingOverride dimming_override = DimmingOverride::NONE;
 
     // Configure the display overrides.
     switch (screen) {
@@ -637,8 +727,18 @@ void update() {
                     if (screen == Screen::VALUE) blink_from = 3;
                     break;
 
+                case ConfigEntry::FF_BRIGHTNESS_MIN:
+                    snprintf(text, 7, "F- %3d", (int)config.ff_brightness_min);
+                    if (screen == Screen::VALUE) blink_from = 3;
+                    break;
+
                 case ConfigEntry::GATE_BRIGHTNESS:
                     snprintf(text, 7, "Gb %3d", (int)config.gate_brightness);
+                    if (screen == Screen::VALUE) blink_from = 3;
+                    break;
+
+                case ConfigEntry::GATE_BRIGHTNESS_MIN:
+                    snprintf(text, 7, "G- %3d", (int)config.gate_brightness_min);
                     if (screen == Screen::VALUE) blink_from = 3;
                     break;
 
@@ -647,11 +747,24 @@ void update() {
                     if (screen == Screen::VALUE) blink_from = 3;
                     break;
 
+                case ConfigEntry::SYNCHRO_BRIGHTNESS_MIN:
+                    snprintf(text, 7, "S- %3d", (int)config.synchro_brightness_min);
+                    if (screen == Screen::VALUE) blink_from = 3;
+                    break;
+
                 case ConfigEntry::DISPLAY_BRIGHTNESS:
                     if (screen == Screen::VALUE) {
                         snprintf(text, 7, "888888");
                     } else {
                         snprintf(text, 7, "db %3d", (int)config.display_brightness);
+                    }
+                    break;
+
+                case ConfigEntry::DISPLAY_BRIGHTNESS_MIN:
+                    if (screen == Screen::VALUE) {
+                        snprintf(text, 7, "888888");
+                    } else {
+                        snprintf(text, 7, "d- %3d", (int)config.display_brightness_min);
                     }
                     break;
 
@@ -666,7 +779,8 @@ void update() {
                     break;
 
                 case ConfigEntry::LDR_DIMMING:
-                    snprintf(text, 7, "Ldr  %d", (int)config.ldr_dimming);
+                    snprintf(text, 7, "Ldr%3d", (int)config.ldr_dimming);
+                    if (screen == Screen::VALUE) blink_from = 3;
                     break;
 
                 case ConfigEntry::SECONDS_SHOWN:
@@ -734,10 +848,25 @@ void update() {
                     // Full scale is about 2.5A.
                     status_synchro = pwr::current * 3;
                     if (status_synchro > 29*256) status_synchro = 29*256;
+
+                    dimming_override = DimmingOverride::MAX;
+                    break;
+
+                case ConfigEntry::FF_BRIGHTNESS_MIN:
+                case ConfigEntry::GATE_BRIGHTNESS_MIN:
+                case ConfigEntry::SYNCHRO_BRIGHTNESS_MIN:
+                case ConfigEntry::DISPLAY_BRIGHTNESS_MIN:
+
+                    // Full scale is about 2.5A.
+                    status_synchro = pwr::current * 3;
+                    if (status_synchro > 29*256) status_synchro = 29*256;
+
+                    dimming_override = DimmingOverride::MIN;
                     break;
 
                 case ConfigEntry::LDR_DIMMING:
-                    status_synchro = (ldr::brightness * 29) / 4;
+                    // map an illuminance of 1-30 lux to the synchroscope.
+                    status_synchro = ldr::dimmed_brightness(29 * 256, 1, 64*30);
                     break;
 
                 case ConfigEntry::LOCATION_CODE:
@@ -769,12 +898,15 @@ void update() {
             if (config.ff_brightness) config.ff_brightness--;
             if (config.gate_brightness) config.gate_brightness--;
             if (config.display_brightness) config.display_brightness--;
+            if (config.ff_brightness_min) config.ff_brightness_min--;
+            if (config.gate_brightness_min) config.gate_brightness_min--;
+            if (config.display_brightness_min) config.display_brightness_min--;
             count -= 100;
         }
     }
 
     // Always update configuration (it includes LDR behavior).
-    commit_config(text, status_color, status_synchro);
+    commit_config(text, status_color, status_synchro, dimming_override);
 
 }
 

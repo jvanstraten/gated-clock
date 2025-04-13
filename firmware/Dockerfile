@@ -6,6 +6,11 @@ FROM debian:8
 
 RUN PACKAGES="libusb-dev git make curl gcc-arm-none-eabi gcc unzip" && \
     export DEBIAN_FRONTEND=noninteractive && \
+    rm /etc/apt/sources.list && \
+    echo "deb [trusted=yes] http://archive.debian.org/debian jessie main" | tee -a /etc/apt/sources.list && \
+    echo "deb [trusted=yes] http://archive.debian.org/debian-security jessie/updates main" | tee -a /etc/apt/sources.list && \
+    echo "Acquire::Check-Valid-Until false;" | tee -a /etc/apt/apt.conf.d/10-nocheckvalid && \
+    echo 'Package: *\nPin: origin "archive.debian.org"\nPin-Priority: 500' | tee -a /etc/apt/preferences.d/10-archive-pin && \
     apt-get update && \
     apt-get install -y $PACKAGES && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
